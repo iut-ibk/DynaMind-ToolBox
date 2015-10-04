@@ -271,126 +271,170 @@
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td>node</td>
+<tr class="row-odd"><td>weir</td>
 <td>&nbsp;</td>
-<td colspan="2">NODE</td>
+<td colspan="2">EDGE</td>
 <td>read</td>
 <td>&nbsp;</td>
 </tr>
 <tr class="row-even"><td>&nbsp;</td>
+<td>start_id</td>
+<td>LINK</td>
+<td>node</td>
+<td>read</td>
+<td>down stream node</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>end_id</td>
+<td>LINK</td>
+<td>node</td>
+<td>read</td>
+<td>up stream node</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>crest_height</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>crest height in (m)</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>discharge_coefficient</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>discharge coefficient</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>end_coefficient</td>
+<td colspan="2">double</td>
+<td>read</td>
+<td>end coefficient</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>&nbsp;</td>
 <td colspan="2">&nbsp;</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td>junction</td>
+<tr class="row-even"><td>node</td>
 <td>&nbsp;</td>
 <td colspan="2">NODE</td>
 <td>read</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td colspan="2">&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>junction</td>
+<td>&nbsp;</td>
+<td colspan="2">NODE</td>
+<td>read</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>node_id</td>
 <td>LINK</td>
 <td>node</td>
 <td>read</td>
 <td>link to node</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>d</td>
 <td colspan="2">&nbsp;</td>
 <td>read</td>
 <td>maximum depth of junction in m
 (e.g. from ground surface to invert)</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>invert_elevation</td>
 <td colspan="2">double</td>
 <td>read</td>
 <td>invert elevation in m</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>flooding_volume</td>
 <td colspan="2">&nbsp;</td>
 <td>write</td>
 <td>flooded volume in m3</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>node_depth</td>
 <td colspan="2">&nbsp;</td>
 <td>write</td>
 <td>depth from invert to peak water level in m</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>&nbsp;</td>
 <td colspan="2">&nbsp;</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>sub_catchment</td>
+<tr class="row-odd"><td>sub_catchment</td>
 <td>&nbsp;</td>
 <td colspan="2">FACE</td>
 <td>read</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>area</td>
 <td colspan="2">double</td>
 <td>read</td>
 <td>area in m2</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>impervious_fraction</td>
 <td colspan="2">double</td>
 <td>read</td>
 <td>imperviousness dimensionless</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>&nbsp;</td>
 <td colspan="2">&nbsp;</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>inlet</td>
+<tr class="row-odd"><td>inlet</td>
 <td>&nbsp;</td>
 <td colspan="2">NODE</td>
 <td>read</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>node_id</td>
 <td>LINK</td>
 <td>node</td>
 <td>read</td>
 <td>link to node</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>sub_catchment_id</td>
 <td>LINK</td>
 <td>sub_catchment</td>
 <td>read</td>
 <td>link sub catchment</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>&nbsp;</td>
 <td colspan="2">&nbsp;</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>outfall</td>
+<tr class="row-odd"><td>outfall</td>
 <td>&nbsp;</td>
 <td colspan="2">NODE</td>
 <td>read</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>node_id</td>
 <td>LINK</td>
 <td>node</td>
 <td>read</td>
 <td>link to node</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>invert_elevation</td>
 <td colspan="2">double</td>
 <td>read</td>

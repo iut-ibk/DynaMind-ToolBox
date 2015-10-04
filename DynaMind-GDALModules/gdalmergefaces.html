@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Offset Faces &mdash; DynaMind-ToolBox 0.9.0-dev documentation</title>
+  <title>Merge Faces &mdash; DynaMind-ToolBox 0.9.0-dev documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.9.0-dev documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules" href="index.html"/>
-        <link rel="next" title="Create a Square Grid" href="dm_creategrid.html"/>
-        <link rel="prev" title="Subtract Features" href="gdalerase.html"/> 
+        <link rel="next" title="For Loop" href="loopgroup.html"/>
+        <link rel="prev" title="Create a Square Grid" href="dm_creategrid.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -98,14 +98,14 @@
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gdalcalculatecentroids.html">Create Centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gdalerase.html">Subtract Features</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Offset Faces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gdaloffset.html">Offset Faces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dm_creategrid.html">Create a Square Grid</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Merge Faces</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dm_creategrid.html">Create a Square Grid</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gdalmergefaces.html">Merge Faces</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#workflow-control">Workflow Control</a></li>
@@ -146,11 +146,11 @@
       
           <li><a href="index.html">Standard Modules</a> &raquo;</li>
       
-    <li>Offset Faces</li>
+    <li>Merge Faces</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdaloffset.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/gdalmergefaces.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -160,9 +160,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="offset-faces">
-<h1>Offset Faces<a class="headerlink" href="#offset-faces" title="Permalink to this headline">¶</a></h1>
-<p>Inner offsets faces.</p>
+  <div class="section" id="merge-faces">
+<h1>Merge Faces<a class="headerlink" href="#merge-faces" title="Permalink to this headline">¶</a></h1>
+<p>Merge faces off same attributes</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -178,17 +178,17 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>blockName</td>
+<tr class="row-even"><td>view_name</td>
 <td>STRING</td>
-<td>view name of the faces to split</td>
+<td>view name of the input faces</td>
 </tr>
-<tr class="row-odd"><td>subdevisionName</td>
+<tr class="row-odd"><td>combined_view_name</td>
 <td>STRING</td>
-<td>view name of the split faces</td>
+<td>view name of combined faces</td>
 </tr>
-<tr class="row-even"><td>offset</td>
-<td>DOUBLE</td>
-<td>inner offset width</td>
+<tr class="row-even"><td>attribute_name</td>
+<td>STRING</td>
+<td>attribute name</td>
 </tr>
 </tbody>
 </table>
@@ -212,19 +212,19 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>blockName</td>
+<tr class="row-even"><td>view_name</td>
 <td>&nbsp;</td>
 <td>FACE</td>
 <td>read</td>
-<td>faces to offset</td>
+<td>input faces</td>
 </tr>
 <tr class="row-odd"><td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
+<td>attribute_name</td>
+<td>STRING</td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>subdevisionName</td>
+<tr class="row-even"><td>combined_view_name</td>
 <td>&nbsp;</td>
 <td>FACE</td>
 <td>write</td>
@@ -235,7 +235,7 @@
 </div>
 <div class="section" id="module-name">
 <h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
-<p><span class="target" id="index-0"></span>GDALOffset</p>
+<p><span class="target" id="index-0"></span>combined_view_name</p>
 </div>
 </div>
 
@@ -246,10 +246,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dm_creategrid.html" class="btn btn-neutral float-right" title="Create a Square Grid" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="loopgroup.html" class="btn btn-neutral float-right" title="For Loop" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalerase.html" class="btn btn-neutral" title="Subtract Features" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dm_creategrid.html" class="btn btn-neutral" title="Create a Square Grid" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
