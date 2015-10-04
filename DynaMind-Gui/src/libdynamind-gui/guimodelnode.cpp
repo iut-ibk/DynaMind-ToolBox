@@ -68,6 +68,8 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 {
 	this->module = m;
 	this->modelnode = mn;
+	setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+
 
 	QGridLayout *layout = new QGridLayout;
 	pathSignalMapper = new QSignalMapper(this);
