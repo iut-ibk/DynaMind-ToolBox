@@ -53,6 +53,7 @@ Geometry Processing
    gdalerase
    gdaloffset
    dm_creategrid
+   gdalmergefaces
 
 
 Workflow Control
