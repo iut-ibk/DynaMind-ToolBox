@@ -89,6 +89,7 @@ private:
 	DM::ViewContainer * conduits;
 	DM::ViewContainer * inlets;
 	DM::ViewContainer * junctions;
+	DM::ViewContainer * weirs;
 	//DM::ViewContainer * endnodes;
 	DM::ViewContainer * catchments;
 	DM::ViewContainer * outfalls;
@@ -166,6 +167,7 @@ private:
 
 	QFile reportFile;
 
+	void writeProfile(OGRFeature* conduit, std::string linkname, std::fstream &inp);
 };
 
 #endif // SWMMWRITEANDREAD_H

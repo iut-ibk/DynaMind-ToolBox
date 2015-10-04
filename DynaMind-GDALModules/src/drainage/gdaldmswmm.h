@@ -47,7 +47,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	DM::ViewContainer catchment;
 	DM::ViewContainer outfalls;
 	DM::ViewContainer nodes;
-	//DM::View weir;
+	DM::ViewContainer weir;
 	//DM::View wwtp;
 	//DM::View storage;
 	//DM::View pumps;
@@ -59,7 +59,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	std::string FileName;
 	std::vector<DM::Node*> PointList;
 	bool isCombined;
-
+	bool hasWeir;
 	bool writeResultFile;
 	bool deleteSWMM;
 

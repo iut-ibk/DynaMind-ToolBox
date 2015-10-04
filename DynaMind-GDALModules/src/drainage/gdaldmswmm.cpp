@@ -86,6 +86,7 @@ GDALDMSWMM::GDALDMSWMM()
 }
 
 void GDALDMSWMM::init() {
+	hasWeir = false;
 
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("start_id", "node", DM::READ);
@@ -128,6 +129,19 @@ void GDALDMSWMM::init() {
 	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
 	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
 
+	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
+	if (inViews.find("weir") != inViews.end()) {
+		this->hasWeir = true;
+		weir = DM::ViewContainer("weir", DM::EDGE, DM::READ);
+		weir.addAttribute("start_id", "node", DM::READ);
+		weir.addAttribute("end_id", "node", DM::READ);
+		// weir.addAttribute("diameter", DM::Attribute::DOUBLE, DM::READ);
+		weir.addAttribute("crest_height", DM::Attribute::DOUBLE, DM::READ);
+		weir.addAttribute("discharge_coefficient", DM::Attribute::DOUBLE, DM::READ);
+		weir.addAttribute("end_coefficient", DM::Attribute::DOUBLE, DM::READ);
+	}
+
+
 	if (this->climateChangeFactorFromCity)
 		city.addAttribute("climate_change_factor",DM::Attribute::DOUBLE, DM::READ);
 
@@ -142,6 +156,8 @@ void GDALDMSWMM::init() {
 	data_stream.push_back(&outfalls);
 	data_stream.push_back(&conduit);
 	data_stream.push_back(&nodes);
+	if (this->hasWeir)
+		data_stream.push_back(&weir);
 	data_stream.push_back(&city);
 
 
@@ -152,6 +168,8 @@ void GDALDMSWMM::init() {
 	data_map["outfall"]  = &this->outfalls;
 	data_map["conduit"]  = &this->conduit;
 	data_map["node"]  = &this->nodes;
+	if (this->hasWeir)
+		data_map["weir"]  = &this->weir;
 	data_map["city"]  = &this->city;
 	this->registerViewContainers(data_stream);
 }

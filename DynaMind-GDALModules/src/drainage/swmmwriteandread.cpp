@@ -65,13 +65,20 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 
 	QString UUIDPath = QUuid::createUuid().toString().remove("{").remove("}");
 
+
 	conduits = data_map["conduit"];
+
 	inlets= data_map["inlet"];
 	junctions= data_map["junction"];
 	catchments = data_map["catchment"];
 	outfalls= data_map["outfall"];
 	nodes= data_map["node"];
 	city= data_map["city"];
+
+	if (data_map.find("weir") != data_map.end())
+		weirs = data_map["weir"];
+	else
+		weirs = 0;
 
 	if (!tmpPath.mkdir(UUIDPath)) {
 		Logger(Error) << "Couldn't create folder " << tmpPath.absolutePath().toStdString() << "/" << UUIDPath.toStdString();
@@ -891,63 +898,41 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
 	}
 }
 
-void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
-	//std::vector<std::string> OutfallNames = city->getUUIDsOfComponentsInView(weir);
+void SWMMWriteAndRead::writeProfile(OGRFeature* conduit, std::string linkname, std::fstream &inp)
+{
+	std::string shape = conduit->GetFieldAsString("type");
+	if (shape == "IRREGULAR"){
+		inp << linkname << conduit->GetFID() << "\t" << "IRREGULAR" << "\t"<< "trans" << conduit->GetFID() <<" \t0\t0\t0\n";
+	} else if (shape == "RECT_CLOSED"){
+		double h = conduit->GetFieldAsDouble("diameter");
+		double w = conduit->GetFieldAsDouble("width");
+		inp << linkname << conduit->GetFID() << "\t" << "RECT_CLOSED" << "\t"<< h <<" \t" << w << "\t0\t0\n";
+	} else if (shape == "RECT_OPEN")  {
+		inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("diameter") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+	} else if (shape == "W")  {
+		inp << linkname << conduit->GetFID() << "\t" << "RECT_OPEN" << "\t"<< conduit->GetFieldAsDouble("height") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
+	} else { //Everthing is is CIRCULAR
+		double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
+		inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< d <<" \t0\t0\t0\n";
+	}
+}
 
-	//std::vector<std::string> WWTPNames = city->getUUIDsOfComponentsInView(wwtp);
-	//XSection
+void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 	inp<<"\n";
 	inp<<"[XSECTIONS]\n";
 	inp<<";;Link	Type	G1	G2	G3	G4\n";
 	inp<<";;==========================================\n";
 
-	//	std::vector<DM::View> condies;
-	//	condies.push_back(weir);
-	//	condies.push_back(conduit);
-
-	//	foreach (DM::View condie, condies)
-	//	{
 	this->conduits->resetReading();
 	OGRFeature * conduit;
 	while (conduit = conduits->getNextFeature()) {
-		//foreach(Component* c, city->getAllComponentsInView(condie))
-		{
-			std::string linkname = "";
-			//			if (condie.getName() == "CONDUIT")
-			linkname = "LINK";
-			//			if (condie.getName() == "WEIR")
-			//				linkname = "WEIR";
-
-			//			DM::Edge * link = (Edge*)c;
-
-			//			DM::Node * nStartNode = link->getStartNode();
-			//			DM::Node * nEndNode = link->getEndNode();
-
-			//			if (UUIDtoINT[nStartNode] == 0) {
-			//				UUIDtoINT[nStartNode] = GLOBAL_Counter++;
-			//			}
-			//			if (UUIDtoINT[nEndNode] == 0) {
-			//				UUIDtoINT[nEndNode] = GLOBAL_Counter++;
-			//			}
-
-
-			std::string shape = conduit->GetFieldAsString("type");
-
-
-			if (shape == "IRREGULAR"){
-				inp << linkname << conduit->GetFID() << "\t" << "IRREGULAR" << "\t"<< "trans" << conduit->GetFID() <<" \t0\t0\t0\n";
-			} else if (shape == "RECT_CLOSED"){
-				double h = conduit->GetFieldAsDouble("diameter");
-				double w = conduit->GetFieldAsDouble("width");
-				inp << linkname << conduit->GetFID() << "\t" << "RECT_CLOSED" << "\t"<< h <<" \t" << w << "\t0\t0\n";
-			} else if (shape == "RECT_OPEN")  {
-				inp << linkname << conduit->GetFID() << "\t" << shape << "\t"<< conduit->GetFieldAsDouble("diameter") <<" \t"<< conduit->GetFieldAsDouble("width") << "\t0\t0\n";
-			} else { //Everthing is is CIRCULAR
-				double d = conduit->GetFieldAsDouble("diameter");//link->getAttribute("Diameter")->getDouble();
-				inp << linkname << conduit->GetFID() << "\t" << "CIRCULAR" << "\t"<< d <<" \t0\t0\t0\n";
-			}
-
-			continue;
+			writeProfile(conduit, "LINK", inp);
+	}
+	this->weirs->resetReading();
+	while (conduit = weirs->getNextFeature()) {
+			writeProfile(conduit, "WEIR", inp);
+	}
+	}
 			//			}
 
 			//			DM::Component * xscetion = link->getAttribute("XSECTION")->getLinkedComponents()[0];
@@ -990,14 +975,15 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 			//			}
 			//		}
 			//	}
-			inp<<"\n";
-		}
-	}
-}
+		//}
+	//}
+
 
 
 void SWMMWriteAndRead::writeWeir(std::fstream &inp)
 {
+
+
 	inp<<"\n";
 	inp<<"[WEIRS]\n";
 	inp<<";;               Inlet            Outlet           Weir         Crest      Disch.     Flap End      End \n";
@@ -1005,6 +991,31 @@ void SWMMWriteAndRead::writeWeir(std::fstream &inp)
 	inp<<";;-------------- ---------------- ---------------- ------------ ---------- ---------- ---- -------- ----------\n";
 	//LINK984          NODE109          NODE985          TRANSVERSE   0          1.80       NO   0        0
 
+	if (!this->weirs)
+		return;
+
+	this->weirs->resetReading();
+	OGRFeature * weir;
+
+	while (weir = weirs->getNextFeature()) {
+		int StartNode = weir->GetFieldAsInteger("start_id");
+		int EndNode = weir->GetFieldAsInteger("end_id");
+
+		if ( EndNode == StartNode) {
+			Logger(Warning) << "Start Node is End Node";
+			continue;
+		}
+		int id = weir->GetFID();
+		inp << "WEIR" << id << "\tNODE" <<EndNode << "\tNODE" << StartNode << "\t";
+		inp<<"TRANSVERSE" << "\t";
+		inp<< weir->GetFieldAsDouble("crest_height") << "\t";
+
+		inp<< weir->GetFieldAsDouble("discharge_coefficient") << "\t";
+		inp<<"NO" << "\t";
+		inp<<"0" << "\t";
+		inp<< weir->GetFieldAsDouble("end_coefficient") << "\t";
+		inp << "\n";
+	}
 	//	foreach(Component* c, city->getAllComponentsInView(weir))
 	//	{
 	//		DM::Edge* weir = (Edge*)c;
