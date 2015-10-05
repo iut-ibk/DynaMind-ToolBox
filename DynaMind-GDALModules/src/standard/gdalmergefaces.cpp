@@ -82,11 +82,31 @@ void GDALMergeFaces::run()
 {
 	OGRGeometry * geo;
 	leadingView.resetReading();
-	int cluster_id = 1;
+
+	OGRFeature * f;
+	std::set<int> indizes;
+	while (f = leadingView.getNextFeature()) {
+		indizes.insert(f->GetFieldAsInteger(this->attriubteName.c_str()));
+	}
+
+	//int cluster_id = 1;
 	int counter = 1;
-	while(geo = joinCluster(cluster_id)) {
-		cluster_id++;
+
+
+	foreach (int cluster_id, indizes) {
+	//while(geo = joinCluster(cluster_id)) {
+		//cluster_id++;
+		geo = joinCluster(cluster_id);
+
+		if (counter % 100 == 0) {
+		DM::Logger(DM::Standard) << "merged " << counter << "/" << indizes.size();
+		}
 		counter++;
+		if (!geo)
+			continue;
+
+
+
 		if (wkbMultiPolygon == geo->getGeometryType()){
 			geo = geo->UnionCascaded();
 			OGRMultiPolygon * mgeo = (OGRMultiPolygon*) geo;
@@ -108,4 +128,9 @@ void GDALMergeFaces::run()
 		f->SetGeometry(geo);
 	}
 
+}
+
+string GDALMergeFaces::getHelpUrl()
+{
+	return "/DynaMind-GDALModules/gdalmergefaces.html";
 }

@@ -37,6 +37,7 @@ public:
 	GDALMergeFaces();
 	void init();
 	void run();
+	std::string getHelpUrl();
 
 private:
 	std::string viewName;
