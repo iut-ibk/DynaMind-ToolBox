@@ -100,6 +100,11 @@ void GDALSpatialLinking::run()
 	if (this->getSimulation()->getSimulationConfig().getCoorindateSystem() != 0) {
 		DM::Logger(DM::Debug) << "Use Spatialite Backend";
 		//// TODO: leadingView.createSpatialIndex();
+
+		std::stringstream query_spatail_index;
+		query_spatail_index << "SELECT CreateSpatialIndex('" << this->leadingViewName << "','GEOMETRY')";
+
+
 		std::stringstream query;
 
 		std::string lead_filter = leadingView.get_attribute_filter_sql_string();
@@ -129,6 +134,8 @@ void GDALSpatialLinking::run()
 		execute_query1(db,"SELECT load_extension('mod_spatialite')");
 
 		DM::Logger(DM::Standard) << query.str();
+
+		execute_query1(db,query_spatail_index.str().c_str());
 
 		execute_query1(db,query.str().c_str());
 		sqlite3_close(db);
