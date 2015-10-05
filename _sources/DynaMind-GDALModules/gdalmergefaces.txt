@@ -36,4 +36,4 @@ Data-stream
 Module Name
 -----------
 
-:index:`GDALMergeFaces <GDALModules; GDALMergeFaces | Merge faces>`
+:index:`combined_view_name <GDALModules; GDALMergeFaces | Merge faces>`
