@@ -38,84 +38,104 @@ class SimplifyABSAge(Module):
 
         def init(self):
 
+            self.name_list = []
+
+            self.name_list.append("age_years_20_24_years_persons")
+            self.name_list.append("age_years_25_29_years_persons")
+            self.name_list.append("age_years_30_34_years_persons")
+            self.name_list.append("age_years_35_39_years_persons")
+            self.name_list.append("age_years_40_44_years_persons")
+            self.name_list.append("age_years_45_49_years_persons")
+            self.name_list.append("age_years_50_54_years_persons")
+            self.name_list.append("age_years_55_59_years_persons")
+            self.name_list.append("age_years_60_64_years_persons")
+            self.name_list.append("age_years_65_69_years_persons")
+            self.name_list.append("age_years_70_74_years_persons")
+            self.name_list.append("age_years_75_79_years_persons")
+            self.name_list.append("age_years_80_84_years_persons")
+            self.name_list.append("age_years_85_89_years_persons")
+
+
             self.translation_table = {}
             #B04a
-            self.translation_table["negative_nil_income_total"] = "low"
-            self.translation_table["1_199_total"] = "low"
-            self.translation_table["200_299_total"] = "low"
-            self.translation_table["300_399_total"] = "low"
-            self.translation_table["400_599_total"] = "low"
-            self.translation_table["600_799_total"] = "low"
-            self.translation_table["800_999_total"] = "medium"
-            self.translation_table["1000_1249_total"] = "medium"
-            self.translation_table["1250_1499_total"] = "medium"
-            self.translation_table["1500_1999_total"] = "medium"
-            self.translation_table["2000_2499_total"] = "high"
-            self.translation_table["2500_2999_total"] = "high"
-            self.translation_table["3000_3499_total"] = "high"
-            self.translation_table["3500_3999_total"] = "high"
-            self.translation_table["2500_2999_total"] = "high"
-            self.translation_table["3000_3499_total"] = "high"
-            self.translation_table["4000_or_more_total"] = "high"
+            self.translation_table["age_years_20_24_years_persons"] = "age_20_24"
+            self.translation_table["age_years_25_29_years_persons"] = "age_25_29"
+            self.translation_table["age_years_30_34_years_persons"] = "age_30_34"
+            self.translation_table["age_years_35_39_years_persons"] = "age_35_39"
+            self.translation_table["age_years_40_44_years_persons"] = "age_40_44"
+            self.translation_table["age_years_45_49_years_persons"] = "age_45_49"
+            self.translation_table["age_years_50_54_years_persons"] = "age_50_54"
+            self.translation_table["age_years_55_59_years_persons"] = "age_55_59"
+            self.translation_table["age_years_60_64_years_persons"] = "age_60_64"
+            self.translation_table["age_years_65_69_years_persons"] = "age_65_69"
+            self.translation_table["age_years_70_74_years_persons"] = "age_70_74"
+            self.translation_table["age_years_75_79_years_persons"] = "age_75_79"
+            self.translation_table["age_years_80_84_years_persons"] = "age_80_84"
+            self.translation_table["age_years_85_89_years_persons"] = "age_85_89"
 
 
-            self.__b28 = ViewContainer("b28", NODE, READ)
+            self.__b04 = ViewContainer("b04", NODE, READ)
 
             for k in self.translation_table.keys():
-                self.__b28.addAttribute(k, Attribute.INT, READ)
+                self.__b04.addAttribute(k, Attribute.INT, READ)
 
 
 
-            self.__ress = ViewContainer("hh_income", NODE, WRITE)
-            self.__ress.addAttribute("low", Attribute.INT, WRITE)
-            self.__ress.addAttribute("medium", Attribute.INT, WRITE)
-            self.__ress.addAttribute("high", Attribute.INT, WRITE)
+            self.__ress = ViewContainer("hh_age", NODE, WRITE)
+            # self.__ress.addAttribute("low", Attribute.INT, WRITE)
+            # self.__ress.addAttribute("medium", Attribute.INT, WRITE)
+            # self.__ress.addAttribute("high", Attribute.INT, WRITE)
 
-            self.__ress.addAttribute("cdf_low", Attribute.DOUBLE, WRITE)
-            self.__ress.addAttribute("cdf_medium", Attribute.DOUBLE, WRITE)
-            self.__ress.addAttribute("cdf_high", Attribute.DOUBLE, WRITE)
-            self.__ress.addAttribute("cdf_mean", Attribute.DOUBLE, WRITE)
-
+            self.__ress.addAttribute("cdf_age_20_24", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_25_29", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_30_34", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_35_39", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_40_44", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_45_49", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_50_54", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_55_59", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_60_64", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_65_69", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_70_74", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_75_79", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_80_84", Attribute.DOUBLE, WRITE)
+            self.__ress.addAttribute("cdf_age_85_89", Attribute.DOUBLE, WRITE)
 
             views = []
-            views.append(self.__b28)
+            views.append(self.__b04)
             views.append(self.__ress)
 
             self.registerViewContainers(views)
 
-
         def run(self):
+            self.__b04.reset_reading()
 
-            self.__b28.reset_reading()
-
-            for b40 in self.__b28:
+            for b04 in self.__b04:
                 values = {}
-                values["low"] = 0
-                values["medium"] = 0
-                values["high"] = 0
+                for k in self.name_list:
+                    values[k] = 0
 
-
-
-                for k in self.translation_table.keys():
-                    values[self.translation_table[k]] += b40.GetFieldAsInteger(k)
+                for k in self.name_list:
+                    values[k] += b04.GetFieldAsInteger(k)
 
                 f = self.__ress.create_feature()
-
-                f.SetGeometry(b40.GetGeometryRef())
+                f.SetGeometry(b04.GetGeometryRef())
 
                 sum = 0.0
-                for vk in values.keys():
+
+                for vk in self.name_list:
                     sum += float(values[vk])
-                    f.SetField(vk, int(values[vk]))
 
                 if sum < 1.0:
                     continue
-                #Create CDF
-                f.SetField("cdf_low", float(values["low"]) / sum)
-                f.SetField("cdf_medium", float(values["low"] + values["medium"]) / sum)
-                f.SetField("cdf_high", float(values["low"] + values["medium"] + values["high"]) / sum )
-                f.SetField("cdf_mean", float(values["low"]*1 + values["medium"]*2 + values["high"]*3)  / sum )
 
+                #Create CDF
+                cdf_sum = 0
+                for k in self.name_list:
+                    cdf_sum += values[k]
+                    f.SetField("cdf_" + self.translation_table[k], float(cdf_sum) / sum)
+            self.__b04.finalise()
+            self.__ress.finalise()
 
 
 

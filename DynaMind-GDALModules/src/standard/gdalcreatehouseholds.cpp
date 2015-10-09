@@ -31,6 +31,21 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	education.addAttribute("cdf_secondary", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_other", DM::Attribute::DOUBLE, DM::READ);
 
+	hh_age = DM::ViewContainer("hh_age", DM::COMPONENT, DM::READ);
+	hh_age.addAttribute("cdf_age_20_24", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_25_29", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_30_34", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_35_39", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_40_44", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_45_49", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_50_54", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_55_59", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_60_64", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_65_69", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_70_74", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_75_79", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_80_84", DM::Attribute::DOUBLE, DM::READ);
+	hh_age.addAttribute("cdf_age_85_89", DM::Attribute::DOUBLE, DM::READ);
 
 	building = DM::ViewContainer("building", DM::FACE, DM::READ);
 	building.addAttribute("residential_units", DM::Attribute::INT, DM::READ);
@@ -41,6 +56,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	household.addAttribute("persons", DM::Attribute::INT, DM::WRITE);
 	household.addAttribute("education", DM::Attribute::STRING, DM::WRITE);
 	household.addAttribute("income", DM::Attribute::STRING, DM::WRITE);
+	household.addAttribute("age_cat", DM::Attribute::STRING, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> datastream;
 	//datastream.push_back(&district);
@@ -48,6 +64,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	datastream.push_back(&hh_income);
 	datastream.push_back(&education);
 	datastream.push_back(&household);
+	datastream.push_back(&hh_age);
 
 	education_names.push_back("cdf_secondary");
 	education_names.push_back("cdf_other");
@@ -58,15 +75,35 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	hh_income_names.push_back("cdf_medium");
 	hh_income_names.push_back("cdf_high");
 
+	hh_age_names.push_back("cdf_age_20_24");
+	hh_age_names.push_back("cdf_age_25_29");
+	hh_age_names.push_back("cdf_age_30_34");
+	hh_age_names.push_back("cdf_age_35_39");
+	hh_age_names.push_back("cdf_age_40_44");
+	hh_age_names.push_back("cdf_age_45_49");
+	hh_age_names.push_back("cdf_age_50_54");
+	hh_age_names.push_back("cdf_age_55_59");
+	hh_age_names.push_back("cdf_age_60_64");
+	hh_age_names.push_back("cdf_age_65_69");
+	hh_age_names.push_back("cdf_age_70_74");
+	hh_age_names.push_back("cdf_age_75_79");
+	hh_age_names.push_back("cdf_age_80_84");
+	hh_age_names.push_back("cdf_age_85_89");
+
+
 	education_names_p.push_back("secondary");
 	education_names_p.push_back("other");
 	education_names_p.push_back("technical");
 	education_names_p.push_back("tertiary");
 
-
 	hh_income_names_p.push_back("low");
 	hh_income_names_p.push_back("medium");
 	hh_income_names_p.push_back("high");
+
+	foreach (std::string name, hh_age_names) {
+		hh_age_names_p.push_back(name.replace(0, 4, ""));
+
+	}
 
 	this->registerViewContainers(datastream);
 }
@@ -81,10 +118,14 @@ void GDALCreateHouseholds::run()
 		hh_income_v.push_back(0);
 	}
 
+	foreach (std::string e, hh_age_names) {
+		hh_age_name_v.push_back(0);
+	}
 
 
 	building.createIndex("district_id");
 	hh_income.createIndex("district_id");
+	hh_age.createIndex("district_id");
 	education.createIndex("district_id");
 
 
@@ -108,6 +149,7 @@ void GDALCreateHouseholds::run()
 
 		fill_cdf(district_id, "district_id" ,education, this->education_names, this->education_v);
 		fill_cdf(district_id, "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
+		fill_cdf(district_id, "district_id" ,hh_age, this->hh_age_names, this->hh_age_name_v);
 
 		OGRGeometry * geo = b->GetGeometryRef();
 		if (!geo)
@@ -127,6 +169,7 @@ void GDALCreateHouseholds::run()
 			h->SetField("persons",rand() % 4 + 1 );
 			h->SetField("education", this->sampler(this->education_names_p, this->education_v).c_str());
 			h->SetField("income", this->sampler(this->hh_income_names_p, this->hh_income_v).c_str());
+			h->SetField("age_cat", this->sampler(this->hh_age_names_p, this->hh_age_name_v).c_str());
 			h->SetGeometry(&pt);
 			counter++;
 			//households--;

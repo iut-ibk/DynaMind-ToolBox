@@ -44,16 +44,21 @@ private:
 	DM::ViewContainer building;
 	DM::ViewContainer household;
 	DM::ViewContainer hh_income;
+	DM::ViewContainer hh_age;
 	DM::ViewContainer education;
 
 	std::vector<std::string> hh_income_names;
 	std::vector<std::string> education_names;
+	std::vector<std::string> hh_age_names;
 
 	std::vector<std::string> hh_income_names_p;
 	std::vector<std::string> education_names_p;
+	std::vector<std::string> hh_age_names_p;
 
 	std::vector<double> hh_income_v;
 	std::vector<double> education_v;
+	std::vector<double> hh_age_name_v;
+
 	boost::random::mt19937 generator;
 	//boost::random::default_random_engine generator;
 	boost::random::uniform_real_distribution<double> distribution;
