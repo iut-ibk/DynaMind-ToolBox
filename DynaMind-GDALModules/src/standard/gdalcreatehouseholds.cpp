@@ -56,7 +56,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	household.addAttribute("persons", DM::Attribute::INT, DM::WRITE);
 	household.addAttribute("education", DM::Attribute::STRING, DM::WRITE);
 	household.addAttribute("income", DM::Attribute::STRING, DM::WRITE);
-	household.addAttribute("age_cat", DM::Attribute::STRING, DM::WRITE);
+	household.addAttribute("age", DM::Attribute::INT, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> datastream;
 	//datastream.push_back(&district);
@@ -101,7 +101,7 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	hh_income_names_p.push_back("high");
 
 	foreach (std::string name, hh_age_names) {
-		hh_age_names_p.push_back(name.replace(0, 4, ""));
+		hh_age_names_p.push_back(name.replace(0, 8, "").replace(2,5,""));
 
 	}
 
@@ -169,7 +169,8 @@ void GDALCreateHouseholds::run()
 			h->SetField("persons",rand() % 4 + 1 );
 			h->SetField("education", this->sampler(this->education_names_p, this->education_v).c_str());
 			h->SetField("income", this->sampler(this->hh_income_names_p, this->hh_income_v).c_str());
-			h->SetField("age_cat", this->sampler(this->hh_age_names_p, this->hh_age_name_v).c_str());
+			h->SetField("age", QString::fromStdString(this->sampler(this->hh_age_names_p, this->hh_age_name_v)).toInt() + rand() % 5);
+
 			h->SetGeometry(&pt);
 			counter++;
 			//households--;
