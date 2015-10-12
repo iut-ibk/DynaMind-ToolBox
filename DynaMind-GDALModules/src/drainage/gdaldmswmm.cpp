@@ -67,10 +67,10 @@ GDALDMSWMM::GDALDMSWMM()
 	this->addParameter("Folder", DM::STRING, &this->FileName);
 	this->addParameter("RainFile", DM::FILENAME, &this->RainFile);
 	this->addParameter("ClimateChangeFactor", DM::DOUBLE, & this->climateChangeFactor);
+	exportSubCatchmentShape = false;
+	this->addParameter("export_subcatchment_shape", DM::BOOL, &this->exportSubCatchmentShape);
 
-
-
-	this->addParameter("combined system", DM::BOOL, &this->isCombined);
+	//this->addParameter("combined system", DM::BOOL, &this->isCombined);
 
 	this->addParameter("rainfile_from_vector", DM::STRING, & this->rainfile_from_vector);
 
@@ -223,7 +223,7 @@ void GDALDMSWMM::run() {
 		city.addAttribute(this->rainfile_from_vector,DM::Attribute::DOUBLEVECTOR, DM::READ);
 
 	//swmm->setBuildYearConsidered(this->consider_built_time);
-
+	swmm->setExportSubcatchmentShape(exportSubCatchmentShape);
 	swmm->setClimateChangeFactor(cf);
 	swmm->setupSWMM();
 	swmm->runSWMM();

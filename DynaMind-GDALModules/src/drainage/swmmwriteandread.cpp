@@ -47,9 +47,10 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
 	data_map(data_map),
 	climateChangeFactor(1),
 	rainfile(rainfile),
-	setting_timestep(7),
+	setting_timestep(2),
 	built_year_considered(false),
-	deleteSWMMWhenDone(true)
+	deleteSWMMWhenDone(true),
+	export_subcatchment_shape(false)
 {
 	GLOBAL_Counter = 1;
 	this->createViewDefinition();
@@ -393,6 +394,53 @@ void SWMMWriteAndRead::writeJunctions(std::fstream &inp)
 }
 
 
+void SWMMWriteAndRead::writePolygons(std::fstream &inp)
+{
+	inp<<"[POLYGONS]\n";
+	inp<<";;Subcatchment\tX-Coord\tY-Coord\n";
+
+	if (!this->export_subcatchment_shape)
+		return;
+
+	int counter = 0;
+	this->inlets->resetReading();
+
+	OGRFeature* inlet;
+	while (inlet = this->inlets->getNextFeature()) {
+		int link_id = inlet->GetFieldAsInteger("node_id");
+		if (link_id == 0)
+			continue;
+		this->catchments->resetReading();
+		//std::stringstream catchment_filter;
+		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
+
+		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
+
+		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("sub_catchment_id") );
+		//while (catchment = catchments->getNextFeature()) {
+		//	break;
+		//}
+
+		if (!catchment)
+			continue;
+
+		int id = catchment->GetFID();
+		//DM::Face * catchment_attr = (DM::Face*)catchment_attr_comp;
+		OGRPolygon * poly = (OGRPolygon*)catchment->GetGeometryRef();
+
+		int points = poly->getExteriorRing()->getNumPoints();
+		OGRPoint p;
+		for (int i = 0; i < points; i++) {
+			poly->getExteriorRing()->getPoint(i,&p);
+			inp << "sub" << id << "\t" << p.getX() << "\t" << p.getY() << "\n";
+		}
+
+		counter++;
+	}
+
+	inp<<"\n";
+}
+
 void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 {
 	this->TotalImpervious = 0;
@@ -450,44 +498,6 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
 		inp << "sub" << catchment_id << "\tRG01" << "\t\tnode" << link_id << "\t" << area << "\t" << imp * 100 << "\t" << width << "\t" << gradient * 100 << "\t1\n";
 
 	}
-	inp<<"[POLYGONS]\n";
-	inp<<";;Subcatchment\tX-Coord\tY-Coord\n";
-	int counter = 0;
-	this->inlets->resetReading();
-
-	while (inlet = this->inlets->getNextFeature()) {
-		int link_id = inlet->GetFieldAsInteger("node_id");
-		if (link_id == 0)
-			continue;
-		this->catchments->resetReading();
-		//std::stringstream catchment_filter;
-		//catchment_filter << "catchment_id = " << inlet->GetFieldAsInteger("catchment_id");
-
-		//this->catchments->setAttributeFilter(catchment_filter.str().c_str());
-
-		OGRFeature * catchment = catchments->getFeature((int) inlet->GetFieldAsInteger("sub_catchment_id") );
-		//while (catchment = catchments->getNextFeature()) {
-		//	break;
-		//}
-
-		if (!catchment)
-			continue;
-
-		int id = catchment->GetFID();
-		//DM::Face * catchment_attr = (DM::Face*)catchment_attr_comp;
-		OGRPolygon * poly = (OGRPolygon*)catchment->GetGeometryRef();
-
-		int points = poly->getExteriorRing()->getNumPoints();
-		OGRPoint p;
-		for (int i = 0; i < points; i++) {
-			poly->getExteriorRing()->getPoint(i,&p);
-			inp << "sub" << id << "\t" << p.getX() << "\t" << p.getY() << "\n";
-		}
-
-		counter++;
-	}
-
-	inp<<"\n";
 	//-------------------------//
 
 	//SUBAREAS
@@ -928,6 +938,8 @@ void SWMMWriteAndRead::writeXSection(std::fstream &inp) {
 	while (conduit = conduits->getNextFeature()) {
 			writeProfile(conduit, "LINK", inp);
 	}
+	if(!this->weirs)
+		return;
 	this->weirs->resetReading();
 	while (conduit = weirs->getNextFeature()) {
 			writeProfile(conduit, "WEIR", inp);
@@ -1172,15 +1184,14 @@ void SWMMWriteAndRead::writeSWMMFile() {
 	Impervious_Infiltration = 0;
 	this->TotalImpervious = 0;
 
-
 	QString fileName = this->SWMMPath.absolutePath()+ "/"+ "swmm.inp";
 	std::fstream inp;
 	inp.open(fileName.toLatin1(),ios::out);
-	//std::cout << fileName.toStdString() << std::endl;
 	inp << std::fixed;
 	inp << std::setprecision(9);
 	writeSWMMheader(inp);
 	writeSubcatchments(inp);
+	writePolygons(inp);
 	writeLID_Controlls(inp);
 	writeLID_Usage(inp);
 	writeJunctions(inp);
@@ -1347,6 +1358,7 @@ void SWMMWriteAndRead::setCalculationTimeStep(int timeStep)
 	this->setting_timestep = timeStep;
 }
 
+
 void SWMMWriteAndRead::setBuildYearConsidered(bool buildyear)
 {
 	this->built_year_considered = buildyear;
@@ -1380,6 +1392,16 @@ bool SWMMWriteAndRead::getDeleteSWMMWhenDone() const
 void SWMMWriteAndRead::setDeleteSWMMWhenDone(bool value)
 {
 	deleteSWMMWhenDone = value;
+}
+
+bool SWMMWriteAndRead::getExportSubcatchmentShape() const
+{
+	return export_subcatchment_shape;
+}
+
+void SWMMWriteAndRead::setExportSubcatchmentShape(bool value)
+{
+	export_subcatchment_shape = value;
 }
 
 
@@ -1532,7 +1554,7 @@ void SWMMWriteAndRead::evalWaterLevelInJunctions()
 void SWMMWriteAndRead::writeSWMMheader(std::fstream &inp)
 {
 	inp<<"[TITLE]\n";
-	inp<<"VIBe\n\n";
+	inp<<"DynaMind\n\n";
 	//-------------------------//
 
 	//OPTIONS

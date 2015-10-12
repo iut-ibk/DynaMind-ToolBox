@@ -79,9 +79,15 @@ public:
 	bool getDeleteSWMMWhenDone() const;
 	void setDeleteSWMMWhenDone(bool value);
 
+
+
+	bool getExportSubcatchmentShape() const;
+	void setExportSubcatchmentShape(bool value);
+
 private:
 	bool built_year_considered;
 	bool deleteSWMMWhenDone;
+	bool export_subcatchment_shape;
 	int setting_timestep;
 
 	int GLOBAL_Counter;
@@ -123,6 +129,7 @@ private:
 	void writeLID_Usage(std::fstream &inp);
 	void writeCurves(std::fstream & inp);
 	void writeTransetcts(std::fstream & inp);
+	void writePolygons(std::fstream &inp);
 
 
 	void writeRainFile();
