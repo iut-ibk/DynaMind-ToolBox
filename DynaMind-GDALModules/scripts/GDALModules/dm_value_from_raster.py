@@ -23,7 +23,7 @@ class DM_ValueFromRaster(Module):
             self.createParameter("attribute_name", STRING)
             self.attribute_name = "value"
 
-            self.createParameter("raster_file", STRING)
+            self.createParameter("raster_file", FILENAME)
             self.raster_file = ""
 
         def init(self):
