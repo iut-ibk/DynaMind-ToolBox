@@ -36,6 +36,7 @@ public:
 	GDALCreateNeighbourhoodTable();
 	void init();
 	void run();
+
 	std::string getHelpUrl();
 
 private:
@@ -44,6 +45,7 @@ private:
 
 	std::string name_id1;
 	std::string name_id2;
+	bool onlyShareEdge;
 
 	DM::ViewContainer leadingView;
 	DM::ViewContainer ngView;

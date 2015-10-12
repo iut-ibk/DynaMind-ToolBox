@@ -19,6 +19,9 @@ GDALCreateNeighbourhoodTable::GDALCreateNeighbourhoodTable()
 	this->neighName = "";
 	this->addParameter("neigh_name", DM::STRING, &neighName);
 
+	this->onlyShareEdge = false;
+	this->addParameter("only_share_edge", DM::BOOL, &onlyShareEdge);
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -60,12 +63,19 @@ void GDALCreateNeighbourhoodTable::run()
 
 	std::stringstream query;
 
-	query << "SELECT p1.OGC_FID as \"" << name_id1 << "\", p2.OGC_FID as \"" << name_id2 << "\" FROM " <<  viewName <<" as p1, " << viewName;
-	query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND  p2.ROWID IN ( SELECT pkid ";
-	query << "FROM " << "idx_"<< viewName << "_geometry";
-	query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
+	if (!onlyShareEdge) {
+		query << "SELECT p1.OGC_FID as \"" << name_id1 << "\", p2.OGC_FID as \"" << name_id2 << "\" FROM " <<  viewName <<" as p1, " << viewName;
+		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND  p2.ROWID IN ( SELECT pkid ";
+		query << "FROM " << "idx_"<< viewName << "_geometry";
+		query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
+	} else {
+		query << "SELECT p1.OGC_FID as \"" << name_id1 << "\", p2.OGC_FID as \"" << name_id2 << "\" FROM " <<  viewName <<" as p1, " << viewName;
+		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND GeometryType(Intersection(p1.geometry, p2.geometry)) != 'POINT'  AND p2.ROWID IN ( SELECT pkid ";
+		query << "FROM " << "idx_"<< viewName << "_geometry";
+		query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
+	}
 
-	DM::Logger(DM::Debug) << query.str();
+	DM::Logger(DM::Standard) << query.str();
 	OGRLayer * l = sys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
 
 	if (!l) {

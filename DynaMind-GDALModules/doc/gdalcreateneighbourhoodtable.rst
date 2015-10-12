@@ -1,8 +1,7 @@
 ===================
 Link Adjacent Faces
 ===================
-Creates a new
-table that links a faces to all its adjacent faces.
+Creates a new table that links a faces to all its adjacent faces.
 
 Parameter
 ---------
@@ -13,6 +12,8 @@ Parameter
 |view_name          | STRING                 | source nodes                                                          |
 +-------------------+------------------------+-----------------------------------------------------------------------+
 |neigh_name         | STRING                 | view name of the link table                                           |
++-------------------+------------------------+-----------------------------------------------------------------------+
+|onlyShareEdge      | BOOL                   | don't include as neighbourhood when have only a common node (Neumann) |
 +-------------------+------------------------+-----------------------------------------------------------------------+
 
 Data-stream
