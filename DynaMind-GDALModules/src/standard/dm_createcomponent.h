@@ -12,6 +12,11 @@ public:
 	void run();
 	void init();
 
+	string component_type;
+	bool create_empty;
+
+	std::map<string, int> comp_as_int;
+
 	std::string getHelpUrl();
 
 	std::string lead_view_name;
