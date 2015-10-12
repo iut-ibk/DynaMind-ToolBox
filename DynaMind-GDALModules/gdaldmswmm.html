@@ -98,6 +98,7 @@
 <li class="toctree-l2"><a class="reference internal" href="index.html#network-analysis">Network Analysis</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#performance-assessment">Performance Assessment</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="">SWMM Integration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#note">Note</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
@@ -159,6 +160,52 @@
   <div class="section" id="swmm-integration">
 <h1>SWMM Integration<a class="headerlink" href="#swmm-integration" title="Permalink to this headline">¶</a></h1>
 <p>Exports a drainage network to <a class="reference external" href="http://www2.epa.gov/water-research/storm-water-management-model-swmm">SWMM</a>., executes SWMM and imports the results into DynaMind.</p>
+<div class="section" id="parameter">
+<h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="19%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>RainFile</td>
+<td>FILENAME</td>
+<td>swmm rain file</td>
+</tr>
+<tr class="row-odd"><td>ClimateChangeFactor</td>
+<td>DOUBLE</td>
+<td>multiplier for rain event</td>
+</tr>
+<tr class="row-even"><td>export_subcatchment_shape</td>
+<td>BOOL</td>
+<td>export</td>
+</tr>
+<tr class="row-odd"><td>rainfile_from_vector</td>
+<td>STRING</td>
+<td>use rain file from vector assigned to city</td>
+</tr>
+<tr class="row-even"><td>climateChangeFactorFromCity</td>
+<td>STRING</td>
+<td>use climate change factor from city object</td>
+</tr>
+<tr class="row-odd"><td>calculationTimestep</td>
+<td>INT</td>
+<td>run swmm every n-th setp in a loop</td>
+</tr>
+<tr class="row-even"><td>deleteSWMM</td>
+<td>BOOL</td>
+<td>delete swmm file after execution</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="data-stream">
 <h2>Data-stream<a class="headerlink" href="#data-stream" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
