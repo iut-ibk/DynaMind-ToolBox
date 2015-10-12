@@ -31,5 +31,6 @@ from simplify_abs_age import *
 from rwht_cost_model import *
 from dm_direct_graph import *
 from dm_value_from_raster import *
+from dm_create_graph import *
 from dualmapping import *
 from segmentation import *
