@@ -271,11 +271,6 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("NODE");
 					int id = id_asstring.toInt();
-					//					DM::Node * p = (DM::Node*)revUUIDtoINT[id];
-					//					if (!p) {
-					//						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
-					//						continue;
-					//					}
 					nodeDepthSummery[id] = QString(data[3]).toDouble();
 				}
 			}
@@ -298,11 +293,6 @@ void SWMMWriteAndRead::readInReportFile() {
 					QString id_asstring = data[0];
 					id_asstring.remove("LINK");
 					int id = id_asstring.toInt();
-					//					DM::Edge * p = (DM::Edge*)revUUIDtoINT[id];
-					//					if (!p) {
-					//						Logger(Warning) << id_asstring.toStdString()  << " doesn't exist : line: " << line.toStdString();
-					//						continue;
-					//					}
 					linkFlowSummery_capacity[id] = QString(data[7]).toDouble();
 					linkFlowSummery_velocity[id] = QString(data[6]).toDouble();
 				}
@@ -341,8 +331,8 @@ void SWMMWriteAndRead::readInReportFile() {
 	this->Vout = Voutfall;
 
 
-	this->evalWaterLevelInJunctions();
-	Logger (Standard)  << "Flooded Nodes " << this->getWaterLeveleBelow0();
+	//this->evalWaterLevelInJunctions();
+	//Logger (Standard)  << "Flooded Nodes " << this->getWaterLeveleBelow0();
 }
 
 void SWMMWriteAndRead::writeJunctions(std::fstream &inp)
@@ -1525,30 +1515,30 @@ void SWMMWriteAndRead::createViewDefinition()
 
 void SWMMWriteAndRead::evalWaterLevelInJunctions()
 {
-	//	water_level_below_0 = 0;
-	//	water_level_below_10 = 0;
-	//	water_level_below_20 = 0;
+//		water_level_below_0 = 0;
+//		water_level_below_10 = 0;
+//		water_level_below_20 = 0;
 
-	//	// Filter Nodes that area acutally flooded
-	//	typedef std::pair<Node*, double > rainnode;
-	//	foreach (const rainnode& f, getFloodedNodes())
-	//		if (f.second > 0.0)
-	//			water_level_below_0++;
+//		// Filter Nodes that area acutally flooded
+//		typedef std::pair<Node*, double > rainnode;
+//		foreach (const rainnode& f, getFloodedNodes())
+//			if (f.second > 0.0)
+//				water_level_below_0++;
 
-	//	std::vector<rainnode> surcharge = this->getNodeDepthSummery();
-	//	foreach (const rainnode& fn, surcharge)
-	//	{
-	//		DM::Component * n =  fn.first;
-	//		if (fn.second < 0.009 || !n)
-	//			continue;
-	//		double D = n->getAttribute("D")->getDouble();
-	//		if (D - fn.second < 0.10) water_level_below_10++;
-	//		if (D - fn.second < 0.20) water_level_below_20++;
-	//	}
+//		std::vector<rainnode> surcharge = this->getNodeDepthSummery();
+//		foreach (const rainnode& fn, surcharge)
+//		{
+//			DM::Component * n =  fn.first;
+//			if (fn.second < 0.009 || !n)
+//				continue;
+//			double D = n->getAttribute("D")->getDouble();
+//			if (D - fn.second < 0.10) water_level_below_10++;
+//			if (D - fn.second < 0.20) water_level_below_20++;
+//		}
 
-	//	water_level_below_0 /= surcharge.size();
-	//	water_level_below_10 /= surcharge.size();
-	//	water_level_below_20 /= surcharge.size();
+//		water_level_below_0 /= surcharge.size();
+//		water_level_below_10 /= surcharge.size();
+//		water_level_below_20 /= surcharge.size();
 }
 
 void SWMMWriteAndRead::writeSWMMheader(std::fstream &inp)
