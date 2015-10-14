@@ -19,7 +19,7 @@ class WTP_Recreational_Value_AU(Module):
         self.households.addAttribute("age", DM.Attribute.INT, DM.READ)
         self.households.addAttribute("bedrooms", DM.Attribute.INT, DM.READ)
         self.households.addAttribute("education", DM.Attribute.STRING, DM.READ)
-        self.households.addAttribute("wtp_extreme_health", DM.Attribute.DOUBLE, DM.WRITE)
+        self.households.addAttribute("wtp_recreational_value", DM.Attribute.DOUBLE, DM.WRITE)
 
         self.registerViewContainers([self.households])
 
@@ -31,10 +31,9 @@ class WTP_Recreational_Value_AU(Module):
         self.education_levels["tertiary"] = 1.
 
     def run(self):
-        random.no
         self.households.reset_reading()
         for h in self.households:
             education = h.GetFieldAsString("education")
-            wtp = max(0.0, (2.844952 - 11.62263*self.education_levels(education) + 6.))
-            h.SetField("wtp_temp_minus", wtp)
+            wtp = max(0.0, (2.844952 - 11.62263*self.education_levels[education] + 6.))
+            h.SetField("wtp_recreational_value", wtp)
         self.households.finalise()

@@ -5,10 +5,10 @@ from pydynamind import *
 from scipy import random
 
 
-# agent_wtp(Region_ID,agent,'wtp_stream_high1') = 10.99824 + 0.3368328*agent_wtp(Region_ID,agent,'Bedroom') - 0.0334691*agent_wtp(Region_ID,agent,'Age') - 0.0765181*agent_wtp(Region_ID,agent,'Education');
+# 2.844952 - 11.62263*agent_wtp(Region_ID,agent,'Education') + 6.463264*agent_wtp(Region_ID,agent,'Gender')
 
-class WTP_Extream_Heat_AU(Module):
-    display_name = "WTP Extreme Heat (AU)"
+class WTP_Water_Restrictions_AU(Module):
+    display_name = "WTP Water Restrictions (AU)"
     group_name = "Performance Assessment"
 
     def __init__(self):
@@ -19,16 +19,9 @@ class WTP_Extream_Heat_AU(Module):
         self.households.addAttribute("age", DM.Attribute.INT, DM.READ)
         self.households.addAttribute("bedrooms", DM.Attribute.INT, DM.READ)
         self.households.addAttribute("education", DM.Attribute.STRING, DM.READ)
-        self.households.addAttribute("wtp_extreme_heat", DM.Attribute.DOUBLE, DM.WRITE)
+        self.households.addAttribute("wtp_water_restrictions", DM.Attribute.DOUBLE, DM.WRITE)
 
         self.registerViewContainers([self.households])
-
-        # self.education_levels = {}
-        # self.education_levels[""] = 1.
-        # self.education_levels["technical"] = 1.
-        # self.education_levels["other"] = 2.
-        # self.education_levels["secondary"] = 3.
-        # self.education_levels["tertiary"] = 4.
 
         self.education_levels = {}
         self.education_levels[""] = 0.
@@ -40,6 +33,9 @@ class WTP_Extream_Heat_AU(Module):
     def run(self):
         self.households.reset_reading()
         for h in self.households:
-            wtp = max(0.0, random.normal(7.348656, 9.407043))
-            h.SetField("wtp_extreme_heat", wtp)
+            age = h.GetFieldAsInteger("age")
+            education = h.GetFieldAsString("education")
+            bedrooms = h.GetFieldAsInteger("bedrooms")
+            wtp = max(0.0, (3.208593 - 0.6362358 * bedrooms + 0.356186 * age - 0.0027977 * age * age - 1.883466 * self.education_levels[education]))
+            h.SetField("wtp_water_restrictions", wtp)
         self.households.finalise()
