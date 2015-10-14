@@ -135,7 +135,9 @@ class SimplifyABSEducation(Module):
                 f.SetField("cdf_mean", float(values["secondary"]*1 + values["other"]*2 + values["technical"]*3 + values["tertiary"]*4) / sum)
 
 
-
+            self.__b40b.finalise()
+            self.__b01.finalise()
+            self.__ress.finalise()
 
 
 

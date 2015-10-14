@@ -114,7 +114,8 @@ class SimplifyABSIncome(Module):
                 f.SetField("cdf_high", float(values["low"] + values["medium"] + values["high"]) / sum )
                 f.SetField("cdf_mean", float(values["low"]*1 + values["medium"]*2 + values["high"]*3)  / sum )
 
-
+            self.__b28.finalise()
+            self.__ress.finalise()
 
 
 
