@@ -2,40 +2,29 @@
 //   table.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.1
-//   Date:     03/20/14   (Build 5.1.001)
-//             09/15/14   (Build 5.1.007)
-//             03/19/15   (Build 5.1.008)
+//   Version:  5.0
+//   Date:     6/19/07   (Build 5.0.010)
+//             1/21/09   (Build 5.0.014)
+//             6/22/09   (Build 5.0.016)
 //   Author:   L. Rossman
 //
 //   Table (curve and time series) functions.
 //
-//   Curve and Time Series objects in SWMM 5 are both modeled with
-//   TTable data structures.
-//
-//   The table_getFirstEntry and table_getNextEntry functions, as well as the
-//   Time Series functions that use them, are not thread safe.
-//
-//   Build 5.1.008:
-//   - The lookup functions used for Curve tables (table_lookup, table_lookupEx,
-//     table_intervalLookup, table_inverseLookup, table_getSlope, table_getMaxY,
-//     table_getArea, and table_getInverseArea) were made thread-safe (thanks to
-//     suggestions by CHI).
-//
+//   NOTE: Curve and Time Series objects in SWMM 5 are both modeled with
+//         TTable data structures.
 //-----------------------------------------------------------------------------
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
+#include <string.h>                                                            //(5.0.014 - LR)
 #include "headers.h"
 
 //-----------------------------------------------------------------------------
 //  Local functions
 //-----------------------------------------------------------------------------
-int    table_getNextFileEntry(TTable* table, double* x, double* y);
-int    table_parseFileLine(char* line, TTable* table, double* x, double* y);
-double table_interpolate(double x, double x1, double y1, double x2, double y2);//(5.1.008)
+int  table_getNextFileEntry(TTable* table, double* x, double* y);
+int  table_parseFileLine(char* line, TTable* table, double* x, double* y);
 
 
 //=============================================================================
@@ -129,7 +118,7 @@ int table_readTimeseries(char* tok[], int ntoks)
     if ( Tseries[j].ID == NULL )
         Tseries[j].ID = project_findID(TSERIES, tok[0]);
 
-    // --- check if time series data is in an external file
+    // --- check if time series data is in an external file                    //(5.0.014 - LR)
     if ( strcomp(tok[1], w_FILE ) )
     {
         sstrncpy(Tseries[j].file.name, tok[2], MAXFNAME);
@@ -138,7 +127,7 @@ int table_readTimeseries(char* tok[], int ntoks)
     }
 
     // --- parse each token of input line
-    x = 0.0;
+	x = 0.0;
     k = 1;
     state = 1;               // start off looking for a date
     while ( k < ntoks )
@@ -237,7 +226,7 @@ void   table_deleteEntries(TTable *table)
     table->lastEntry  = NULL;
     table->thisEntry  = NULL;
 
-    if (table->file.file)
+    if (table->file.file)                                                      //(5.0.014 - LR)
     { 
         fclose(table->file.file);
         table->file.file = NULL;
@@ -254,7 +243,7 @@ void   table_init(TTable *table)
 //
 {
     table->ID = NULL;
-    table->refersTo = -1;
+    table->refersTo = -1;                                                      //(5.0.010 - LR)
     table->firstEntry = NULL;
     table->lastEntry = NULL;
     table->thisEntry = table->firstEntry;
@@ -263,10 +252,10 @@ void   table_init(TTable *table)
     table->x2 = 0.0;
     table->y1 = 0.0;
     table->y2 = 0.0;
-    table->dxMin = 0.0;
-    table->file.mode = NO_FILE;
-    table->file.file = NULL;
-    table->curveType = -1;
+    table->dxMin = 0.0;                                                        //(5.0.014 - LR)
+    table->file.mode = NO_FILE;                                                //(5.0.014 - LR)
+    table->file.file = NULL;                                                   //(5.0.014 - LR)
+    table->curveType = -1;                                                     //(5.0.014 - LR)
 }
 
 //=============================================================================
@@ -277,6 +266,9 @@ int   table_validate(TTable *table)
 //  Output:  returns error code
 //  Purpose: checks that table's x-values are in ascending order.
 //
+
+////  This function was significantly modified for release 5.0.014.  ////      //(5.0.014 - LR)
+
 {
     int    result;
     double x1, x2, y1, y2;
@@ -301,7 +293,7 @@ int   table_validate(TTable *table)
         dx = x2 - x1;
         if ( dx <= 0.0 )
         {
-            table->x2 = x2;
+            table->x2 = x2;                                                    //(5.0.014 - LR)
             return ERR_CURVE_SEQUENCE;
         }
         dxMin = MIN(dxMin, dx);
@@ -332,7 +324,7 @@ int table_getFirstEntry(TTable *table, double *x, double *y)
     *x = 0;
     *y = 0.0;
 
-    if ( table->file.mode == USE_FILE )
+    if ( table->file.mode == USE_FILE )                                        //(5.0.014 - LR)
     {
         if ( table->file.file == NULL ) return FALSE;
         rewind(table->file.file);
@@ -352,6 +344,35 @@ int table_getFirstEntry(TTable *table, double *x, double *y)
 
 //=============================================================================
 
+////  This function has been deprecated. ////                                  //(5.0.014 - LR)
+/*
+int table_getLastEntry(TTable *table, double *x, double *y)
+//
+//  Input:   table = pointer to a TTable structure
+//  Output:  x = x-value of last table entry
+//           y = y-value of last table entry
+//           returns TRUE if successful, FALSE if not
+//  Purpose: retrieves the last x/y entry in a table.
+//
+//  NOTE: does not update the current position pointer (thisEntry).
+//
+{
+    TTableEntry *entry;
+    *x = 0;
+    *y = 0.0;
+    entry = table->lastEntry;
+    if ( entry )
+    {
+        *x = entry->x;
+        *y = entry->y;
+        return TRUE;
+    }
+    else return FALSE;
+}
+*/
+
+//=============================================================================
+
 int table_getNextEntry(TTable *table, double *x, double *y)
 //
 //  Input:   table = pointer to a TTable structure
@@ -365,7 +386,7 @@ int table_getNextEntry(TTable *table, double *x, double *y)
 {
     TTableEntry *entry;
 
-    if ( table->file.mode == USE_FILE )
+    if ( table->file.mode == USE_FILE )                                        //(5.0.014 - LR)
         return table_getNextFileEntry(table, x, y);
     
     entry = table->thisEntry->next;
@@ -381,8 +402,6 @@ int table_getNextEntry(TTable *table, double *x, double *y)
 
 //=============================================================================
 
-////  Revised for release 5.1.008  ////                                        //(5.1.008)
-
 double table_lookup(TTable *table, double x)
 //
 //  Input:   table = pointer to a TTable structure
@@ -397,18 +416,10 @@ double table_lookup(TTable *table, double x)
 //
 {
     double x1,y1,x2,y2;
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    if ( entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
+    table_getFirstEntry(table, &x1, &y1);
     if ( x <= x1 ) return y1;
-    while ( entry->next )
+    while ( table_getNextEntry(table, &x2, &y2) )
     {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
         if ( x <= x2 ) return table_interpolate(x, x1, y1, x2, y2);
         x1 = x2;
         y1 = y2;
@@ -417,44 +428,6 @@ double table_lookup(TTable *table, double x)
 }
 
 //=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
-
-double table_getSlope(TTable *table, double x)
-//
-//  Input:   table = pointer to a TTable structure
-//           x = an x-value
-//  Output:  returns the slope of the curve at x
-//  Purpose: retrieves the slope of the curve at the line segment containing x.
-//
-{
-    double x1,y1,x2,y2;
-    double dx;
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    if ( entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
-    x2 = x1;
-    y2 = y1;
-    while ( entry->next )
-    {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
-        if ( x <= x2 ) break;
-        x1 = x2;
-        y1 = y2;
-    }
-    dx = x2 - x1;
-    if ( dx == 0.0 ) return 0.0;
-    return (y2 - y1) / dx;
-}
-
-//=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
 
 double table_lookupEx(TTable *table, double x)
 //
@@ -468,34 +441,24 @@ double table_lookupEx(TTable *table, double x)
 {
     double x1,y1,x2,y2;
     double s = 0.0;
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    if (entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
+    table_getFirstEntry(table, &x1, &y1);
     if ( x <= x1 )
     {
         if (x1 > 0.0 ) return x/x1*y1;
         else return y1;
     }
-    while ( entry->next )
+    while ( table_getNextEntry(table, &x2, &y2) )
     {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
         if ( x2 != x1 ) s = (y2 - y1) / (x2 - x1);
         if ( x <= x2 ) return table_interpolate(x, x1, y1, x2, y2);
         x1 = x2;
         y1 = y2;
     }
-    if ( s < 0.0 ) s = 0.0;
+    if ( s < 0.0 ) s = 0.0;                                                    //(5.0.016 - LR)
     return y1 + s*(x - x1);
 }
 
 //=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
 
 double table_intervalLookup(TTable *table, double x)
 //
@@ -506,22 +469,17 @@ double table_intervalLookup(TTable *table, double x)
 //           whose x-value is > x.
 //
 {
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    if (entry == NULL ) return 0.0;
-    if ( x < entry->x ) return entry->y;
-    while ( entry->next )
+    double xx, yy;
+    table_getFirstEntry(table, &xx, &yy);
+    if ( x < xx ) return yy;
+    while ( table_getNextEntry(table, &xx, &yy) )
     {
-        entry = entry->next;
-        if ( x < entry->x ) return entry->y;
+        if ( x < xx ) return yy;
     }
-    return entry->y;
+    return yy;
 }
 
 //=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
 
 double table_inverseLookup(TTable *table, double y)
 //
@@ -537,196 +495,15 @@ double table_inverseLookup(TTable *table, double y)
 //
 {
     double x1,y1,x2,y2;
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    if (entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
+    table_getFirstEntry(table, &x1, &y1);
     if ( y <= y1 ) return x1;
-    while ( entry->next )
+    while ( table_getNextEntry(table, &x2, &y2) )
     {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
         if ( y <= y2 ) return table_interpolate(y, y1, x1, y2, x2);
         x1 = x2;
         y1 = y2;
     }
     return x1;
-}
-
-//=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
-
-double  table_getMaxY(TTable *table, double x)
-//
-//  Input:   table = pointer to a TTable structure
-//           x = an x-value
-//  Output:  returns the maximum y-value for x-values below x.
-//  Purpose: finds the largest y value in the initial non-decreasing
-//           portion of a table that appear before value x.
-//
-{
-    double ymax;
-    TTableEntry* entry;
-
-    entry = table->firstEntry;
-    ymax = entry->y;
-    while ( x > entry->x && entry->next )
-    {
-        entry = entry->next;
-        if ( entry->y < ymax ) return ymax;
-        ymax = entry->y;
-    }
-    return 0.0;
-}
-
-//=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
-
-double  table_getArea(TTable* table, double x)
-//
-//  Input:   table = pointer to a TTable structure
-//           x = an value
-//  Output:  returns area value
-//  Purpose: finds area under a tabulated curve from 0 to x;
-//           requires that table's x values be non-negative
-//           and non-decreasing.
-//
-//  The area within each interval i of the table is given by:
-//     Integral{ y(x)*dx } from x(i) to x
-//  where y(x) = y(i) + s*dx
-//        dx = x - x(i)
-//        s = [y(i+1) - y(i)] / [x(i+1) - x(i)]
-//  This results in the following expression for a(i):
-//     a(i) = y(i)*dx + s*dx*dx/2
-//
-{
-    double x1, x2;
-    double y1, y2;
-    double dx = 0.0, dy = 0.0;
-    double a, s = 0.0;
-    TTableEntry* entry;
-
-    // --- get area up to first table entry
-    //     and see if x-value lies in this interval
-    entry = table->firstEntry;
-    if (entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
-    if ( x1 > 0.0 ) s = y1/x1;
-    if ( x <= x1 ) return s*x*x/2.0;
-    a = y1*x1/2.0;
-    
-    // --- add next table entry to area until target x-value is bracketed
-    while ( entry->next )
-    {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
-        dx = x2 - x1;
-        dy = y2 - y1;
-        if ( x <= x2 )
-        {
-            if ( dx <= 0.0 ) return a;
-            y2 = table_interpolate(x, x1, y1, x2, y2);
-            return a + (x - x1) * (y1 + y2) / 2.0;
-        }
-        a += (y1 + y2) * dx / 2.0;
-        x1 = x2;
-        y1 = y2;
-    }
-
-    // --- extrapolate area if table limit exceeded
-    if ( dx > 0.0 ) s = dy/dx;
-    else s = 0.0;
-    dx = x - x1;
-    return a + y1*dx + s*dx*dx/2.0;
-}
-
-//=============================================================================
-
-////  Revised for release 5.1.008.  ////                                       //(5.1.008)
-
-double  table_getInverseArea(TTable* table, double a)
-//
-//  Input:   table = pointer to a TTable structure
-//           a = an area value
-//  Output:  returns an x value
-//  Purpose: finds x value for given area under a curve.
-//
-//  Refer to table_getArea function to see how area is computed.
-//
-{
-    double x1, x2;
-    double y1, y2;
-    double dx = 0.0, dy = 0.0;
-    double a1, a2, s;
-    TTableEntry* entry;
-
-    // --- see if target area is below that of 1st table entry
-    entry = table->firstEntry;
-    if (entry == NULL ) return 0.0;
-    x1 = entry->x;
-    y1 = entry->y;
-    a1 = y1*x1/2.0;
-    if ( a <= a1 )
-    {
-        if ( y1 > 0.0 ) return sqrt(2.0*a*x1/y1);
-        else return 0.0;
-    }
-
-    // --- add next table entry to area until target area is bracketed
-    while ( entry->next )
-    {
-        entry = entry->next;
-        x2 = entry->x;
-        y2 = entry->y;
-        dx = x2 - x1;
-        dy = y2 - y1;
-        a2 = a1 + y1*dx + dy*dx/2.0;
-        if ( a <= a2 )
-        {
-            if ( dx <= 0.0 ) return x1;
-            if ( dy == 0.0 )
-            {
-                if ( a2 == a1 ) return x1;
-                else return x1 + dx * (a - a1) / (a2 - a1);
-            }
-
-            // --- if y decreases with x then replace point 1 with point 2
-            if ( dy < 0.0 )
-            {
-                x1 = x2;
-                y1 = y2;
-                a1 = a2;
-            }
-
-            s = dy/dx;
-            dx = (sqrt(y1*y1 + 2.0*s*(a-a1)) - y1) / s;
-            return x1 + dx;
-        }
-        x1 = x2;
-        y1 = y2;
-        a1 = a2;
-    }
-
-    // --- extrapolate area if table limit exceeded
-    if ( dx == 0.0 || dy == 0.0 )
-    {
-        if ( y1 > 0.0 ) dx = (a - a1) / y1;
-        else dx = 0.0;
-    }
-    else
-    {
-        s = dy/dx;
-        dx = (sqrt(y1*y1 + 2.0*s*(a-a1)) - y1) / s;
-        if (dx < 0.0) dx = 0.0;
-    }
-    return x1 + dx;
 }
 
 //=============================================================================
@@ -802,6 +579,126 @@ double table_tseriesLookup(TTable *table, double x, char extend)
 
 //=============================================================================
 
+double  table_getArea(TTable* table, double x)
+//
+//  Input:   table = pointer to a TTable structure
+//           x = an value
+//  Output:  returns area value
+//  Purpose: finds area under a tabulated curve from 0 to x;
+//           requires that table's x values be non-negative
+//           and non-decreasing.
+//
+//  The area within each interval i of the table is given by:
+//     Integral{ y(x)*dx } from x(i) to x
+//  where y(x) = y(i) + s*dx
+//        dx = x - x(i)
+//        s = [y(i+1) - y(i)] / [x(i+1) - x(i)]
+//  This results in the following expression for a(i):
+//     a(i) = y(i)*dx + s*dx*dx/2
+//
+{
+    double x1, x2;
+    double y1, y2;
+    double dx = 0.0, dy = 0.0;
+    double a, s = 0.0;
+
+    // --- get area up to first table entry
+    //     and see if x-value lies in this interval
+    table_getFirstEntry(table, &x1, &y1);
+    if ( x1 > 0.0 ) s = y1/x1;
+    if ( x <= x1 ) return s*x*x/2.0;
+    a = y1*x1/2.0;
+    
+    // --- add next table entry to area until target x-value is bracketed
+    while ( table_getNextEntry(table, &x2, &y2) )
+    {
+        dx = x2 - x1;
+        dy = y2 - y1;
+        if ( x <= x2 )
+        {
+            if ( dx <= 0.0 ) return a;
+            y2 = table_interpolate(x, x1, y1, x2, y2);                         //(5.0.016 - LR)
+            return a + (x - x1) * (y1 + y2) / 2.0;                             //(5.0.016 - LR)
+        }
+        a += (y1 + y2) * dx / 2.0;                                             //(5.0.016 - LR)
+        x1 = x2;
+        y1 = y2;
+    }
+
+    // --- extrapolate area if table limit exceeded
+    if ( dx > 0.0 ) s = dy/dx;
+    else s = 0.0;
+    dx = x - x1;
+    return a + y1*dx + s*dx*dx/2.0;
+}
+
+//=============================================================================
+
+double  table_getInverseArea(TTable* table, double a)
+//
+//  Input:   table = pointer to a TTable structure
+//           a = an area value
+//  Output:  returns an x value
+//  Purpose: finds x value for given area under a curve.
+//
+//  Refer to table_getArea function to see how area is computed.
+//
+{
+    double x1, x2;
+    double y1, y2;
+    double dx = 0.0, dy = 0.0;
+    double a1, a2, s;
+
+    // --- see if target area is below that of 1st table entry
+    table_getFirstEntry(table, &x1, &y1);
+    a1 = y1*x1/2.0;
+    if ( a <= a1 )
+    {
+        if ( y1 > 0.0 ) return sqrt(2.0*a*x1/y1);
+        else return 0.0;
+    }
+
+    // --- add next table entry to area until target area is bracketed
+    while ( table_getNextEntry(table, &x2, &y2) )
+    {
+        dx = x2 - x1;
+        dy = y2 - y1;
+        a2 = a1 + y1*dx + dy*dx/2.0;
+        if ( a <= a2 )
+        {
+            if ( dx <= 0.0 ) return x1;
+            s = dy/dx;
+            if ( s > 0.0 )
+            {
+                dx = (sqrt(y1*y1 + 2.0*s*(a-a1)) - y1) / s;
+            }
+            else dx = (a - a1) / y1;
+            return x1 + dx;
+        }
+        x1 = x2;
+        y1 = y2;
+        a1 = a2;
+    }
+
+    // --- extrapolate area if table limit exceeded
+    if ( dx == 0.0 || dy == 0.0 )
+    {
+        if ( y1 > 0.0 ) dx = (a - a1) / y1;
+        else dx = 0.0;
+    }
+    else
+    {
+        s = dy/dx;
+        dx = (sqrt(y1*y1 + 2.0*s*(a-a1)) - y1) / s;
+        if (dx < 0.0) dx = 0.0;
+    }
+    return x1 + dx;
+}
+
+//=============================================================================
+
+////  New function added for release 5.0.014  ////                             //(5.0.014 - LR)
+
 int  table_getNextFileEntry(TTable* table, double* x, double* y)
 //
 //  Input:   table = pointer to a TTable structure
@@ -816,7 +713,8 @@ int  table_getNextFileEntry(TTable* table, double* x, double* y)
     char line[MAXLINE+1];
     int  code;
     if ( table->file.file == NULL ) return FALSE;
-    while ( !feof(table->file.file) && fgets(line, MAXLINE, table->file.file) != NULL )
+    if ( feof(table->file.file) ) return FALSE;
+    while ( fgets(line, MAXLINE, table->file.file) != NULL )
     {
         code = table_parseFileLine(line, table, x, y);
         if ( code < 0 ) continue;      //skip blank & comment lines
@@ -826,6 +724,8 @@ int  table_getNextFileEntry(TTable* table, double* x, double* y)
 }
 
 //=============================================================================
+
+////  New function added for release 5.0.014  ////                             //(5.0.014 - LR)
 
 int  table_parseFileLine(char* line, TTable* table, double* x, double* y)
 //

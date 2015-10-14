@@ -2,8 +2,10 @@
 //   toposort.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.1
-//   Date:     03/20/14   (Build 5.1.001)
+//   Version:  5.0
+//   Date:     6/19/07   (Build 5.0.010)
+//             12/5/08   (Build 5.0.014)
+//             07/30/10  (Build 5.0.019)
 //   Author:   L. Rossman
 //
 //   Topological sorting of conveyance network links
@@ -51,7 +53,8 @@ static void findCycles(void);
 static void findSpanningTree(int startNode);
 static void evalLoop(int startLink);
 static int  traceLoop(int i1, int i2, int k);
-static void checkDummyLinks(void);
+static void checkDummyLinks(void);                                             //(5.0.014 - LR)
+
 //=============================================================================
 
 void toposort_sortLinks(int sortedLinks[])
@@ -68,10 +71,10 @@ void toposort_sortLinks(int sortedLinks[])
     if ( RouteModel == DW )
     {
 
-        // --- check for nodes with both incoming and outgoing
-        //     dummy links (creates ambiguous ordering)
-        checkDummyLinks();
-        if ( ErrorCode ) return;
+        // --- check for nodes with both incoming and outgoing                 //(5.0.014 - LR)
+        //     dummy links (creates ambiguous ordering)                        //(5.0.014 - LR)
+        checkDummyLinks();                                                     //(5.0.014 - LR)
+        if ( ErrorCode ) return;                                               //(5.0.014 - LR)
 
         // --- find number of outflow links for each node
         for ( i=0; i<Nobjects[NODE]; i++ ) Node[i].degree = 0;
@@ -81,13 +84,13 @@ void toposort_sortLinks(int sortedLinks[])
             //     count for downstream node, otherwise increment count
             //     for upstream node
             n = Link[i].node1;
-            if ( Link[i].direction < 0 ) n = Link[i].node2;
+            if ( Link[i].direction < 0 ) n = Link[i].node2;                    //(5.0.014 - LR)
             if ( Node[n].type == OUTFALL )
-            {
-                if ( Link[i].direction < 0 ) n = Link[i].node1;
-                else n = Link[i].node2;
+            {                                                                  //(5.0.014 - LR)
+                if ( Link[i].direction < 0 ) n = Link[i].node1;                //(5.0.014 - LR)
+                else n = Link[i].node2;                                        //(5.0.014 - LR)
                 Node[n].degree++;
-            }
+            }                                                                  //(5.0.014 - LR)
             else Node[n].degree++;
         }
         return;
@@ -477,6 +480,8 @@ int traceLoop(int i1, int i2, int k1)
 
 //=============================================================================
 
+////  ----  This is a new function added for Release 5.0.014  ----  ////       //(5.0.014 - LR)
+
 void checkDummyLinks()
 //
 //  Input:   none
@@ -502,7 +507,7 @@ void checkDummyLinks()
     {
         j = Link[i].node2;
         if ( Link[i].direction < 0 ) j = Link[i].node1;
-        if ( (Link[i].type == CONDUIT && Link[i].xsect.type == DUMMY) ||
+        if ( (Link[i].type == CONDUIT && Link[i].xsect.type == DUMMY) ||       //(5.0.019 - LR)
              (Link[i].type == PUMP &&
               Pump[Link[i].subIndex].type == IDEAL_PUMP) )
         {
@@ -514,14 +519,14 @@ void checkDummyLinks()
     // --- find marked nodes with outgoing dummy links or ideal pumps
     for ( i = 0; i < Nobjects[LINK]; i++ )
     {
-        if ( (Link[i].type == CONDUIT && Link[i].xsect.type == DUMMY) ||
+        if ( (Link[i].type == CONDUIT && Link[i].xsect.type == DUMMY) ||       //(5.0.019 - LR)
              (Link[i].type == PUMP && 
               Pump[Link[i].subIndex].type == IDEAL_PUMP) )
         {
             j = Link[i].node1;
             if ( marked[j] > 0 )
             {
-                report_writeErrorMsg(ERR_DUMMY_LINK, Node[j].ID);
+                report_writeErrorMsg(ERR_MULTI_DUMMY_LINK, Node[j].ID);
             }
         }
     }

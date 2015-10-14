@@ -2,8 +2,9 @@
 //   culvert.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.1
-//   Date:     03/20/14   (Build 5.1.001)
+//   Version:  5.0
+//   Date:     1/21/09    (Build 5.0.014)
+//             07/30/10   (Build 5.0.019)
 //   Author:   L. Rossman
 //
 //   Culvert equations for SWMM5
@@ -11,6 +12,7 @@
 //   Computes flow reduction in a culvert-type conduit due to
 //   inlet control using equations from the FHWA HEC-5 circular.
 //
+//   This module was substantially revised for release 5.0.019.
 //-----------------------------------------------------------------------------
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -25,11 +27,11 @@ enum CulvertParam {FORM, K, M, C, Y};
 static const int    MAX_CULVERT_CODE = 57;
 static const double Params[58][5] = {
 
-//   FORM   K       M     C        Y
+//   FORM   K       M     C        Y  
 //------------------------------------
     {0.0, 0.0,    0.0,  0.0,    0.00},
 
-    //Circular concrete
+    //Circular concrete 
     {1.0, 0.0098, 2.00, 0.0398, 0.67},  //Square edge w/headwall
     {1.0, 0.0018, 2.00, 0.0292, 0.74},  //Groove end w/headwall
     {1.0, 0.0045, 2.00, 0.0317, 0.69},  //Groove end projecting
@@ -48,7 +50,7 @@ static const double Params[58][5] = {
     {1.0, 0.061, 0.75,  0.0400, 0.80},  //90 or 15 deg. wingwall flares
     {1.0, 0.061, 0.75,  0.0423, 0.82},  //0 deg. wingwall flares (striaght sides)
 
-    //Rectanglar Box with Flared Wingwalls & Top Edge Bevel
+    //Rectanglar Box with Flared Wingwalls & Top Edge Bevel 
     {2.0, 0.510, 0.667, 0.0309, 0.80},  //45 deg. flare; 0.43D top edge bevel
     {2.0, 0.486, 0.667, 0.0249, 0.83},  //18-33.7 deg flare; 0.083D top edge bevel
 
@@ -131,20 +133,17 @@ static const double Params[58][5] = {
     };
 
 //-----------------------------------------------------------------------------
-//  Culvert data structure
+//  Shared Variables
 //-----------------------------------------------------------------------------
-typedef struct
-{
-    double  yFull;                  // full depth of culvert (ft)
-    double  scf;                    // slope correction factor
-    double  dQdH;                   // Derivative of flow w.r.t. head
-    double  qc;                     // Unsubmerged critical flow
-    double  kk;
-	double  mm;                     // Coeffs. for unsubmerged flow
-    double  ad;
-	double  hPlus;                  // Intermediate terms
-    TXsect* xsect;                  // Pointer to culvert cross section
-} TCulvert;
+static double  Yfull;                  // full depth of culvert (ft)
+static double  Scf;                    // slope correction factor
+static double  Dqdh;                   // Derivative of flow w.r.t. head 
+static double  Qc;                     // Unsubmerged critical flow
+static double  KK, MM;                 // Coeffs. for unsubmerged flow
+static double  AD, Hplus;              // Intermediate terms
+static TXsect* Xsect;                  // Pointer to culvert cross section
+
+static double Yratio;
 
 //-----------------------------------------------------------------------------
 //  External functions (declared in funcs.h)
@@ -154,15 +153,13 @@ typedef struct
 //-----------------------------------------------------------------------------
 //  Local functions
 //-----------------------------------------------------------------------------
-static double getUnsubmergedFlow(int code, double h, TCulvert* culvert);
-static double getSubmergedFlow(int code, double h, TCulvert* culvert);
-static double getTransitionFlow(int code, double h, double h1, double h2,
-	          TCulvert* culvert);
-static double getForm1Flow(double h, TCulvert* culvert);
-static double form1Eqn(double yc, void* p);
+static double getUnsubmergedFlow(int code, double h);
+static double getSubmergedFlow(int code, double h);
+static double getTransitionFlow(int code, double h, double h1, double h2);
+static double getForm1Flow(double h);
+static double form1Eqn(double yc);
 
-static void report_CulvertControl(int j, double q0, double q, int condition,
-	        double yRatio);                                                  //for debugging only
+static void report_CulvertControl(int j, double q0, double q, int condition);  //for debugging only
 
 
 //=============================================================================
@@ -177,59 +174,52 @@ double culvert_getInflow(int j, double q0, double h)
 //           controlled culverts
 //
 {
-    int      code,                      //culvert type code number
-             k,                         //conduit index
-             condition;                 //flow condition
-    double   y,                         //current depth (ft)
-             y1,                        //unsubmerged depth limit (ft)
-             y2,                        //submerged depth limit (ft)
-             q;                         //inlet-controlled flow (cfs)
-	TCulvert culvert;                   //intermediate results
+    int     code,                      //culvert type code number
+            k,                         //conduit index
+            condition;                 //flow condition
+    double  y,                         //current depth (ft)
+            y1,                        //unsubmerged depth limit (ft)
+            y2,                        //submerged depth limit (ft)
+            q;                         //inlet-controlled flow (cfs)
 
-    // --- check that we have a culvert conduit
+    // --- check that we have a culvert conduit    
     if ( Link[j].type != CONDUIT ) return q0;
-    culvert.xsect = &Link[j].xsect;
-    code = culvert.xsect->culvertCode;
+    Xsect = &Link[j].xsect;
+    code = Xsect->culvertCode;
     if ( code <= 0 || code > MAX_CULVERT_CODE ) return q0;
 
-    // --- compute often-used variables
+    // --- compute often-used variables 
     k = Link[j].subIndex;
-    culvert.yFull = culvert.xsect->yFull;
-    culvert.ad = culvert.xsect->aFull * sqrt(culvert.yFull);
-
-    // --- slope correction factor (-7 for mitered inlets, 0.5 for others)
-    switch (code)
-    {
-    case 5:
-    case 37:
-    case 46: culvert.scf = -7.0 * Conduit[k].slope; break;
-    default: culvert.scf = 0.5 * Conduit[k].slope;
-    }
+    Scf = 0.5 * Conduit[k].slope;
+    Yfull = Xsect->yFull;
+    AD = Xsect->aFull * sqrt(Yfull);
 
     // --- find head relative to culvert's upstream invert
-    //     (can be greater than yFull when inlet is submerged)
+    //     (can be greater than yFull when inlet is submerged) 
     y = h - (Node[Link[j].node1].invertElev + Link[j].offset1);
 
+    Yratio = y / Yfull;
+
     // --- check for submerged flow (based on FHWA criteria of Q/AD > 4)
-    y2 = culvert.yFull * (16.0 * Params[code][C] + Params[code][Y] - culvert.scf);
+    y2 = Yfull * (16.0 * Params[code][C] + Params[code][Y] - Scf);
     if ( y >= y2 )
-    {
-        q = getSubmergedFlow(code, y, &culvert);
+    {    
+        q = getSubmergedFlow(code, y);
         condition = 2;
     }
     else
     {
         // --- check for unsubmerged flow (based on arbitrary limit of 0.95 full)
-        y1 = 0.95 * culvert.yFull;
+        y1 = 0.95 * Yfull;
         if ( y <= y1 )
         {
-            q = getUnsubmergedFlow(code, y, &culvert);
+            q = getUnsubmergedFlow(code, y);
             condition = 1;
         }
         // --- flow is in transition zone
         else
         {
-            q = getTransitionFlow(code, y, y1, y2, &culvert);
+            q = getTransitionFlow(code, y, y1, y2);
             condition = 0;
         }
     }
@@ -238,11 +228,9 @@ double culvert_getInflow(int j, double q0, double h)
     if ( q < q0 )
     {
         // --- for debugging only
-        //if ( RptFlags.controls ) report_CulvertControl(j, q0, q, condition,
-		//                                               y / culvert.yFull);
+        //if ( RptFlags.controls ) report_CulvertControl(j, q0, q, condition);
 
-        Link[j].inletControl = TRUE;
-        Link[j].dqdh = culvert.dQdH;
+        Link[j].dqdh = Dqdh;
         return q;
     }
     else return q0;
@@ -250,92 +238,88 @@ double culvert_getInflow(int j, double q0, double h)
 
 //=============================================================================
 
-double getUnsubmergedFlow(int code, double h, TCulvert* culvert)
+double getUnsubmergedFlow(int code, double h)
 //
 //  Input:   code  = culvert type code number
 //           h     = inlet water depth above culvert invert
-//           culvert = pointer to a culvert data structure
 //  Output:  returns flow rate;
-//           computes value of variable Dqdh
+//           computes value of module-level variable Dqdh
 //  Purpose: computes flow rate and its derivative for unsubmerged
 //           culvert inlet.
 //
 {
-    double arg;
+    double arg; 
     double q;
 
     // --- assign shared variables
-    culvert->kk = Params[code][K];
-    culvert->mm = Params[code][M];
-    arg = h / culvert->yFull / culvert->kk;
+    KK = Params[code][K];
+    MM = Params[code][M];
+    arg = h / Yfull / KK;
 
     // --- evaluate correct equation form
     if ( Params[code][FORM] == 1.0)
     {
-        q = getForm1Flow(h, culvert);
+        q = getForm1Flow(h);
     }
-    else q = culvert->ad * pow(arg, 1.0/culvert->mm);
-    culvert->dQdH = q / h / culvert->mm;
+    else q = AD * pow(arg, 1.0/MM);
+    Dqdh = q / h / MM;
     return q;
 }
 
 //=============================================================================
 
-double getSubmergedFlow(int code, double h, TCulvert* culvert)
+double getSubmergedFlow(int code, double h)
 //
 //  Input:   code  = culvert type code number
 //           h     = inlet head (ft)
-//           culvert = pointer to a culvert data structure
 //  Output:  returns flow rate;
-//           computes value of Dqdh
+//           computes value of module-level variable Dqdh
 //  Purpose: computes flow rate and its derivative for submerged
 //           culvert inlet.
 //
 {
-    double cc = Params[code][C];
-    double yy = Params[code][Y];
-    double arg = (h/culvert->yFull - yy + culvert->scf) / cc ;
+    double CC = Params[code][C];
+    double YY = Params[code][Y];
+    double arg = (h/Yfull - YY + Scf) / CC ;
     double q;
 
     if ( arg <= 0.0 )
     {
-        culvert->dQdH = 0.0;
+        Dqdh = 0.0;
         return BIG;
     }
-    q = sqrt(arg) * culvert->ad;
-    culvert->dQdH = 0.5 * q / arg / culvert->yFull / cc;
+    q = sqrt(arg) * AD;
+    Dqdh = 0.5 * q / arg / Yfull / CC;
     return q;
 }
 
 //=============================================================================
 
-double getTransitionFlow(int code, double h, double h1, double h2, TCulvert* culvert)
+double getTransitionFlow(int code, double h, double h1, double h2)
 //
-//  Input:   code    = culvert type code number
-//           h       = inlet water depth above culvert invert (ft)
-//           h1      = head limit for unsubmerged condition (ft)
-//           h2      = head limit for submerged condition (ft)
-//           culvert = pointer to a culvert data structure
+//  Input:   code  = culvert type code number
+//           h     = inlet water depth above culvert invert (ft)
+//           h1    = head limit for unsubmerged condition (ft)
+//           h2    = head limit for submerged condition (ft)
 //  Output:  returns flow rate )cfs);
-//           computes value of Dqdh (cfs/ft)
+//           computes value of module-level variable Dqdh (cfs/ft)
 //  Purpose: computes flow rate and its derivative for inlet-controlled flow
 //           when inlet water depth lies in the transition range between
 //           submerged and unsubmerged conditions.
 //
 {
-    double q1 = getUnsubmergedFlow(code, h1, culvert);
-    double q2 = getSubmergedFlow(code, h2, culvert);
+    double q1 = getUnsubmergedFlow(code, h1);
+    double q2 = getSubmergedFlow(code, h2);
     double q = q1 + (q2 - q1) * (h - h1) / (h2 - h1);
-    culvert->dQdH = (q2 - q1) / (h2 - h1);
+    Dqdh = (q2 - q1) / (h2 - h1);
     return q;
 }
 
 //=============================================================================
 
-double getForm1Flow(double h, TCulvert* culvert)
+double getForm1Flow(double h)
 //
-//  Input:   h       = inlet water depth above culvert invert
-//           culvert = pointer to a culvert data structure
+//  Input:   h     = inlet water depth above culvert invert
 //  Output:  returns inlet controlled flow rate
 //  Purpose: computes inlet-controlled flow rate for unsubmerged culvert
 //           using FHWA Equation Form1.
@@ -343,27 +327,28 @@ double getForm1Flow(double h, TCulvert* culvert)
 //  See pages 195-196 of FHWA HEC-5 (2001) for details.
 //
 {
-    // --- save re-used terms in culvert structure
-    culvert->hPlus = h / culvert->yFull + culvert->scf;
+    double yc;
+
+    // --- save re-used terms in module-level variables
+    Hplus = h/Yfull + Scf;
 
     // --- use Ridder's method to solve Equation Form 1 for critical depth
     //     between a range of 0.01h and h
-    findroot_Ridder(0.01*h, h, 0.001, form1Eqn, culvert);
+    yc = findroot_Ridder(0.01*h, h, 0.001, form1Eqn);
 
     // --- return the flow value used in evaluating Equation Form 1
-    return culvert->qc;
+    return Qc;
 }
 
 //=============================================================================
 
-double form1Eqn(double yc, void* p)
+double form1Eqn(double yc)
 //
 //  Input:   yc = critical depth
-//           p  = pointer to a TCulvert object
 //  Output:  returns residual error
 //  Purpose: evaluates the error in satisfying FHWA culvert Equation Form1:
 //
-//  h/yFull + 0.5*s = yc/yFull + yh/2/yFull + K[ac/aFull*sqrt(g*yh/yFull)]^M
+//  h/yFull + 0.5*s = yc/yFull + yh/2/yFull + K[ac/aFull*sqrt(g*yh/yFull)]^M 
 //
 //  for a given value of critical depth yc where:
 //    h = inlet depth above culvert invert
@@ -375,21 +360,17 @@ double form1Eqn(double yc, void* p)
 //    K and M = coefficients
 //
 {
-    double ac, wc, yh;
-	TCulvert* culvert = (TCulvert *)p;
-
-	ac = xsect_getAofY(culvert->xsect, yc);
-    wc = xsect_getWofY(culvert->xsect, yc);
-    yh = ac/wc;
-
-    culvert->qc = ac * sqrt(GRAVITY * yh);
-    return culvert->hPlus - yc/culvert->yFull - yh/2.0/culvert->yFull -
-		culvert->kk * pow(culvert->qc/culvert->ad, culvert->mm);
+    double ac = xsect_getAofY(Xsect, yc);
+    double wc = xsect_getWofY(Xsect, yc);
+    double yh = ac/wc;
+    
+    Qc = ac * sqrt(GRAVITY * yh);
+    return Hplus - yc/Yfull - yh/2.0/Yfull - KK * pow(Qc/AD, MM);
 }
 
 //=============================================================================
 
-void report_CulvertControl(int j, double q0, double q, int condition, double yRatio)
+void report_CulvertControl(int j, double q0, double q, int condition)
 //
 //  Used for debugging only
 //
@@ -402,5 +383,5 @@ void report_CulvertControl(int j, double q0, double q, int condition, double yRa
     datetime_timeToStr(aDate, theTime);
     fprintf(Frpt.file,
             "\n  %11s: %8s Culvert %s flow reduced from %.3f to %.3f cfs for %s flow (%.2f).",
-            theDate, theTime, Link[j].ID, q0, q, conditionTxt[condition], yRatio);
+            theDate, theTime, Link[j].ID, q0, q, conditionTxt[condition], Yratio);
 }

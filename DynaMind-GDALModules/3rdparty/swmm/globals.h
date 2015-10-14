@@ -2,25 +2,14 @@
 //   globals.h
 //
 //   Project: EPA SWMM5
-//   Version: 5.1
-//   Date:    03/19/14  (Build 5.1.000)
-//            04/14/14  (Build 5.1.004)
-//            09/15/14  (Build 5.1.007)
-//            03/19/15  (Build 5.1.008)
+//   Version: 5.0
+//   Date:    6/19/07   (Build 5.0.010)
+//            2/4/08    (Build 5.0.012)
+//            1/21/09   (Build 5.0.014)
+//            07/30/10  (Build 5.0.019)
 //   Author:  L. Rossman
 //
 //   Global Variables
-//
-//   Build 5.1.004:
-//   - Ignore RDII option added.
-//
-//   Build 5.1.007:
-//   - Monthly climate variable adjustments added.
-//
-//   Build 5.1.008:
-//   - Number of parallel threads for dynamic wave routing added.
-//   - Minimum dynamic wave routing variable time step added.
-//
 //-----------------------------------------------------------------------------
 
 EXTERN TFile
@@ -31,20 +20,19 @@ EXTERN TFile
                   Frain,                    // Rainfall file
                   Frunoff,                  // Runoff file
                   Frdii,                    // RDII inflow file
-                  Fhotstart1,               // Hot start input file
-                  Fhotstart2,               // Hot start output file
+                  Fhotstart1,               // Hotstart input file
+                  Fhotstart2,               // Hotstart output file
                   Finflows,                 // Inflows routing file
                   Foutflows;                // Outflows routing file
 
 EXTERN long
                   Nperiods,                 // Number of reporting periods
-                  StepCount,                // Number of routing steps used
-                  NonConvergeCount;         // Number of non-converging steps
+                  StepCount;                // Number of routing steps used
 
 EXTERN char
                   Msg[MAXMSG+1],            // Text of output message
                   Title[MAXTITLE][MAXMSG+1],// Project title
-                  TempDir[MAXFNAME+1];      // Temporary file directory
+                  TmpDir[MAXFNAME+1];       // Temporary file directory
 
 EXTERN TRptFlags
                   RptFlags;                 // Reporting options
@@ -57,8 +45,8 @@ EXTERN int
                   FlowUnits,                // Flow units
                   InfilModel,               // Infiltration method
                   RouteModel,               // Flow routing method
-                  ForceMainEqn,             // Flow equation for force mains
-                  LinkOffsets,              // Link offset convention
+                  ForceMainEqn,             // Flow equation for force mains   //(5.0.010 - LR)
+                  LinkOffsets,              // Link offset convention          //(5.0.012 - LR)
                   AllowPonding,             // Allow water to pond at nodes
                   InertDamping,             // Degree of inertial damping
                   NormalFlowLtd,            // Normal flow limited
@@ -66,24 +54,20 @@ EXTERN int
                   Compatibility,            // SWMM 5/3/4 compatibility
                   SkipSteadyState,          // Skip over steady state periods
                   IgnoreRainfall,           // Ignore rainfall/runoff
-                  IgnoreRDII,               // Ignore RDII                     //(5.1.004)
-                  IgnoreSnowmelt,           // Ignore snowmelt
-                  IgnoreGwater,             // Ignore groundwater
-                  IgnoreRouting,            // Ignore flow routing
-                  IgnoreQuality,            // Ignore water quality
+                  IgnoreSnowmelt,           // Ignore snowmelt                 //(5.0.014 - LR)
+                  IgnoreGwater,             // Ignore groundwater              //(5.0.014 - LR)
+                  IgnoreRouting,            // Ignore flow routing             //(5.0.014 - LR)
+                  IgnoreQuality,            // Ignore water quality            //(5.0.014 - LR)
                   ErrorCode,                // Error code number
                   WarningCode,              // Warning code number
                   WetStep,                  // Runoff wet time step (sec)
                   DryStep,                  // Runoff dry time step (sec)
                   ReportStep,               // Reporting time step (sec)
                   SweepStart,               // Day of year when sweeping starts
-                  SweepEnd,                 // Day of year when sweeping ends
-                  MaxTrials,                // Max. trials for DW routing
-                  NumThreads;               // Number of parallel threads used //(5.1.008)
+                  SweepEnd;                 // Day of year when sweeping ends
 
 EXTERN double
                   RouteStep,                // Routing time step (sec)
-                  MinRouteStep,             // Minimum variable time step (sec) //(5.1.008)
                   LengtheningStep,          // Time step for lengthening (sec)
                   StartDryDays,             // Antecedent dry days
                   CourantFactor,            // Courant time step factor
@@ -92,10 +76,7 @@ EXTERN double
                   RunoffError,              // Runoff continuity error
                   GwaterError,              // Groundwater continuity error
                   FlowError,                // Flow routing error
-                  QualError,                // Quality routing error
-                  HeadTol,                  // DW routing head tolerance (ft)
-                  SysFlowTol,               // Tolerance for steady system flow
-                  LatFlowTol;               // Tolerance for steady nodal inflow       
+                  QualError;                // Quality routing error
 
 EXTERN DateTime
                   StartDate,                // Starting date
@@ -120,7 +101,6 @@ EXTERN TTemp      Temp;                     // Temperature data
 EXTERN TEvap      Evap;                     // Evaporation data
 EXTERN TWind      Wind;                     // Wind speed data
 EXTERN TSnow      Snow;                     // Snow melt data
-EXTERN TAdjust    Adjust;                   // Climate adjustments             //(5.1.007)
 
 EXTERN TSnowmelt* Snowmelt;                 // Array of snow melt objects
 EXTERN TGage*     Gage;                     // Array of rain gages
@@ -143,4 +123,8 @@ EXTERN TPattern*  Pattern;                  // Array of time patterns
 EXTERN TTable*    Curve;                    // Array of curve tables
 EXTERN TTable*    Tseries;                  // Array of time series tables
 EXTERN TTransect* Transect;                 // Array of transect data
-EXTERN TShape*    Shape;                    // Array of custom conduit shapes
+EXTERN TShape*    Shape;                    // Array of custom conduit shapes  //(5.0.010 - LR)
+
+//EXTERN THorton*   HortInfil;              // Horton infiltration data        //(5.0.019 - LR)
+//EXTERN TGrnAmpt*  GAInfil;                // Green-Ampt infiltration data    //(5.0.019 - LR)
+//EXTERN TCurveNum* CNInfil;                // Curve No. infiltration data     //(5.0.019 - LR)

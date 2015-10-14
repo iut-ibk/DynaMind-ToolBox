@@ -2,16 +2,12 @@
 //   input.c
 //
 //   Project:  EPA SWMM5
-//   Version:  5.1
-//   Date:     03/20/14  (Build 5.1.001)
-//             09/15/14  (Build 5.1.007)
+//   Version:  5.0
+//   Date:     6/19/07   (Build 5.0.010)
+//             07/30/10  (Build 5.0.019)
 //   Author:   L. Rossman
 //
 //   Input data processing functions.
-//
-//   Build 5.1.007:
-//   - Support added for climate adjustment input data.
-//
 //-----------------------------------------------------------------------------
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -19,7 +15,7 @@
 #include <string.h>
 #include <math.h>
 #include "headers.h"
-#include "lid.h"
+#include "lid.h"                                                               //(5.0.019 - LR)
 
 //-----------------------------------------------------------------------------
 //  Constants
@@ -44,6 +40,7 @@ static int  Mlinks[MAX_LINK_TYPES];    // Working number of link objects
 //-----------------------------------------------------------------------------
 //  Local functions
 //-----------------------------------------------------------------------------
+static void setDefaults(void);
 static int  addObject(int objType, char* id);
 static int  getTokens(char *s);
 static int  parseLine(int sect, char* line);
@@ -378,10 +375,10 @@ int  addObject(int objType, char* id)
                 errcode = error_setInpError(ERR_DUP_NAME, id);
             Nobjects[CURVE]++;
 
-            // --- check for a conduit shape curve
-            id = strtok(NULL, SEPSTR);
-            if ( findmatch(id, CurveTypeWords) == SHAPE_CURVE )
-                Nobjects[SHAPE]++;
+            // --- check for a conduit shape curve                             //(5.0.010 - LR)
+            id = strtok(NULL, SEPSTR);                                         //(5.0.010 - LR)
+            if ( findmatch(id, CurveTypeWords) == SHAPE_CURVE )                //(5.0.010 - LR)
+                Nobjects[SHAPE]++;                                             //(5.0.010 - LR)
         }
         break;
 
@@ -413,14 +410,13 @@ int  addObject(int objType, char* id)
         }
         break;
 
+////  Following segment added for SWMM5-LID edition  ////                      //(5.0.019 - LR)
       case s_LID_CONTROL:
         // --- an LID object can span several lines
         if ( project_findObject(LID, id) < 0 )
         {
             if ( !project_addObject(LID, id, Nobjects[LID]) )
-            {
                 errcode = error_setInpError(ERR_DUP_NAME, id);
-            }
             Nobjects[LID]++;
         }
         break;
@@ -456,9 +452,6 @@ int  parseLine(int sect, char *line)
       case s_EVAP:
         return climate_readEvapParams(Tok, Ntokens);
 
-      case s_ADJUST:                                                           //(5.1.007)
-        return climate_readAdjustments(Tok, Ntokens);                          //(5.1.007)
-
       case s_SUBCATCH:
         j = Mobjects[SUBCATCH];
         err = subcatch_readParams(j, Tok, Ntokens);
@@ -479,9 +472,6 @@ int  parseLine(int sect, char *line)
 
       case s_GROUNDWATER:
         return gwater_readGroundwaterParams(Tok, Ntokens);
-
-	  case s_GWF:
-        return gwater_readFlowExpression(Tok, Ntokens);
 
       case s_SNOWMELT:
         return snow_readMeltParams(Tok, Ntokens);
@@ -579,8 +569,8 @@ int  parseLine(int sect, char *line)
       case s_FILE:
         return iface_readFileParams(Tok, Ntokens);
 
-      case s_LID_CONTROL:
-        return lid_readProcParams(Tok, Ntokens);
+      case s_LID_CONTROL:                                                      //(5.0.019 - LR)
+        return lid_readProcParams(Tok, Ntokens);                               //(5.0.019 - LR)
 
       case s_LID_USAGE:
         return lid_readGroupParams(Tok, Ntokens);
@@ -613,9 +603,7 @@ int readControl(char* tok[], int ntoks)
     if ( keyword == 0 )
     {
         if ( !project_addObject(CONTROL, tok[1], Mobjects[CONTROL]) )
-        {
             return error_setInpError(ERR_DUP_NAME, Tok[1]);
-        }
         Mobjects[CONTROL]++;
     }
 
@@ -738,16 +726,13 @@ int  match(char *str, char *substr)
     if (!substr[0]) return(0);
 
     // --- skip leading blanks of str
-    for (i = 0; str[i]; i++)
-    {
+    for (i=0; str[i]; i++)
         if (str[i] != ' ') break;
-    }
 
     // --- check if substr matches remainder of str
-    for (i = i,j = 0; substr[j]; i++,j++)
-    {
-        if (!str[i] || UCHAR(str[i]) != UCHAR(substr[j])) return(0);
-    }
+    for (i=i,j=0; substr[j]; i++,j++)
+        if (!str[i] || UCHAR(str[i]) != UCHAR(substr[j]))
+            return(0);
     return(1);
 }
 
