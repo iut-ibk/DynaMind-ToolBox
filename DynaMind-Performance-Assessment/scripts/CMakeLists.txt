@@ -1,6 +1,6 @@
 FILE(COPY ${dynamind-performance-assessment_SOURCE_DIR}/scripts DESTINATION ${SCRIPT_PATH})
 
-INSTALL(DIRECTORY ${dynamind-gdalmodules_SOURCE_DIR}/scripts/
+INSTALL(DIRECTORY ${dynamind-performance-assessment_SOURCE_DIR}/scripts/
 		DESTINATION "share/DynaMind/PythonModules/scripts")
 
 
