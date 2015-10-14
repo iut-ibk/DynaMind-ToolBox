@@ -120,12 +120,6 @@ Data-stream
 |                    | invert_elevation          | double              | read  | invert elevation in m                        |
 +--------------------+---------------------------+---------------------+-------+----------------------------------------------+
 
-
-Note
-----
-
- - sub_catchments with area = 0 or nan are not exported
-
 Module Name
 -----------
 
