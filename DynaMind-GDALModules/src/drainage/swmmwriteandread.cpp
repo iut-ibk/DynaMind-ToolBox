@@ -1590,7 +1590,6 @@ void SWMMWriteAndRead::writeSWMMheader(std::fstream &inp)
 	inp<<"IGNORE_RAINFALL\t\tNO\n";
 	inp<<"FORCE_MAIN_EQUATION\tH-W\n";
 	inp<<"LINK_OFFSETS\t\tDEPTH\n\n";
-	inp<<"THREADS\t\t1\n\n";
 	//-------------------------//
 
 	//REPORT
