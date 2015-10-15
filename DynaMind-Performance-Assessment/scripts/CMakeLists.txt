@@ -1,7 +1,7 @@
 FILE(COPY ${dynamind-performance-assessment_SOURCE_DIR}/scripts DESTINATION ${SCRIPT_PATH})
 
 INSTALL(DIRECTORY ${dynamind-performance-assessment_SOURCE_DIR}/scripts/
-		DESTINATION "share/DynaMind/PythonModules")
+		DESTINATION "share/DynaMind/PythonModules/scripts")
 
 
 #MACRO(list_subdirectories retval curdir return_relative)
