@@ -40,6 +40,24 @@ std::string SimulationConfig::getDefaultModulePath()
 	#endif
 }
 
+std::string SimulationConfig::getDefaultLibraryPath()
+{
+	QString currentPath = QCoreApplication::applicationDirPath();
+	// Default path if run form compiled version
+	if (currentPath.contains("/output")) {
+		return currentPath.toStdString();
+	}
+
+	// asume install in /usr/bin
+	#if defined(_WIN32) || defined(__CYGWIN__)
+		std::cout << currentPath.toStdString() << std::endl;
+		return currentPath.toStdString();
+	#else
+		std::cout << currentPath.toStdString() << "/../lib" << std::endl;
+		return currentPath.toStdString() + "/../lib";
+	#endif
+}
+
 bool SimulationConfig::getKeepSystems() const
 {
 	return keepSystems;

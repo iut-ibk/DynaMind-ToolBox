@@ -188,10 +188,10 @@ bool RainWaterHarvestingOptions::initmodel()
 
 	try{
 		// Register default simulation
-		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/libcd3core");
 
 		// Register default modules
-		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/libcd3core");
+		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/libcd3core");
 
 
 		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");

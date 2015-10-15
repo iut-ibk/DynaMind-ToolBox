@@ -22,6 +22,7 @@ public:
 	std::string getWorkingDir() const;
 	void setWorkingDir(const std::string &value);
 	std::string getDefaultModulePath();
+	std::string getDefaultLibraryPath();
 };
 
 }
