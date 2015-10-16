@@ -6,6 +6,9 @@ import time
 import datetime
 
 class MikeWhisperer(Module):
+        display_name = "Coupling Mike Urban"
+        group_name = "Performance Assessment"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)

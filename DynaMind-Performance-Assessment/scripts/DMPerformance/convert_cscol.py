@@ -5,6 +5,10 @@ from pydynamind import *
 import pdb
 
 class ConvertCsCOL(Module):
+
+        display_name = "ConvertCsCOL"
+        group_name = "Little Helper"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
