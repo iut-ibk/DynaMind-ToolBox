@@ -4,6 +4,10 @@ from pydynamind import *
 import psycopg2
 
 class LoadDAnCEStations(Module):
+
+        display_name = "Load Rain Station"
+        group_name = "DAnCE Platform"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
@@ -20,6 +24,7 @@ class LoadDAnCEStations(Module):
             self.createParameter("password", STRING)
             self.password = ""
 
+            self.createParameter("view_name", STRING)
             self.view_name = "station"
 
             self.createParameter("append", BOOL)

@@ -3,7 +3,12 @@ from osgeo import ogr, osr
 from pydynamind import *
 import psycopg2
 
+
+
 class LoadDAnCETimeseries(Module):
+        display_name = "Load Timeseries Data"
+        group_name = "DAnCE Platform"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
@@ -33,6 +38,7 @@ class LoadDAnCETimeseries(Module):
             self.createParameter("from_city", BOOL)
             self.from_city = False
 
+            self.createParameter("view_name", STRING)
             self.view_name = "station"
 
 
@@ -43,7 +49,7 @@ class LoadDAnCETimeseries(Module):
             self.node_station.addAttribute("dance_station_id", Attribute.INT, READ)
 
             self.timeseries = ViewContainer("timeseries", COMPONENT, WRITE)
-            self.timeseries.addAttribute("station_id", Attribute.INT, WRITE)
+            self.timeseries.addAttribute(self.view_name+"_id", Attribute.INT, WRITE)
             self.timeseries.addAttribute("values", Attribute.DOUBLEVECTOR, WRITE)
             self.timeseries.addAttribute("start", Attribute.STRING, WRITE)
             self.timeseries.addAttribute("end", Attribute.STRING, WRITE)
@@ -138,7 +144,7 @@ class LoadDAnCETimeseries(Module):
                 timeseries = self.timeseries.create_feature()
                 timeseries.SetField("start", start)
                 timeseries.SetField("end", end)
-                timeseries.SetField("station_id", station.GetFID())
+                timeseries.SetField(self.view_name+"_id", station.GetFID())
                 delta_t = self.deltaT
                 if self.deltaT < db_timestep:
                     log( "used timestep " + str(db_timestep), Warning)
