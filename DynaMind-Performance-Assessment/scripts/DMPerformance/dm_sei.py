@@ -29,13 +29,23 @@ class DMSEI(Module):
         self.createParameter("time_delta", DM.INT)
         self.time_delta = 360
 
+        self.createParameter("rain_vector_from_city", DM.STRING)
+        self.rain_vector_from_city = ""
+
+    def init(self):
         self.view_catchments = ViewContainer("catchment", DM.COMPONENT, DM.READ)
         self.view_catchments.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("stream_erosion_index", DM.Attribute.DOUBLE, DM.WRITE)
 
+        view_register = [self.view_catchments]
 
-        self.registerViewContainers([self.view_catchments])
+        if self.rain_vector_from_city != "":
+            self.city = ViewContainer("city", DM.COMPONENT, DM.READ)
+            self.city.addAttribute(self.rain_vector_from_city, DM.Attribute.DOUBLEVECTOR, DM.READ)
+            view_register.append(self.city)
+
+        self.registerViewContainers(view_register)
 
 
     def peakflow(self, catchment):
@@ -67,21 +77,29 @@ class DMSEI(Module):
         return natural_peaks
 
     def SEI(self, catchment, thresholds):
-        filenname = str(uuid.uuid4())
+        filename = str(uuid.uuid4())
 
-        fo = open("/tmp/" + filenname + ".inp", 'w')
+        fo = open("/tmp/" + filename + ".inp", 'w')
         intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(seconds=self.time_delta)).strftime('%H:%M:%S')
         dt = datetime.timedelta(seconds=self.time_delta)
-        self.init_swmm_model(fo, rainfile=self.swmm_rain_file, start='01/01/2000', stop='12/30/2009', intervall=intervall,
+
+        swmm_rain_filename = self.swmm_rain_file
+        if self.rain_vector_from_city != "":
+            self.city.reset_reading()
+            for c in self.city:
+                s = str(c.GetFieldAsString(self.rain_vector_from_city))
+                self.write_rain_file(filename, map(float, s.split()), 60 * 5)
+                swmm_rain_filename = "/tmp/" + filename + ".dat"
+        self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2009', intervall=intervall,
                              sub_satchment=catchment)
         fo.close()
 
         swmm = cdll.LoadLibrary(self.getSWMMLib())
-        e_code = swmm.swmm_run("/tmp/" + filenname + ".inp", "/tmp/" + filenname + ".rep", "/tmp/" + filenname + ".out")
+        e_code = swmm.swmm_run("/tmp/" + filename + ".inp", "/tmp/" + filename + ".rep", "/tmp/" + filename + ".out")
         if e_code != 0:
             print e_code, "something went wrong"
             return -1
-        f = swmmread.open("/tmp/" + filenname + ".out")
+        f = swmmread.open("/tmp/" + filename + ".out")
         SEIs = {}
         for c in catchment.keys():
             timeseries = f.get_values('subcatchments', c)
@@ -94,10 +112,11 @@ class DMSEI(Module):
 
             SEIs[c] = sum
 
-        os.remove("/tmp/" + filenname + ".inp")
-        os.remove("/tmp/" + filenname + ".rep")
-        os.remove("/tmp/" + filenname + ".out")
-        #os.remove("/tmp/" + filenname + ".dat")
+        os.remove("/tmp/" + filename + ".inp")
+        os.remove("/tmp/" + filename + ".rep")
+        os.remove("/tmp/" + filename + ".out")
+        if self.rain_vector_from_city != "":
+            os.remove("/tmp/" + filename + ".dat")
         return SEIs
 
     def transform_rain_file(self):
