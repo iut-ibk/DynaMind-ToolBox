@@ -288,3 +288,5 @@ class DMSEI(Module):
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
         self.view_catchments.finalise()
+        if self.rain_vector_from_city != "":
+            self.city.finalise()
