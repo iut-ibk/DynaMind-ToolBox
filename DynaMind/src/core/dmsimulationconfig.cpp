@@ -3,6 +3,7 @@
 #include "dmlogger.h"
 #include <QCoreApplication>
 #include <QDir>
+#include <QString>
 
 namespace DM {
 
