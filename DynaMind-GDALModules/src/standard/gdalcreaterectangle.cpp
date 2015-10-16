@@ -1,7 +1,8 @@
 #include "gdalcreaterectangle.h"
 #include "ogrsf_frmts.h"
 #include "dmgdalsystem.h"
-DM_DECLARE_NODE_NAME(GDALCreateRectangle, GDALModules)
+
+DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateRectangle, Create Rectangle, Test Modules)
 
 GDALCreateRectangle::GDALCreateRectangle()
 {
