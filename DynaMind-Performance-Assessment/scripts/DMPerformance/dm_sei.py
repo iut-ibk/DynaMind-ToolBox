@@ -4,6 +4,7 @@ import swmmread
 import numpy as np
 import math
 from ctypes import *
+from sys import platform as _platform
 
 import ogr
 
@@ -255,7 +256,17 @@ class DMSEI(Module):
 
     def getSWMMLib(self):
         sc = self.getSimulationConfig()
-        return sc.getDefaultModulePath() + "/Modules/libswmm5.dylib"
+        if _platform == "linux" or _platform == "linux2":
+            return sc.getDefaultModulePath() + "/Modules/libswmm5.so"
+            # linux
+        elif _platform == "darwin":
+            # OS X
+            return sc.getDefaultModulePath() + "/Modules/libswmm5.dylib"
+        elif _platform == "win32":
+            # Windows
+            return sc.getDefaultModulePath() + "/Modules/swmm5.dll"
+
+
 
     def getRainVec(self):
         return [0.5236, 1.2614, 0.7378, 1.1662, 2.2848, 1.2376, 4.284, 2.9512, 1.3328, 0.7378, 0.7854, 0.9996, 1.0234,
