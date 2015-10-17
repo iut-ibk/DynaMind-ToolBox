@@ -65,7 +65,12 @@ void SqliteWorkHorse::initDatabase(){
 		return;
 	}
 	sqlite3_enable_load_extension(db,1);
-	execute_query("SELECT load_extension('mod_spatialite')");
+	sqlite3_enable_load_extension(db,1);
+	#ifdef WIN32
+		execute_query(db,"SELECT load_extension('mod_spatialite')");
+	#else
+		execute_query(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
+	#endif
 	std::stringstream query_ss;
 	query_ss << "SELECT load_extension('" << this->plow->getExtensionLocation() << "')";
 	std::cout << query_ss.str() << std::endl;

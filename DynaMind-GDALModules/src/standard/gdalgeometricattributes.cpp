@@ -76,7 +76,12 @@ void GDALGeometricAttributes::run_sql()
 	}
 
 	//Load spatialite
-	execute_sql_statement(db, "SELECT load_extension('mod_spatialite')");
+	sqlite3_enable_load_extension(db,1);
+	#ifdef WIN32
+		execute_sql_statement(db,"SELECT load_extension('mod_spatialite')");
+	#else
+		execute_sql_statement(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
+	#endif
 
 	std::stringstream query_stream;
 	query_stream << "SELECT load_extension('" << this->getSimulation()->getSimulationConfig().getDefaultModulePath() << "/SqliteExtension/libdm_sqlite_plugin" << "')";

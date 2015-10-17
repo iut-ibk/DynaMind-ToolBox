@@ -242,8 +242,11 @@ void DM_SQliteCalculator::run()
 		return;
 	}
 	sqlite3_enable_load_extension(db,1);
-	execute_query(db,"SELECT load_extension('mod_spatialite')");
-
+	#ifdef WIN32
+		execute_query(db,"SELECT load_extension('mod_spatialite')");
+	#else
+		execute_query(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
+	#endif
 	execute_query(db,getSQLExtension().c_str());
 
 	std::stringstream query;

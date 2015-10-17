@@ -131,7 +131,12 @@ void GDALSpatialLinking::run()
 		}
 		sqlite3_enable_load_extension(db,1);
 
-		execute_query1(db,"SELECT load_extension('mod_spatialite')");
+		sqlite3_enable_load_extension(db,1);
+		#ifdef WIN32
+			execute_query1(db,"SELECT load_extension('mod_spatialite')");
+		#else
+			execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
+		#endif
 
 		DM::Logger(DM::Standard) << query.str();
 
