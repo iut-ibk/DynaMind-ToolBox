@@ -16,11 +16,12 @@ ParcelSplitWorker::ParcelSplitWorker()
 {
 }
 
-ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width, bool splitFirst, char *poly_wkt) :
+ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width,  double target_length, bool splitFirst, char *poly_wkt) :
 	id(id),
 	module(module),
 	width(width),
 	splitFirst(splitFirst),
+	target_length(target_length),
 	poly_wkt(poly_wkt)
 {
 
@@ -70,13 +71,23 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 		v1_bigger = false;
 	}
 
-	//Splitt Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
-	double splite_width = 2;
-	if (!splitFirst)
-			splite_width = 1;
+	int numberOfElements_x  = -1;
+	int numberOfElements_y =  -1;
 
-	int numberOfElements_x  = (!v1_bigger) ? splite_width : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
-	int numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length()))/this->width : splite_width;
+	//Splitt Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
+	if (this->target_length > 0 ){
+		numberOfElements_x  = (!v1_bigger) ? sqrt(CGAL::to_double(v1.squared_length())) / this->target_length : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
+		numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length())) / this->width : sqrt(CGAL::to_double(v2.squared_length())) / this->target_length;
+
+	} else {
+		double splite_width = 2;
+		if (!splitFirst)
+				splite_width = 1;
+		numberOfElements_x  = (!v1_bigger) ? splite_width : sqrt(CGAL::to_double(v1.squared_length())) / this->width;
+		numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length())) / this->width : splite_width;
+	}
+	numberOfElements_x = (numberOfElements_x < 0) ? 1 : numberOfElements_x;
+	numberOfElements_y = (numberOfElements_y < 0) ? 1 : numberOfElements_y;
 
 	Vector_2 dv1 = v1/numberOfElements_x;
 	Vector_2 dv2 = v2/numberOfElements_y;

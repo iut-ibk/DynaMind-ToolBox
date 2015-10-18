@@ -29,6 +29,10 @@ GDALParcelSplit::GDALParcelSplit()
 	this->splitFirst = true;
 	this->addParameter("split_first", DM::BOOL, &this->splitFirst);
 
+	this->target_length = 0;
+	this->addParameter("target_length", DM::DOUBLE, &this->target_length);
+
+
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
 	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
 
@@ -74,7 +78,7 @@ void GDALParcelSplit::run()
 		char* geo;
 
 		poFeature->GetGeometryRef()->exportToWkt(&geo); //Geo destroyed by worker
-		ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->splitFirst, geo);
+		ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->target_length, this->splitFirst, geo);
 		pool.start(ps);
 	}
 	pool.waitForDone();

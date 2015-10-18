@@ -43,6 +43,7 @@ private:
 	DM::ViewContainer parcels;
 	int counter_added;
 	double width;
+	double target_length;
 	int generated;
 
 	bool splitFirst;

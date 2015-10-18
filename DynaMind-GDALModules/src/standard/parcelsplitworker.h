@@ -35,13 +35,14 @@ class DM_HELPER_DLL_EXPORT ParcelSplitWorker : public QObject, public  QRunnable
 private:
 	double width;
 	bool splitFirst;
+	double target_length;
 	char * poly_wkt;
 	GDALParcelSplit * module;
 	int id;
 
 public:
 	ParcelSplitWorker();
-	ParcelSplitWorker(int id, GDALParcelSplit * module, double width, bool splitFirst, char * poly_wkt);
+	ParcelSplitWorker(int id, GDALParcelSplit * module, double width, double target_length, bool splitFirst, char * poly_wkt);
 	void splitePoly(Polygon_with_holes_2 &poly);
 	Pwh_list_2 splitter(Polygon_2 & rect);
 	void run();
