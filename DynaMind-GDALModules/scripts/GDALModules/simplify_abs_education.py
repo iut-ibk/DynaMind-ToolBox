@@ -50,14 +50,14 @@ class SimplifyABSEducation(Module):
             self.translation_table["persons_level_of_education_not_stated_total"] = "other"
             #self.translation_table["persons_total_total"]
 
-            self.translation_table_1 = {}
-            self.translation_table_1["total_persons_persons"] = "other"
-            self.translation_table_1["highest_year_of_school_completed_year_12_or_equivalent_persons"] = "secondary"
-            self.translation_table_1["highest_year_of_school_completed_year_11_or_equivalent_persons"] = "secondary"
-            self.translation_table_1["highest_year_of_school_completed_year_10_or_equivalent_persons"] = "secondary"
-            self.translation_table_1["highest_year_of_school_completed_year_9_or_equivalent_persons"] = "secondary"
-            self.translation_table_1["highest_year_of_school_completed_year_8_or_below_persons"] = "secondary"
-            self.translation_table_1["highest_year_of_school_completed_did_not_go_to_school_persons"] = "other"
+            # self.translation_table_1 = {}
+            self.translation_table["total_persons_persons"] = "other"
+            self.translation_table["highest_year_of_school_completed_year_12_or_equivalent_persons"] = "secondary"
+            self.translation_table["highest_year_of_school_completed_year_11_or_equivalent_persons"] = "secondary"
+            self.translation_table["highest_year_of_school_completed_year_10_or_equivalent_persons"] = "secondary"
+            self.translation_table["highest_year_of_school_completed_year_9_or_equivalent_persons"] = "secondary"
+            self.translation_table["highest_year_of_school_completed_year_8_or_below_persons"] = "secondary"
+            self.translation_table["highest_year_of_school_completed_did_not_go_to_school_persons"] = "other"
 
 
             self.__b40b = ViewContainer("b40b", NODE, READ)
@@ -65,10 +65,10 @@ class SimplifyABSEducation(Module):
             for k in self.translation_table.keys():
                 self.__b40b.addAttribute(k, Attribute.INT, READ)
 
-            self.__b01 = ViewContainer("b01", NODE, READ)
-
-            for k in self.translation_table_1.keys():
-                self.__b01.addAttribute(k, Attribute.INT, READ)
+            # self.__b01 = ViewContainer("b01", NODE, READ)
+            #
+            # for k in self.translation_table_1.keys():
+            #     self.__b01.addAttribute(k, Attribute.INT, READ)
 
             self.__ress = ViewContainer("education", NODE, WRITE)
             self.__ress.addAttribute("tertiary", Attribute.INT, WRITE)
@@ -86,7 +86,7 @@ class SimplifyABSEducation(Module):
             views = []
             views.append(self.__b40b)
             views.append(self.__ress)
-            views.append(self.__b01)
+            # views.append(self.__b01)
 
             self.registerViewContainers(views)
 
@@ -109,11 +109,11 @@ class SimplifyABSEducation(Module):
 
                 id = b40.GetFID()
                 #print id
-                b01 = self.__b01.get_feature(id)
+                # b01 = self.__b01.get_feature(id)
                 #print b01
 
-                for k in self.translation_table_1.keys():
-                     values[self.translation_table_1[k]] += b01.GetFieldAsInteger(k)
+                # for k in self.translation_table_1.keys():
+                #      values[self.translation_table_1[k]] += b01.GetFieldAsInteger(k)
 
 
                 f = self.__ress.create_feature()
@@ -136,7 +136,7 @@ class SimplifyABSEducation(Module):
 
 
             self.__b40b.finalise()
-            self.__b01.finalise()
+            # self.__b01.finalise()
             self.__ress.finalise()
 
 
