@@ -46,7 +46,7 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	this->addParameter("date_from_global", DM::BOOL, &this->start_date_from_global);
 
 	global_viewe_name = "global_viewe_name";
-	this->addParameter("STRING", DM::STRING, &this->global_viewe_name);
+	this->addParameter("global_viewe_name", DM::STRING, &this->global_viewe_name);
 
 	start_date_name = "start_date";
 	this->addParameter("start_date_name", DM::STRING, &this->start_date_name);
