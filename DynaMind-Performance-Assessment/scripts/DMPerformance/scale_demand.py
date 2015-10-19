@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 import pdb
 
 class ScaleOutdoorDemand(Module):
+        display_name = "Dry Weather Period"
+        group_name = "Performance Assessment"
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
@@ -26,12 +29,17 @@ class ScaleOutdoorDemand(Module):
             self.createParameter("scaling_factor", DOUBLE)
             self.scaling_factor = 1.0
 
-            self.parcel = ViewContainer("parcel", EDGE, READ)
-            self.parcel.addAttribute("outdoor_demand_daily", Attribute.DOUBLEVECTOR, MODIFY)
-            #self.parcel.addAttribute("scale_pattern", Attribute.DOUBLEVECTOR, WRITE)
+            self.createParameter("view_name", STRING)
+            self.view_name = "parcel"
+
+            self.createParameter("attribute_name", STRING)
+            self.attribute_name = "outdoor_demand_daily"
+
+        def init(self):
+            self.parcel = ViewContainer(self.view_name, EDGE, READ)
+            self.parcel.addAttribute(self.attribute_name, Attribute.DOUBLEVECTOR, MODIFY)
 
             self.registerViewContainers([self.parcel])
-
 
         def run(self):
             start_date = "2000-Jan-01 00:00:00"
@@ -59,12 +67,6 @@ class ScaleOutdoorDemand(Module):
                 scaling_factor.append(val)
                 #print next_day, val, next_day.month #, start_wet.month , next_day.month , end_wet.month
 
-
-            print scaling_factor
-
-
-
-
             for p in self.parcel:
 
                 scaled_values = []
@@ -75,27 +77,5 @@ class ScaleOutdoorDemand(Module):
                 for i in range(len(floats)):
                     scaled_values.append(floats[i] * scaling_factor[i])
 
-
-
                 p.SetField("outdoor_demand_daily", ' '.join(str(d) for d in scaled_values))
             self.parcel.finalise()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-__author__ = 'christianurich'
