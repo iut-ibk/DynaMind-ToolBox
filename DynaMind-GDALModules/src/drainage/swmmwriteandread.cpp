@@ -876,16 +876,12 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
 		coordinates << std::setprecision(8);
 		int length = width.size();
 		int added_elements = 0;
+        coordinates << "\nGR ";
 		for(int i = 0; i < width.size(); i++) {
 			if (i % 3 == 0 && i != 0)
 				coordinates << "\nGR ";
 			coordinates << depth[i] << " " << width[i] << " ";
 			added_elements++;
-			/*if (length > 12 && i < length-4) {
-				i++;
-				i++;
-				i++;
-			}*/
 
 		}
 
