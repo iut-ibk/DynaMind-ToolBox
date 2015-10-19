@@ -47,7 +47,7 @@ void DM_CalculateDistance::init()
 
 	properInit=true;
 	this->lead_view = DM::ViewContainer(this->lead_view_name, DM::COMPONENT, DM::READ);
-	this->lead_view.addAttribute("distance", DM::Attribute::DOUBLE, DM::WRITE);
+    this->lead_view.addAttribute(this->attribute_name, DM::Attribute::DOUBLE, DM::WRITE);
 	this->distance_view = DM::ViewContainer(this->distance_view_name, DM::COMPONENT, DM::READ);
 
 	std::vector<DM::ViewContainer*> data_stream;
@@ -71,7 +71,7 @@ void DM_CalculateDistance::run()
 
 	std::stringstream query;
 
-	query << "UPDATE " << this->lead_view_name << " SET distance = (SELECT SUM(ST_DISTANCE(";
+    query << "UPDATE " << this->lead_view_name << " SET "+ this->attribute_name + " = (SELECT SUM(ST_DISTANCE(";
 	query << this->lead_view_name << ".geometry, b.geometry)) from " << this->distance_view_name <<" as b)";
 
 	DM::Logger(DM::Debug) << query.str();
