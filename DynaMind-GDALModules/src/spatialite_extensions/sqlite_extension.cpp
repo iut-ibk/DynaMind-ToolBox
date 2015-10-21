@@ -41,9 +41,16 @@ void DM_HELPER_DLL_EXPORT polygon_aspect_ratio(sqlite3_context *context, int arg
 
 /* multiply vector */
 void DM_HELPER_DLL_EXPORT multiply_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
-	const unsigned char * vec = sqlite3_value_text(argv[0]);
-	double value = sqlite3_value_double(argv[1]);
+    if( sqlite3_value_type(argv[0])==SQLITE_NULL){
+        sqlite3_result_null(context);
+        return;
+    }
 
+	const unsigned char * vec = sqlite3_value_text(argv[0]);
+    double value = 0;
+    if( sqlite3_value_type(argv[1])!=SQLITE_NULL){
+        value  = sqlite3_value_double(argv[1]);
+    }
 
 	std::string ress = my_extension::multiply_vector(vec, value);
 	sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
@@ -51,6 +58,10 @@ void DM_HELPER_DLL_EXPORT multiply_vector(sqlite3_context *context, int argc, sq
 
 /* addition vector */
 void DM_HELPER_DLL_EXPORT addition_vector(sqlite3_context *context, int argc, sqlite3_value **argv) {
+    if( sqlite3_value_type(argv[0])==SQLITE_NULL || sqlite3_value_type(argv[0])==SQLITE_NULL){
+        sqlite3_result_null(context);
+        return;
+    }
 	const unsigned char * vec1 = sqlite3_value_text(argv[0]);
 	const unsigned char * vec2 = sqlite3_value_text(argv[1]);
 
@@ -61,6 +72,11 @@ void DM_HELPER_DLL_EXPORT addition_vector(sqlite3_context *context, int argc, sq
 
 /* vector sum */
 void DM_HELPER_DLL_EXPORT vector_sum(sqlite3_context *context, int argc, sqlite3_value **argv) {
+    if( sqlite3_value_type(argv[0])==SQLITE_NULL){
+        sqlite3_result_null(context);
+        return;
+    }
+
 	const unsigned char * vec = sqlite3_value_text(argv[0]);
 	double ress = my_extension::vector_sum(vec);
 	//sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
