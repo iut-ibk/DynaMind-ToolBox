@@ -41,11 +41,19 @@ void ModelObserver::notifyRemovePort(const std::string &name, const DM::PortType
 }
 void ModelObserver::notifyChangeName(const std::string &name)
 {
-	if(node->isGroup())
-	{
-		int i = 0;
-		QList<SimulationTab*> tabs = node->getSimulation()->getTabs();
-		foreach(SimulationTab* tab, tabs)
+	if(!node->isGroup())
+		return;
+	//{
+		//int i = 0;
+		QMap<QWidget *, SimulationTab*> tabs = node->getSimulation()->getTabs();
+
+		QTabWidget* tabWidget = node->getSimulation()->getTabWidget();
+		for (int i = 0; i < tabWidget->count(); i++) {
+			if ( (DM::Module*) tabs[tabWidget->widget(i)]->getParentGroup() == node->getModule() )
+				tabWidget->setTabText(i, QString::fromStdString(name));
+		}
+
+		/*foreach(SimulationTab* tab, tabs)
 		{
 			if(((DM::Module*)tab->getParentGroup()) == node->getModule())
 				break;
@@ -54,7 +62,8 @@ void ModelObserver::notifyChangeName(const std::string &name)
 		}
 		if(i < tabs.size())
 			node->getSimulation()->getTabWidget()->setTabText(i, QString::fromStdString(name));
-	}
+			*/
+	//}
 }
 
 void ModelObserver::notifyStateChange()

@@ -42,6 +42,7 @@
 #include <dmmodule.h>
 #include <dmsimulation.h>
 #include <QWidget>
+#include <QTimer>
 
 class ModelNodeButton;
 class RootGroupNode;
@@ -87,6 +88,7 @@ public:
 	double paint_header(QPainter *painter, double &pos);
 	void paint_rect(QPainter *painter);
 	double paint_datastream(QPainter *painter, double &pos);
+	bool showModelEdit;
 public slots:
 	void deleteModelNode();
 	void editModelNode();
@@ -101,10 +103,13 @@ public slots:
 	void updateSimulation();
 signals:
 	void showHelp(std::string, std::string);
+	void triggerEditModelNode();
 
 protected:
 	virtual void mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) ;
 	virtual void mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event );
+	virtual void mousePressEvent( QGraphicsSceneMouseEvent * event);
+	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent * event);
 	virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent * event );
 	virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent * event );
@@ -120,6 +125,7 @@ private:
 	ModelNode* child;
 	double paint_filter(QPainter *painter, double &pos);
 	double paint_parameter(QPainter *painter, double &pos);
+	QTime timer_mouse_click;
 };
 
 #endif // MODELNODE_H

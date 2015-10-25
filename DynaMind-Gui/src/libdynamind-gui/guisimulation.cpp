@@ -36,6 +36,8 @@
 #include <qtablewidget.h>
 #include <dmlogger.h>
 #include <QGraphicsView>
+#include <QLabel>
+#include <QVBoxLayout>
 
 #ifndef PYTHON_EMBEDDING_DISABLED
 #include <dmpythonenv.h>
@@ -65,16 +67,18 @@ DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent,
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
 
-	if(!parent)
-		selectTab(0);
-	else
-	{
-		for(int i=1;i<tabs.size();i++)
-			if(tabs.at(i)->getParentGroup() == parent)
-				selectTab(i);	
+	//Find right tab widtet
+	SimulationTab * current_tab = 0;
+
+
+	foreach(QWidget* w, tabs.keys()) {
+		if (tabs[w]->getParentGroup() == parent) {
+			current_tab = tabs[w];
+		}
+
 	}
 
-	getSelectedTab()->addItem(node);
+	current_tab->addItem(node);
 	modelNodes[m] = node;
 
 	// group stuff
@@ -95,7 +99,7 @@ void GUISimulation::removeModule(DM::Module* m)
 	// get childs
 	std::vector<DM::Module*> toDelete;
 	mforeach(ModelNode* child, modelNodes)
-		if(child->getModule()->getOwner() == m)
+			if(child->getModule()->getOwner() == m)
 			toDelete.push_back(child->getModule());
 
 	// delete graphical representations
@@ -121,40 +125,105 @@ void GUISimulation::removeModule(DM::Module* m)
 
 SimulationTab* GUISimulation::addTab(DM::Group* parentGroup)
 {
-	SimulationTab* tab = new SimulationTab(parent, this, parentGroup);
-	tabs.append(tab);
-	tabWidget->addTab((QWidget*)tab->getQGViewer(), parentGroup?parentGroup->getClassName():"ROOT");
+	SimulationTab* tab = 0;
+	foreach(QWidget * w, tabs.keys()) {
+		if (tabs[w]->getParentGroup() == parentGroup) {
+			tab = tabs[w];
+		}
+	}
+	if (!tab) {
+		tab = new SimulationTab(parent, this, parentGroup);
+		tabs.insert((QWidget*)tab->getQGViewer(), tab);
+	}
+	 if (!parentGroup) {
+		 this->showTab(parentGroup);
+		 //this->tabWidget->tabBar()->tabButton(0, QTabBar::RightSide)->hide();
+	 }
+	return tab;
+}
+
+SimulationTab *GUISimulation::showTab(DM::Group *parentGroup)
+{
+	SimulationTab* tab = 0;
+	foreach(QWidget * w, tabs.keys()) {
+		if (tabs[w]->getParentGroup() == parentGroup) {
+			tab = tabs[w];
+		}
+	}
+
+	if (!tab)
+		return NULL;
+
+
+	//Check if widget is already shown
+	bool isShow = false;
+	for (int i = 0; i < this->tabWidget->count(); i++) {
+		if(this->tabWidget->widget(i) == (QWidget*) tab->getQGViewer())
+			isShow = true;
+	}
+	if (isShow)
+		return tab;
+	std::string tab_name;
+	if (parentGroup) {
+		tab_name = parentGroup->getName();
+		if (tab_name.empty()) {
+			parentGroup->getDisplayName();
+		}
+	} else {
+		tab_name = "Workbench";
+	}
+	tabWidget->addTab((QWidget*)tab->getQGViewer(), QString::fromStdString(tab_name));
+
 	return tab;
 }
 
 void GUISimulation::closeTab(SimulationTab* tab)
 {
-	int index = tabs.indexOf(tab);
-	closeTab(index);
+
+	// get widget
+	QWidget * current_widget = 0;
+	foreach(QWidget * w, tabs.keys()) {
+		if (tabs[w] == tab) {
+			current_widget = w;
+		}
+	}
+
+	for (int i = 0; i < tabWidget->count(); i++) {
+		if (tabWidget->widget(i) == current_widget) {
+			tabWidget->removeTab(i);
+		}
+	}
+	//int index = tabs.indexOf(tab);
+	//closeTab(index);
+
+
+
 }
 void GUISimulation::closeTab(int index)
 {
-	if(tabs.size() > index)
+	/*if(tabs.size() > index)
 	{
 		//delete tabs[index]; will cause a crash
 		tabWidget->removeTab(index);
 		tabs.removeAt(index);
-	}
+	}*/
 }
 
-SimulationTab* GUISimulation::getTab(int index)
+/*SimulationTab* GUISimulation::getTab(int index)
 {
 	if(tabs.size() > index)
 		return tabs[index];
 	return NULL;
-}
-QList<SimulationTab*> GUISimulation::getTabs()
+}*/
+QMap<QWidget*, SimulationTab*> GUISimulation::getTabs()
 {
 	return tabs;
 }
-SimulationTab* GUISimulation::getSelectedTab()
+SimulationTab* GUISimulation::getSelectedSimulationTab()
 {
-	return getTab(tabWidget->currentIndex());
+	//Return simulation tab based on current selected tab
+
+	return tabs[tabWidget->currentWidget()];
 }
 
 void GUISimulation::selectTab(int index)
@@ -209,7 +278,7 @@ PortNode* GUISimulation::getPortNode(DM::Module* m, std::string portName,
 bool GUISimulation::removeLink(PortNode* out, PortNode* in)
 {
 	return Simulation::removeLink(out->getModule(), out->getPortName().toStdString(),
-		in->getModule(), in->getPortName().toStdString());
+								  in->getModule(), in->getPortName().toStdString());
 }
 
 bool GUISimulation::loadSimulation(std::string filePath) 

@@ -74,6 +74,13 @@ void DMMainWindow::newLogLine(QString line)
 	ui->log_widget->append(line);
 }
 
+void DMMainWindow::closeTab(int index)
+{
+	if (index == 0)
+		return;
+	ui->tabWidget_modelview->removeTab(index);
+}
+
 void DMMainWindow::updateProgress(float progress)
 {
 	ui->progressBar->setValue((int)(progress*100));
@@ -130,6 +137,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
 	connect(ui->actionShow_Help, SIGNAL(triggered()), this, SLOT(showHelp()), Qt::DirectConnection);
+	connect(ui->tabWidget_modelview, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)), Qt::DirectConnection);
 
 	QStringList args = QCoreApplication::arguments();
 	if (args.size() == 2) {
@@ -376,7 +384,7 @@ DMMainWindow::~DMMainWindow()
 
 void DMMainWindow::on_actionZoomIn_triggered()
 {
-	simulation->getSelectedTab()->getQGViewer()->scale(1.2, 1.2);
+	simulation->getSelectedSimulationTab()->getQGViewer()->scale(1.2, 1.2);
 }
 
 void DMMainWindow::on_actionAbout_triggered()
@@ -387,12 +395,12 @@ void DMMainWindow::on_actionAbout_triggered()
 
 void DMMainWindow::on_actionZoomOut_triggered()
 {
-	simulation->getSelectedTab()->getQGViewer()->scale(0.8,0.8);
+	simulation->getSelectedSimulationTab()->getQGViewer()->scale(0.8,0.8);
 }
 
 void DMMainWindow::on_actionZoomReset_triggered()
 {
-	QGraphicsView* view = simulation->getSelectedTab()->getQGViewer();
+	QGraphicsView* view = simulation->getSelectedSimulationTab()->getQGViewer();
 	view->fitInView(view->scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
 }
 
