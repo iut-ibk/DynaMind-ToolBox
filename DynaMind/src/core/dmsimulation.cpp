@@ -733,6 +733,7 @@ public:
 
 void Simulation::run()
 {
+    srand((unsigned)time(NULL));
 	canceled = false;
 	// notify progress
 	foreach(SimulationObserver* obs, observers)
@@ -1369,7 +1370,7 @@ bool Simulation::loadSimulation(std::string filePath)
 
 void Simulation::writeSimulation(QIODevice* dest, QString filePath)
 {
-	SimulationWriter::writeSimulation(	dest, filePath, this->getSimulationConfig(),
+    SimulationWriter::writeSimulation(	dest, filePath, this->getSimulationConfig(),
 		getModules(), getLinks());
 }
 
