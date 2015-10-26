@@ -87,9 +87,6 @@
          <property name="movable">
           <bool>true</bool>
          </property>
-         <property name="tabBarAutoHide">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
       </layout>
