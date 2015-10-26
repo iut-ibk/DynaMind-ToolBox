@@ -50,6 +50,7 @@
 #include <dmmoduleregistry.h>
 #include <qgraphicsview.h>
 #include "dmdbconnector.h"
+#include <simulationtree.h>
 
 void DMMainWindow::ReloadModules() 
 {
@@ -136,6 +137,7 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 	connect(ui->actionUpdate, SIGNAL(triggered()), this , SLOT(updateSimulation()), Qt::DirectConnection);
 	connect(ui->actionReset, SIGNAL(triggered()), this , SLOT(resetSimulation()), Qt::DirectConnection);
 	connect(ui->actionCancel, SIGNAL(triggered()), this, SLOT(cancelSimulation()), Qt::DirectConnection);
+	connect(ui->actionAnalysis, SIGNAL(triggered()), this, SLOT(runAnalysis()), Qt::DirectConnection);
 	connect(ui->actionShow_Help, SIGNAL(triggered()), this, SLOT(showHelp()), Qt::DirectConnection);
 	connect(ui->tabWidget_modelview, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)), Qt::DirectConnection);
 
@@ -284,6 +286,13 @@ void DMMainWindow::cancelSimulation()
 {
 	simulation->cancel();
 	simulationFinished();
+}
+
+void DMMainWindow::runAnalysis()
+{
+	SimulationTree simTree(this->simulation);
+	simTree.update();
+
 }
 
 void DMMainWindow::showHelp()

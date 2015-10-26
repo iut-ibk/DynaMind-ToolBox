@@ -194,10 +194,17 @@
     <addaction name="actionShow_Help"/>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuWorkflow">
+    <property name="title">
+     <string>Workflow</string>
+    </property>
+    <addaction name="actionAnalysis"/>
+   </widget>
    <addaction name="menuSimulation"/>
    <addaction name="menuTools"/>
    <addaction name="menuView"/>
    <addaction name="menuModuleDevelopment"/>
+   <addaction name="menuWorkflow"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -907,6 +914,11 @@
    </property>
    <property name="toolTip">
     <string>Cancel</string>
+   </property>
+  </action>
+  <action name="actionAnalysis">
+   <property name="text">
+    <string>Analysis</string>
    </property>
   </action>
  </widget>
