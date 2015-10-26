@@ -68,6 +68,7 @@ public:
 
 //	void sqlite_backend();
 	std::string getSQLExtension();
+	bool createInputDialog();
 };
 
 #endif // GDALATTRIBUTECALCULATOR_H
