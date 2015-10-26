@@ -59,6 +59,8 @@ private:
 	std::multimap<DM::ViewContainer * , std::string> index_map; //index _id for faster serach
 	DM::Attribute::AttributeType convertAttributeType(std::string type);
 
+
+
 public:
 	DM_SQliteCalculator();
 	void init();

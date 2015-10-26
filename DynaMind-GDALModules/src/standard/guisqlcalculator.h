@@ -8,6 +8,8 @@ namespace Ui {
 class GUISQLCalculator;
 }
 
+class CustomTextEdit;
+
 class GUISQLCalculator : public QDialog
 {
 	Q_OBJECT
@@ -18,6 +20,7 @@ public:
 private:
 	Ui::GUISQLCalculator *ui;
 	DM::Module * m;
+     CustomTextEdit * ct;
 
 protected slots:
 	void accept();

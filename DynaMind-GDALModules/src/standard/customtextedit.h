@@ -3,7 +3,7 @@
 
 #include <QTextEdit>
 #include <QCompleter>
-
+#include "dmmodule.h"
 
 class QCompleter;
 
@@ -12,7 +12,7 @@ class CustomTextEdit : public QTextEdit
 	Q_OBJECT
 
 public:
-	CustomTextEdit( QWidget* parent = 0 );
+    CustomTextEdit(DM::Module *m, QWidget* parent = 0 );
 
 private slots:
 	void insertCompletion( const QString& completion );
