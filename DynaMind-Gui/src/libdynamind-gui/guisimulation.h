@@ -56,11 +56,12 @@ public:
 	void removeModule(DM::Module* m);
 
 	SimulationTab* addTab(DM::Group* parentGroup);	// parent = NULL for root tab
+	SimulationTab* showTab(DM::Group* parentGroup);	// parent = NULL for root tab
 	void closeTab(int index);
 	void closeTab(SimulationTab* tab);
-	SimulationTab* getTab(int index);	// 0 = root*/
-	QList<SimulationTab*> getTabs();	// 0 = root*/
-	SimulationTab* getSelectedTab();
+	//SimulationTab* getTab(int index);	// 0 = root*/
+	QMap<QWidget *, SimulationTab *> getTabs();	// 0 = root*/
+	SimulationTab* getSelectedSimulationTab();
 	void selectTab(int index);
 
 	QTabWidget* getTabWidget(){return tabWidget;};
@@ -80,7 +81,7 @@ public:
     QFont defaultNormal10;
 private:
 	std::map<DM::Module*, ModelNode*> modelNodes;
-	QList<SimulationTab*> tabs;
+	QMap<QWidget*, SimulationTab*> tabs;
 	QTabWidget* tabWidget;
 
 	PortNode* getPortNode(DM::Module* m, std::string portName, 

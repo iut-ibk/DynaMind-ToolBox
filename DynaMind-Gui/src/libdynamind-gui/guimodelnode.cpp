@@ -52,6 +52,7 @@
 #include <QTextEdit>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QCompleter>
 #include "guihelpviewer.h"
 #include <limits>
 
@@ -140,10 +141,20 @@ GUIModelNode::GUIModelNode(DM::Module * m, ModelNode *mn, QWidget* parent) :QWid
 				layout1->addWidget(new QLabel(qname), layout1->rowCount(),0);
 
 				QLineEdit * le = new QLineEdit;
+
 				le->setText(QString::fromStdString(*(std::string*)p->data));
 				elements.insert(qname, le);
 
 				layout1->addWidget(le,layout1->rowCount()-1,1);
+
+				QStringList wordList;
+				wordList << "alpha" << "omega" << "omicron" << "zeta";
+
+				QCompleter *completer = new QCompleter(wordList, this);
+				completer->setCaseSensitivity(Qt::CaseInsensitive);
+				le->setCompleter(completer);
+
+
 			}
 			break;
 		case DM::FILENAME:

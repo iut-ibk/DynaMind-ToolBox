@@ -86,6 +86,8 @@ ModelNode::ModelNode(DM::Module* m, GUISimulation* sim, QGraphicsItem * parent) 
 	hovered = false;
 	setAcceptHoverEvents(true);
 
+	connect(this, SIGNAL(triggerEditModelNode()), this, SLOT(editModelNode()));
+
 }
 
 ModelNode::~ModelNode() 
@@ -553,7 +555,6 @@ void ModelNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 }
 
 
-
 QRectF ModelNode::boundingRect() const
 {
 	return QRect (0, 0, width, height);
@@ -561,6 +562,7 @@ QRectF ModelNode::boundingRect() const
 
 void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 {
+
 	if(DM::Module* m = module->getOwner())
 	{
 		if(GroupNode* gn = (GroupNode*)getSimulation()->getModelNode(m)->getChild())
@@ -574,7 +576,44 @@ void ModelNode::mouseMoveEvent ( QGraphicsSceneMouseEvent * event )
 
 void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
 {
-	editModelNode();
+	showModelEdit = false;
+
+
+	if(!this->module->isGroup()) {
+		QGraphicsItem::mouseDoubleClickEvent(event);
+		return;
+	}
+
+	SimulationTab * s = this->getSimulation()->showTab((DM::Group*)this->module);
+
+	this->getSimulation()->getTabWidget()->setCurrentWidget((QWidget *) s->getQGViewer());
+	//QGraphicsItem::mouseDoubleClickEvent(event);
+
+}
+
+void ModelNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	DM::Logger(DM::Standard) << "start";
+	if (!showModelEdit)
+		this->timer_mouse_click.start();
+
+	QGraphicsItem::mousePressEvent(event);
+
+}
+
+void ModelNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+
+	DM::Logger(DM::Debug) << "end " << this->timer_mouse_click.elapsed();
+	if (this->timer_mouse_click.elapsed() > 0 && this->timer_mouse_click.elapsed() < 200) {
+		showModelEdit = true;
+		//if (this->module->isGroup())
+			QTimer::singleShot(250, this, SLOT(editModelNode()));
+		//else
+			//emit triggerEditModelNode();
+	}
+	QGraphicsItem::mouseReleaseEvent(event);
+
 }
 
 void ModelNode::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
@@ -656,6 +695,9 @@ void ModelNode::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void ModelNode::editModelNode()
 {
+	if (!showModelEdit)
+		return;
+	showModelEdit = false;
 	if(!module->createInputDialog())
 	{
 		if(!ng)
