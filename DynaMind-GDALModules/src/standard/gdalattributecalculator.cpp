@@ -52,16 +52,16 @@ DM::Attribute::AttributeType GDALAttributeCalculator::convertAttributeType(std::
 
 void GDALAttributeCalculator::resetInit()
 {
-    if (!leading_view)
-        delete leading_view;
-	leading_view = 0;
+
 	index_map.clear();
 	variable_types.clear();
-
+    leading_view = 0; // leading view is delete in helper_views_name
 	for (helper_map::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it) {
 		DM::ViewContainer * v = it->second;
+
 		delete v;
 	}
+
 
 	helper_views_name.clear();
 }
@@ -445,9 +445,8 @@ void GDALAttributeCalculator::run()
 			this->setStatus(DM::MOD_CHECK_ERROR);
 			return;
 		}
-
-        delete p;
 	}
+    delete p;
 	//foreach (OGRFeature * f, this->gc_global_features)
 	//OGRFeature::DestroyFeature(f);
 }
