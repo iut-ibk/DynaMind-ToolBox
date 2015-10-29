@@ -52,6 +52,8 @@ DM::Attribute::AttributeType GDALAttributeCalculator::convertAttributeType(std::
 
 void GDALAttributeCalculator::resetInit()
 {
+    if (!leading_view)
+        delete leading_view;
 	leading_view = 0;
 	index_map.clear();
 	variable_types.clear();
@@ -75,6 +77,7 @@ bool GDALAttributeCalculator::initViews()
 		DM::Logger(DM::Error) << "Wrong attribute definition use VIEWNAME.AttributeName";
 		return false;
 	}
+
 	this->leading_view = new DM::ViewContainer(lattr[0].toStdString(), DM::COMPONENT, DM::READ);
 	leading_attribute = lattr[1].toStdString();
 	this->leading_view->addAttribute(leading_attribute, convertAttributeType(this->attributeType), DM::WRITE);
@@ -442,6 +445,8 @@ void GDALAttributeCalculator::run()
 			this->setStatus(DM::MOD_CHECK_ERROR);
 			return;
 		}
+
+        delete p;
 	}
 	//foreach (OGRFeature * f, this->gc_global_features)
 	//OGRFeature::DestroyFeature(f);
