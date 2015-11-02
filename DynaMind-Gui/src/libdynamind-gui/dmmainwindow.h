@@ -74,6 +74,7 @@ public slots:
 	void updateSimulation();
 	void resetSimulation();
 	void cancelSimulation();
+	void runAnalysis();
 	void showHelp();
 	void newLogLine(QString line);
 	void closeTab(int index);

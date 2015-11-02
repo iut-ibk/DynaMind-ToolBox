@@ -5,6 +5,7 @@
 #include "userdefinedfunctions.h"
 #include "dmgroup.h"
 #include "../../3rdparty/sqlite3/sqlite3.h"
+#include "guisqlcalculator.h"
 
 DM_DECLARE_CUSTOM_NODE_NAME(DM_SQliteCalculator, SQlite Query, Data Handling)
 
@@ -284,5 +285,13 @@ string DM_SQliteCalculator::getHelpUrl()
 {
 	return "/DynaMind-GDALModules/dm_sqlcalculator.html";
 }
+
+bool DM_SQliteCalculator::createInputDialog()
+{
+	QWidget * w = new GUISQLCalculator(this);
+	w->show();
+	return true;
+}
+
 
 
