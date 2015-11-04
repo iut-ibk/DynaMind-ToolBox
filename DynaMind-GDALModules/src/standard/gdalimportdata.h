@@ -65,6 +65,7 @@ public:
 	GDALImportData();
 	void run();
 	void init();
+    void preRun();
 	virtual ~GDALImportData();
 	OGRCoordinateTransformation *getTrafo(int sourceEPSG, int targetEPSG);
 

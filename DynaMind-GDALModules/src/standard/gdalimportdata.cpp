@@ -125,7 +125,15 @@ void GDALImportData::init()
 	if (poDS) {
 		OGRDataSource::DestroyDataSource(poDS);
 		poDS = 0;
-	}
+    }
+}
+
+void GDALImportData::preRun()
+{
+    //init is not called anymore before model is executed. Therefore do it here
+    this->init();
+
+    Module::preRun();
 }
 
 GDALImportData::~GDALImportData()
