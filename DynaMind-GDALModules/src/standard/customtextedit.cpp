@@ -2,15 +2,25 @@
 
 #include <QtGui>
 #include <QAbstractItemView>
+#include <QScrollBar>
 
-CustomTextEdit::CustomTextEdit( QWidget* parent )
+CustomTextEdit::CustomTextEdit(DM::Module * m, QWidget* parent )
 	: QTextEdit( parent )
 {
 	m_completer = new QCompleter( this );
 	m_completer->setWidget( this );
 
-	QStringList words;
-	words << "working" << "properly";
+    //QStringList words;
+    //words << "working" << "properly";
+
+    std::map<std::string, DM::View> inViews = m->getViewsInStream()["city"];
+    QStringList words;
+
+    for (std::map<std::string, DM::View>::const_iterator it = inViews.begin(); it != inViews.end(); ++it) {
+        DM::View v = it->second;
+        words.append(QString::fromStdString(v.getName()));
+    }
+
 	QStringListModel* model = new QStringListModel( words, m_completer );
 
 	m_completer->setModel( model );
@@ -42,6 +52,7 @@ void CustomTextEdit::keyPressEvent( QKeyEvent* event )
 {
 	if ( m_completer->popup()->isVisible() )
 	{
+
 		switch ( event->key() )
 		{
 		case Qt::Key_Enter:
@@ -61,8 +72,14 @@ void CustomTextEdit::keyPressEvent( QKeyEvent* event )
 	{
 		m_completer->setCompletionPrefix( completionPrefix );
 		m_completer->popup()->setCurrentIndex( m_completer->completionModel()->index( 0, 0 ) );
+
 	}
 
-	if ( !event->text().isEmpty() && completionPrefix.length() > 2 )
-		m_completer->complete();
+    if ( !event->text().isEmpty() && completionPrefix.length() > 1 ) {
+        QRect cr = this->cursorRect();
+        cr.setWidth(m_completer->popup()->sizeHintForColumn(0)
+                    + m_completer->popup()->verticalScrollBar()->sizeHint().width());
+
+        m_completer->complete(cr);
+    }
 }
