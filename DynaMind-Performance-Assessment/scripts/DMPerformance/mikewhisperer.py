@@ -49,7 +49,7 @@ class MikeWhisperer(Module):
                 log("all done", Standard)
                 return True
             except:
-                 log("continue waiting", Standard)
+                log("continue waiting", Standard)
                 return False
 
         def get_files(self, con, folder, expected, outputfolder):
