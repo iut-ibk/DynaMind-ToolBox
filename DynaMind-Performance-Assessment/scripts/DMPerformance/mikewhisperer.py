@@ -40,18 +40,16 @@ class MikeWhisperer(Module):
             self.dummy = ViewContainer("city", COMPONENT, MODIFY)
             self.registerViewContainers([self.dummy])
 
-
-
         def check_for_done(self, con, folder, expected):
-            print "check ", datetime.datetime.now(), folder
+            log("check " + str(datetime.datetime.now()) + " " + str(folder), Standard)
             try:
                 for e in expected:
                     print e
                     con.listdir(folder + "/" + e)
-                print "all done"
+                log("all done", Standard)
                 return True
             except:
-                print "continue waiting"
+                 log("continue waiting", Standard)
                 return False
 
         def get_files(self, con, folder, expected, outputfolder):
@@ -64,23 +62,21 @@ class MikeWhisperer(Module):
                     os.makedirs(outputfolder + "/" + e)
 
                 for f in files:
-                    print "copy" ,  (folder_name + "/" + f)
+                    log("copy " +  str((folder_name + "/" + f)), Standard)
                     con.get(folder_name + "/" + f, outputfolder + "/" + e + "/" + f)
 
-
         def run(self):
-            print "try to connect"
+            log("try to connect", Standard)
 
             if self.get_group_counter() != -1 and (self.get_group_counter() -  1) % self.step != 0:
                 return
 
-
-            print self.host, self.port, self.username, self.password
+            log(str(self.host) + " "  + str(self.port) + " " + str(self.username) + " " + str(self.password), Standard)
             transport = paramiko.Transport((self.host, self.port))
 
             transport.connect(username=self.username, password=self.password)
 
-            print "connected"
+            log("connected", Standard)
             sftp = paramiko.SFTPClient.from_transport(transport)
             result_folder = self.result_folder
             if self.get_group_counter() != -1:
