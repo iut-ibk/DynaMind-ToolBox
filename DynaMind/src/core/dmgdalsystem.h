@@ -202,6 +202,13 @@ private:
 	std::vector<DM::GDALSystem*> sucessors;
 	QString DBID;
 	std::string workingDir;
+
+	void addLayerToDef(const View & v);
+	void updateAttributeDefinition(std::string view_name,
+								   string attribute_name,
+								   string data_type);
+
+
 	bool keepDatabaseFile;
 	int EPSG;
 

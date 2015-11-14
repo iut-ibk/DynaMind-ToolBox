@@ -55,7 +55,7 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 		EPSG = 0;
 	}
 	if (workingDir == "") {
-		 this->workingDir = QString(QDir::tempPath() + "/dynamind").toStdString();
+		this->workingDir = QString(QDir::tempPath() + "/dynamind").toStdString();
 	}
 	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
@@ -82,6 +82,24 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 
 	predecessor = NULL;
 	this->EPSG = EPSG;
+
+
+	OGRSpatialReference* oSourceSRS;
+	oSourceSRS = new OGRSpatialReference();
+	oSourceSRS->importFromEPSG(this->EPSG);
+	OGRLayer * lyr_def = poDS->CreateLayer("dynamind_table_definitions", oSourceSRS, wkbUnknown, NULL );
+	{
+		OGRFieldDefn oField ( "view_name", OFTString );
+		lyr_def->CreateField(&oField);
+	}
+	{
+		OGRFieldDefn oField ( "attribute_name", OFTString );
+		lyr_def->CreateField(&oField);
+	}
+	{
+		OGRFieldDefn oField ( "data_type", OFTString );
+		lyr_def->CreateField(&oField);
+	}
 }
 
 void GDALSystem::setGDALDatabase(const string & database)
@@ -104,6 +122,8 @@ void GDALSystem::setGDALDatabase(const string & database)
 	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
 		 it != viewLayer.end(); ++it) {
 		std::string viewname = it->first;
+		if (viewname ==  "dynamind_table_definitions")
+			continue;
 		viewLayer[it->first] = poDS->GetLayerByName(viewname.c_str());
 	}
 }
@@ -154,6 +174,20 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 }
 
 
+void GDALSystem::updateAttributeDefinition(std::string view_name,
+										   std::string attribute_name,
+										   std::string data_type)
+{
+	OGRLayer * layer_dev = this->poDS->GetLayerByName("dynamind_table_definitions");
+	OGRFeature * f_def = OGRFeature::CreateFeature(layer_dev->GetLayerDefn());
+	f_def->SetField("view_name", view_name.c_str());
+	f_def->SetField("attribute_name", attribute_name.c_str());
+	f_def->SetField("data_type", data_type.c_str());
+
+	layer_dev->CreateFeature(f_def);
+	OGRFeature::DestroyFeature(f_def);
+}
+
 void GDALSystem::updateView(const View &v)
 {
 	//if view is not in map create a new ogr layer
@@ -179,46 +213,53 @@ void GDALSystem::updateView(const View &v)
 		if (v.getAttributeType(attribute_name) == DM::Attribute::INT){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
 			lyr->CreateField(&oField);
+			updateAttributeDefinition(v.getName(),attribute_name, "INTEGER" );
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::STRING){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
 			lyr->CreateField(&oField);
+			updateAttributeDefinition(v.getName(),attribute_name, "STRING" );
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::DOUBLE){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTReal );
+			updateAttributeDefinition(v.getName(),attribute_name, "DOUBLE" );
 			lyr->CreateField(&oField);
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::STRINGVECTOR){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTStringList );
 			lyr->CreateField(&oField);
+			updateAttributeDefinition(v.getName(),attribute_name, "STRINGVECTOR" );
 			DM::Logger(DM::Error) << "Attribute typer STRINGVECTOR is currently not supported";
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::DOUBLEVECTOR){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
+			updateAttributeDefinition(v.getName(),attribute_name, "DOUBLEVECTOR" );
 			lyr->CreateField(&oField);
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::DATE){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTDate );
+			updateAttributeDefinition(v.getName(),attribute_name, "DATE" );
 			lyr->CreateField(&oField);
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::LINK){
 			OGRFieldDefn oField ( attribute_name.c_str(), OFTInteger );
 			lyr->CreateField(&oField);
-// Not using real reference because it causes a not reproducable
-// problems that the link attribute might not be written.
-// Going back to implement it as simeple integer.
-// Uncomment above line for another try later.
-//			std::stringstream query;
-//			v.getNameOfLinkedView(attribute_name.c_str());
-//			query << "ALTER TABLE " << v.getName() << " ADD COLUMN " << attribute_name.c_str() << " INTEGER REFERENCES " << v.getNameOfLinkedView(attribute_name.c_str()) << "(OGC_FID)";
-//			this->poDS->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
-//			lyr->GetLayerDefn()->AddFieldDefn(&oField);
+			updateAttributeDefinition(v.getName(),attribute_name, "LINK" );
+			// Not using real reference because it causes a not reproducable
+			// problems that the link attribute might not be written.
+			// Going back to implement it as simeple integer.
+			// Uncomment above line for another try later.
+			//			std::stringstream query;
+			//			v.getNameOfLinkedView(attribute_name.c_str());
+			//			query << "ALTER TABLE " << v.getName() << " ADD COLUMN " << attribute_name.c_str() << " INTEGER REFERENCES " << v.getNameOfLinkedView(attribute_name.c_str()) << "(OGC_FID)";
+			//			this->poDS->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
+			//			lyr->GetLayerDefn()->AddFieldDefn(&oField);
 			continue;
 		}
 	}
@@ -349,17 +390,21 @@ GDALSystem::~GDALSystem()
 
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
+
+	// Add Layer to definition database
+	addLayerToDef(v);
+
+
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
 	oSourceSRS->importFromEPSG(this->EPSG);
-
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
-		#ifdef _WIN32 //Use in windows since driver seems to have a problem to create wkbNone tables
+#ifdef _WIN32 //Use in windows since driver seems to have a problem to create wkbNone tables
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
-		#else
+#else
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbUnknown, NULL );
-		#endif
+#endif
 		break;
 	case DM::NODE:
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
@@ -373,6 +418,33 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	}
 
 	return NULL;
+}
+
+void GDALSystem::addLayerToDef(const View &v)
+{
+	OGRLayer * layer_dev = this->poDS->GetLayerByName("dynamind_table_definitions");
+	OGRFeature * f_def;
+
+	f_def = OGRFeature::CreateFeature(layer_dev->GetLayerDefn());
+	f_def->SetField("view_name", v.getName().c_str());
+	f_def->SetField("attribute_name", "DEFINITION");
+	switch ( v.getType() ) {
+	case DM::COMPONENT:
+		f_def->SetField("data_type", "COMPONENT");
+		break;
+	case DM::NODE:
+		f_def->SetField("data_type", "NODE");
+		break;
+	case DM::EDGE:
+		f_def->SetField("data_type", "EDGE");
+		break;
+	case DM::FACE:
+		f_def->SetField("data_type", "FACE");
+		break;
+	}
+	layer_dev->CreateFeature(f_def);
+	OGRFeature::DestroyFeature(f_def);
+
 }
 
 void GDALSystem::syncNewFeatures(const DM::View & v, std::vector<OGRFeature *> & df, bool destroy)
