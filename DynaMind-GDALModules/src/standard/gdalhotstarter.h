@@ -43,7 +43,7 @@ class GDALHotStarter: public DM::Module
 private:
 	std::string hotStartDatabase;
 
-	DM::ViewContainer *viewContainerFactory(OGRLayer * lyr);
+	DM::ViewContainer *viewContainerFactory(OGRLayer * lyr, OGRLayer *def_lyr);
 public:
 	GDALHotStarter();
 	void init();

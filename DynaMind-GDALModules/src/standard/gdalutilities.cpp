@@ -87,5 +87,26 @@ DM::Attribute::AttributeType GDALUtilities::OGRToDMAttribute(OGRFieldDefn * fdef
 	return type;
 }
 
+DM::Attribute::AttributeType DM::GDALUtilities::AttributeTypeStringToType(const std::string &type)
+{
+
+	if (type == "INTEGER")
+		return DM::Attribute::INT;
+	if (type == "DOUBLE")
+		return DM::Attribute::DOUBLE;
+	if (type == "STRINGVECTOR")
+		return DM::Attribute::STRINGVECTOR;
+	if (type == "DOUBLEVECTOR")
+		return DM::Attribute::DOUBLEVECTOR;
+	if (type == "STRING")
+		return DM::Attribute::STRING;
+	if (type == "DATE")
+		return DM::Attribute::DATE;
+	if (type == "LINK")
+		return DM::Attribute::LINK;
+	return DM::Attribute::NOTYPE;
+
+
+}
 }
 

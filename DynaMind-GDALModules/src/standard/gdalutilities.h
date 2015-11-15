@@ -14,6 +14,7 @@ namespace DM {
 		static int DMToOGRGeometry(int dm_geometry);
 		static int OGRtoDMGeometry(OGRFeatureDefn * def);
 		static DM::Attribute::AttributeType OGRToDMAttribute(OGRFieldDefn *fdef);
+		static Attribute::AttributeType AttributeTypeStringToType(const std::string & type);
 	};
 }
 
