@@ -70,6 +70,8 @@ GDALDMSWMM::GDALDMSWMM()
 	exportSubCatchmentShape = false;
 	this->addParameter("export_subcatchment_shape", DM::BOOL, &this->exportSubCatchmentShape);
 
+	explictly_consider_WSUD = false;
+	this->addParameter("explictly_consider_WSUD", DM::BOOL, &this->explictly_consider_WSUD);
 	//this->addParameter("combined system", DM::BOOL, &this->isCombined);
 
 	this->addParameter("rainfile_from_vector", DM::STRING, & this->rainfile_from_vector);
@@ -141,7 +143,7 @@ void GDALDMSWMM::init() {
 		weir.addAttribute("end_coefficient", DM::Attribute::DOUBLE, DM::READ);
 	}
 
-    if (inViews.find("rwht") != inViews.end()) {
+	if (inViews.find("rwht") != inViews.end() && explictly_consider_WSUD) {
         this->hasRaintanks = true;
         rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::READ);
         rwhts.addAttribute("sub_catchment_id", DM::Attribute::LINK, DM::READ);
