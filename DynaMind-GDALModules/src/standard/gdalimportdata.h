@@ -52,6 +52,8 @@ private:
 
 	DM::ViewContainer *vc;
 
+	DM::ViewContainer dummy;
+
 	OGRDataSource *poDS;
 
 	OGRLayer *initLayer();

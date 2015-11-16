@@ -36,8 +36,8 @@ GDALImportData::GDALImportData()
 
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
-	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
-	this->addGDALData("city", data);
+	//data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+	//this->addGDALData("city", data);
 
 	vc = 0; //If still 0 after init() has been called somethig is wrong!
 	poDS = 0;
@@ -78,13 +78,13 @@ void GDALImportData::init()
 	}
 
 	if (initFailed) {
-
-		std::vector<DM::ViewContainer> data;
+		std::vector<DM::ViewContainer*> data;
 		if (this->append)
-			data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		else
-			data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
-		this->addGDALData("city", data);
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::READ);
+		data.push_back(&dummy);
+		this->registerViewContainers(data);
 		return;
 	}
 
@@ -96,6 +96,13 @@ void GDALImportData::init()
 			OGRDataSource::DestroyDataSource(poDS);
 			poDS = 0;
 		}
+		std::vector<DM::ViewContainer*> data;
+		if (this->append)
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY);
+		else
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::READ);
+		data.push_back(&dummy);
+		this->registerViewContainers(data);
 		return;
 	}
 
