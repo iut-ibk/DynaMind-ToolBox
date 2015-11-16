@@ -55,6 +55,11 @@ void DM_ExportSimulationDB::run()
 	else
 		 fileName = QString::fromStdString(this->file_name) + ".sqlite";
 	DM::Logger(DM::Standard) << "Copy file to " << fileName.toStdString();
+
+    if (QFile::exists(fileName)){
+        QFile::remove(fileName);
+    }
+
 	QFile::copy(QString::fromStdString(sys->getDBID()), fileName);
 }
 
