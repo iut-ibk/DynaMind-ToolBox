@@ -61,8 +61,7 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("annual_outdoor_demand",DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("annual_non_potable_demand",DM::Attribute::DOUBLE, DM::WRITE);
-    parcels.addAttribute("dry_days", DM::Attribute::INT, DM::WRITE);
-    parcels.addAttribute("spills", DM::Attribute::INT, DM::WRITE);
+
 }
 
 std::vector<double> RainWaterHarvestingOptions::addVectors(std::vector<double> & vec1, std::vector<double> & vec2){
@@ -141,6 +140,8 @@ void RainWaterHarvestingOptions::init()
 	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("annual_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
+    rwhts.addAttribute("dry_days", DM::Attribute::INT, DM::WRITE);
+    rwhts.addAttribute("spills", DM::Attribute::INT, DM::WRITE);
 
 	if (start_date_from_global) {
 		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
