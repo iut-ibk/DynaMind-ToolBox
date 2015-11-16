@@ -1296,9 +1296,9 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 					{
 						if (!it.value().contains("host=")){
 							QDir path(simFileDir.absoluteFilePath(it.value()));
-							DM::Logger(DM::Debug) << "converted relative path '" << value << "'";
-							value = path.canonicalPath().toStdString();
-							DM::Logger(DM::Debug) << "to absolute path '" << value << "'";
+                            DM::Logger(DM::Standard) << "converted relative path '" << value << "'";
+                            value = QDir::cleanPath(simFileDir.absoluteFilePath(it.value())).toStdString();
+                            DM::Logger(DM::Standard) << "to absolute path '" << value << "'";
 						}
 					}
 				}
