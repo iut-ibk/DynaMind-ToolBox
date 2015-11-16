@@ -44,9 +44,9 @@ class DM_SIM_DB_DropBox(Module):
                 dbx = dropbox.Dropbox(self.access_token)
                 #print 'linked account: ', dbx.users_get_current_account()
                 self.getGDALDBName()
-                f = open(self.getGDALDBName(), 'rb')
-
-                dbx.files_upload(f, file_name, autorename=True)
+                with open(self.getGDALDBName(), 'rb') as f:
+                    data = f.read()
+                dbx.files_upload(data, file_name, autorename=True)
 
 
             except Exception, e:
