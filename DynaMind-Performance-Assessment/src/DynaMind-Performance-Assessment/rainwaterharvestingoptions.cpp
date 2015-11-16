@@ -61,6 +61,8 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("annual_outdoor_demand",DM::Attribute::DOUBLE, DM::WRITE);
 	parcels.addAttribute("annual_non_potable_demand",DM::Attribute::DOUBLE, DM::WRITE);
+    parcels.addAttribute("dry_days", DM::Attribute::INT, DM::WRITE);
+    parcels.addAttribute("spills", DM::Attribute::INT, DM::WRITE);
 }
 
 std::vector<double> RainWaterHarvestingOptions::addVectors(std::vector<double> & vec1, std::vector<double> & vec2){
@@ -287,8 +289,10 @@ double RainWaterHarvestingOptions::createTankOption(OGRFeature * rwht_f, double 
 	s->start(starttime);
 
 	std::vector<double> storage_behaviour =  *(rwht->getState<std::vector<double> >("storage_behaviour"));
-
 	std::vector<double> provided_volume =  *(rwht->getState<std::vector<double> >("provided_volume"));
+
+    int dry_days =  *(rwht->getState<int>("dry"));
+    int spills =  *(rwht->getState<int>("spills"));
 
 	//Underlying assumption is that water is used for toilet flushing first
 	std::vector<double> provided_non_pot_volume(provided_volume.size());
@@ -322,6 +326,8 @@ double RainWaterHarvestingOptions::createTankOption(OGRFeature * rwht_f, double 
 	rwht_f->SetField("annual_water_savings", savings);
 	rwht_f->SetField("outdoor_water_savings", savings - non_pot_savings);
 	rwht_f->SetField("non_potable_savings", non_pot_savings);
+    rwht_f->SetField("dry_days", dry_days);
+    rwht_f->SetField("spills", spills);
 
 	return savings;
 
