@@ -101,6 +101,7 @@ private:
 	DM::ViewContainer * outfalls;
 	DM::ViewContainer * nodes;
 	DM::ViewContainer * city;
+    DM::ViewContainer * rwhts;
 
 
 //	DM::View weir;

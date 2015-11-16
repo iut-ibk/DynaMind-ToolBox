@@ -87,7 +87,7 @@ GDALDMSWMM::GDALDMSWMM()
 
 void GDALDMSWMM::init() {
 	hasWeir = false;
-
+    hasRaintanks = false;
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("start_id", "node", DM::READ);
 	conduit.addAttribute("end_id", "node", DM::READ);
@@ -141,6 +141,15 @@ void GDALDMSWMM::init() {
 		weir.addAttribute("end_coefficient", DM::Attribute::DOUBLE, DM::READ);
 	}
 
+    if (inViews.find("rwht") != inViews.end()) {
+        this->hasRaintanks = true;
+        rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::READ);
+        rwhts.addAttribute("sub_catchment_id", DM::Attribute::LINK, DM::READ);
+        rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::READ);
+        rwhts.addAttribute("connected_area", DM::Attribute::DOUBLE, DM::READ);
+    }
+
+
 
 	if (this->climateChangeFactorFromCity)
 		city.addAttribute("climate_change_factor",DM::Attribute::DOUBLE, DM::READ);
@@ -158,6 +167,8 @@ void GDALDMSWMM::init() {
 	data_stream.push_back(&nodes);
 	if (this->hasWeir)
 		data_stream.push_back(&weir);
+    if (this->hasRaintanks)
+        data_stream.push_back(&rwhts);
 	data_stream.push_back(&city);
 
 
@@ -170,7 +181,10 @@ void GDALDMSWMM::init() {
 	data_map["node"]  = &this->nodes;
 	if (this->hasWeir)
 		data_map["weir"]  = &this->weir;
+    if (this->hasRaintanks)
+        data_map["rwht"]  = &this->rwhts;
 	data_map["city"]  = &this->city;
+
 	this->registerViewContainers(data_stream);
 }
 
