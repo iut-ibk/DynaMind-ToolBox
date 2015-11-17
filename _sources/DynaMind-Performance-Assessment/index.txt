@@ -21,6 +21,7 @@ Nodes
    node_sewer
    node_mixer
    node_flowprobe
+   node_rwht
 
 
 CityDrain3 API

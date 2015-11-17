@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sewer &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
+  <title>RWHT &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.9.0 documentation" href="../index.html"/>
         <link rel="up" title="CityDrain3" href="index.html"/>
-        <link rel="next" title="Mixer" href="node_mixer.html"/>
-        <link rel="prev" title="CityDrain 3 for Module Developers" href="citydrain3.html"/> 
+        <link rel="next" title="CityDrain3" href="citydrain_api.html"/>
+        <link rel="prev" title="Flow Probe" href="node_flowprobe.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -96,14 +96,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">CityDrain3</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#nodes">Nodes</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="">Sewer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#in-and-out">In and Out</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="node_sewer.html">Sewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_mixer.html">Mixer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_flowprobe.html">Flow Probe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="node_rwht.html">RWHT</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">RWHT</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#in-and-out">In and Out</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#state-variables">State Variables</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#citydrain3-api">CityDrain3 API</a></li>
@@ -142,11 +143,11 @@
       
           <li><a href="index.html">CityDrain3</a> &raquo;</li>
       
-    <li>Sewer</li>
+    <li>RWHT</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-Performance-Assessment/node_sewer.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-Performance-Assessment/node_rwht.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -156,10 +157,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sewer">
-<h1>Sewer<a class="headerlink" href="#sewer" title="Permalink to this headline">¶</a></h1>
-<p><span class="target" id="index-0"></span>Sewer node routes water quantity
-and quality using a Muskingum algorithm.</p>
+  <div class="section" id="rwht">
+<h1>RWHT<a class="headerlink" href="#rwht" title="Permalink to this headline">¶</a></h1>
+<p>A simple model to simulate the a rainwater harvesting storage tank</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -175,17 +175,9 @@ and quality using a Muskingum algorithm.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>K</td>
-<td>Integer</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-odd"><td>X</td>
-<td>Double</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td>N</td>
-<td>Integer</td>
-<td>&nbsp;</td>
+<tr class="row-even"><td>storage_volume</td>
+<td>double</td>
+<td>storage volume of tank in m3</td>
 </tr>
 </tbody>
 </table>
@@ -194,9 +186,9 @@ and quality using a Muskingum algorithm.</p>
 <h2>In and Out<a class="headerlink" href="#in-and-out" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="42%" />
-<col width="25%" />
-<col width="33%" />
+<col width="26%" />
+<col width="16%" />
+<col width="58%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -205,13 +197,55 @@ and quality using a Muskingum algorithm.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>in</td>
+<tr class="row-even"><td>in_sw</td>
 <td>in</td>
-<td>&nbsp;</td>
+<td>storm water inflow</td>
 </tr>
-<tr class="row-odd"><td>out</td>
+<tr class="row-odd"><td>in_np</td>
+<td>in</td>
+<td>demand</td>
+</tr>
+<tr class="row-even"><td>out_sw</td>
 <td>out</td>
-<td>&nbsp;</td>
+<td>storm water outflow</td>
+</tr>
+<tr class="row-odd"><td>out_np</td>
+<td>out</td>
+<td>forward of demand not provided by tank</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="state-variables">
+<h2>State Variables<a class="headerlink" href="#state-variables" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="35%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>spills</td>
+<td>INT</td>
+<td>Number of spills</td>
+</tr>
+<tr class="row-odd"><td>dry</td>
+<td>INT</td>
+<td>Number of dry days</td>
+</tr>
+<tr class="row-even"><td>storage_behaviour</td>
+<td>DOUBLE VECTOR</td>
+<td>m3</td>
+</tr>
+<tr class="row-odd"><td>provided_volume</td>
+<td>DOUBLE VECTOR</td>
+<td>m3</td>
 </tr>
 </tbody>
 </table>
@@ -225,10 +259,10 @@ and quality using a Muskingum algorithm.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="node_mixer.html" class="btn btn-neutral float-right" title="Mixer" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="citydrain_api.html" class="btn btn-neutral float-right" title="CityDrain3" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="citydrain3.html" class="btn btn-neutral" title="CityDrain 3 for Module Developers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="node_flowprobe.html" class="btn btn-neutral" title="Flow Probe" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
