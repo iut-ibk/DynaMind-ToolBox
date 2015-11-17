@@ -14,6 +14,9 @@ public:
 
 	string component_type;
 	bool create_empty;
+    bool append;
+
+    DM::ViewContainer dummy;
 
 	std::map<string, int> comp_as_int;
 

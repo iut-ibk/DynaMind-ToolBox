@@ -16,15 +16,20 @@ DM_CreateComponent::DM_CreateComponent()
 	this->create_empty = false;
 	this->addParameter("create_empty", DM::BOOL, &this->create_empty);
 
+    this->append = false;
+    this->addParameter("append", DM::BOOL, &this->append);
+
+
+
 	comp_as_int["COMPONENT"] = DM::COMPONENT;
 	comp_as_int["NODE"] = DM::NODE;
 	comp_as_int["EDGE"] = DM::EDGE;
 	comp_as_int["FACE"] = DM::FACE;
 
 	//dummy to get the ports
-	std::vector<DM::ViewContainer> data;
-	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
-	this->addGDALData("city", data);
+    // dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY)std::vector<DM::ViewContainer> data;
+    //data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE) );
+    //this->addGDALData("city", data);
 }
 
 void DM_CreateComponent::init()
@@ -43,6 +48,12 @@ void DM_CreateComponent::init()
 		lead_view = DM::ViewContainer(this->lead_view_name, ct , DM::WRITE);
 		data.push_back(&lead_view);
 	}
+
+    if (this->append)
+        dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY);
+    else
+        dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE);
+    data.push_back(&dummy);
 	this->registerViewContainers(data);
 }
 
