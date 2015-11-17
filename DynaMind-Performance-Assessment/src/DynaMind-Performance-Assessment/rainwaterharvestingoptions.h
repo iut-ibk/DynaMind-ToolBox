@@ -50,6 +50,7 @@ class RainWaterHarvestingOptions: public DM::Module
 		Node * n_d;
 		Node * n_r;
 		Node * rwht;
+        Node * flow_p;
 		ISimulation * s;
 
 		std::vector<string> storage_volume_tank;

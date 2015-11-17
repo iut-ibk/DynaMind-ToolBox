@@ -142,6 +142,7 @@ void RainWaterHarvestingOptions::init()
 	rwhts.addAttribute("parcel_id", DM::Attribute::INT, DM::WRITE);
     rwhts.addAttribute("dry_days", DM::Attribute::INT, DM::WRITE);
     rwhts.addAttribute("spills", DM::Attribute::INT, DM::WRITE);
+    rwhts.addAttribute("spilled_volume", DM::Attribute::DOUBLE, DM::WRITE);
 
 	if (start_date_from_global) {
 		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
@@ -237,9 +238,14 @@ bool RainWaterHarvestingOptions::initmodel()
 	//rwht->setParameter("storage_volume", storage_volume);
 	m->addNode("rain_tank", rwht);
 
+    //Flow meter
+    flow_p = nodereg->createNode("FlowProbe");
+    m->addNode("flow_probe", flow_p);
+
 	//Stormwater
 	m->addConnection(new NodeConnection(n_r,"out",rwht,"in_sw" ));
 	m->addConnection(new NodeConnection(n_d,"out",rwht,"in_np" ));
+    m->addConnection(new NodeConnection(rwht,"out_sw",flow_p,"in" ));
 
 	s = simreg->createSimulation("DefaultSimulation");
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
@@ -294,6 +300,7 @@ double RainWaterHarvestingOptions::createTankOption(OGRFeature * rwht_f, double 
 
     int dry_days =  *(rwht->getState<int>("dry"));
     int spills =  *(rwht->getState<int>("spills"));
+    double spilled_volume = *(flow_p->getState<double>("TotalFlow"));
 
 	//Underlying assumption is that water is used for toilet flushing first
 	std::vector<double> provided_non_pot_volume(provided_volume.size());
@@ -321,15 +328,13 @@ double RainWaterHarvestingOptions::createTankOption(OGRFeature * rwht_f, double 
 	DM::DMFeature::SetDoubleList(rwht_f, "storage_behaviour_daily", storage_behaviour);
 	DM::DMFeature::SetDoubleList(rwht_f, "provided_volume_daily", provided_volume);
 
-	//DM::DMFeature::SetDoubleList(rwht_f, "provided_volume_monthly", this->create_montlhy_values(provided_volume, 86400));
-
 	rwht_f->SetField("volume", storage_volume);
 	rwht_f->SetField("annual_water_savings", savings);
 	rwht_f->SetField("outdoor_water_savings", savings - non_pot_savings);
 	rwht_f->SetField("non_potable_savings", non_pot_savings);
     rwht_f->SetField("dry_days", dry_days);
     rwht_f->SetField("spills", spills);
-
+    rwht_f->SetField("spilled_volume", spilled_volume);
 	return savings;
 
 }
