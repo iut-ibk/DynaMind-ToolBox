@@ -31,6 +31,7 @@
 #include "waterdemandmodel.h"
 #include "rainwaterharvestingoptions.h"
 #include "dm_microclimate.h"
+#include "storage_simulation.h"
 
 
 using namespace std;
@@ -43,4 +44,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<WaterDemandModel>());
 	registry->addNodeFactory(new DM::NodeFactory<RainWaterHarvestingOptions>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_MicroClimate>());
+	registry->addNodeFactory(new DM::NodeFactory<StorageSimulation>());
 }
