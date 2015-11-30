@@ -18,6 +18,7 @@ DM::ViewContainer *GDALHotStarter::viewContainerFactory(OGRLayer *lyr, OGRLayer 
 	attribute_filter << "view_name = '";
 	attribute_filter << lyr->GetName();
 	attribute_filter << "'";
+
 	def_lyr->SetAttributeFilter(attribute_filter.str().c_str());
 	def_lyr->ResetReading();
 	OGRFeature * f;
@@ -74,6 +75,8 @@ void GDALHotStarter::init()
 	int layer_counter = poDS->GetLayerCount();
 	std::vector<DM::ViewContainer*> datastream;
 	OGRLayer * layer_def = poDS->GetLayerByName("dynamind_table_definitions");
+	if (!layer_def)
+		return;
 	for (int i = 0; i < layer_counter; i++) {
 		OGRLayer * lyr = poDS->GetLayer(i);
 		if (QString::fromStdString(lyr->GetName()) == "dynamind_table_definitions")
