@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RWHT &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
+  <title>Consumption &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.9.0 documentation" href="../index.html"/>
         <link rel="up" title="CityDrain3" href="index.html"/>
-        <link rel="next" title="Consumption" href="node_consumption.html"/>
-        <link rel="prev" title="Flow Probe" href="node_flowprobe.html"/> 
+        <link rel="next" title="CityDrain3" href="citydrain_api.html"/>
+        <link rel="prev" title="RWHT" href="node_rwht.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -99,13 +99,12 @@
 <li class="toctree-l3"><a class="reference internal" href="node_sewer.html">Sewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_mixer.html">Mixer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_flowprobe.html">Flow Probe</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">RWHT</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="node_rwht.html">RWHT</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Consumption</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#in-and-out">In and Out</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#state-variables">State Variables</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="node_consumption.html">Consumption</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#citydrain3-api">CityDrain3 API</a></li>
@@ -144,11 +143,11 @@
       
           <li><a href="index.html">CityDrain3</a> &raquo;</li>
       
-    <li>RWHT</li>
+    <li>Consumption</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-Performance-Assessment/node_rwht.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-Performance-Assessment/node_consumption.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -158,30 +157,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="rwht">
-<h1>RWHT<a class="headerlink" href="#rwht" title="Permalink to this headline">¶</a></h1>
-<p>A simple model to simulate the a rainwater harvesting storage tank</p>
+  <div class="section" id="consumption">
+<h1>Consumption<a class="headerlink" href="#consumption" title="Permalink to this headline">¶</a></h1>
+<p>A simple node producing constant outflows</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="20%" />
-<col width="61%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>storage_volume</td>
-<td>double</td>
-<td>storage volume of tank in m3</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="section" id="in-and-out">
 <h2>In and Out<a class="headerlink" href="#in-and-out" title="Permalink to this headline">¶</a></h2>
@@ -198,55 +178,25 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>in_sw</td>
-<td>in</td>
-<td>storm water inflow</td>
-</tr>
-<tr class="row-odd"><td>in_np</td>
-<td>in</td>
-<td>demand</td>
-</tr>
-<tr class="row-even"><td>out_sw</td>
+<tr class="row-even"><td>out_p</td>
 <td>out</td>
-<td>storm water outflow</td>
+<td>potable demand</td>
 </tr>
 <tr class="row-odd"><td>out_np</td>
 <td>out</td>
-<td>forward of demand not provided by tank</td>
+<td>non potable demand</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="state-variables">
-<h2>State Variables<a class="headerlink" href="#state-variables" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="docutils">
-<colgroup>
-<col width="32%" />
-<col width="35%" />
-<col width="32%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Name</th>
-<th class="head">Type</th>
-<th class="head">Description</th>
+<tr class="row-even"><td>out_g</td>
+<td>out</td>
+<td>grey water</td>
 </tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>spills</td>
-<td>INT</td>
-<td>Number of spills</td>
+<tr class="row-odd"><td>out_s</td>
+<td>out</td>
+<td>black water</td>
 </tr>
-<tr class="row-odd"><td>dry</td>
-<td>INT</td>
-<td>Number of dry days</td>
-</tr>
-<tr class="row-even"><td>storage_behaviour</td>
-<td>DOUBLE VECTOR</td>
-<td>m3</td>
-</tr>
-<tr class="row-odd"><td>provided_volume</td>
-<td>DOUBLE VECTOR</td>
-<td>m3</td>
+<tr class="row-even"><td>out_sw</td>
+<td>out</td>
+<td>storm water</td>
 </tr>
 </tbody>
 </table>
@@ -260,10 +210,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="node_consumption.html" class="btn btn-neutral float-right" title="Consumption" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="citydrain_api.html" class="btn btn-neutral float-right" title="CityDrain3" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="node_flowprobe.html" class="btn btn-neutral" title="Flow Probe" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="node_rwht.html" class="btn btn-neutral" title="RWHT" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
