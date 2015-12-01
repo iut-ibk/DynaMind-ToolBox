@@ -87,6 +87,12 @@ void execute_query(sqlite3 *db, const char *sql ) {
 bool DM_SQliteCalculator::initViews()
 {
 	resetInit();
+
+	if (this->attribute.empty()) {
+		DM::Logger(DM::Error) << "Wrong attribute definition use VIEWNAME.AttributeName";
+		return false;
+	}
+
 	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
 
 	QString attr = QString::fromStdString(this->attribute);
