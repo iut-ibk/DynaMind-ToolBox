@@ -61,6 +61,8 @@ class WaterDemandModel: public DM::Module
 		std::map<int, std::vector<double> > non_potable_demand;
 		std::map<int, std::vector<double> > potable_demand;
 		std::map<int, std::vector<double> > outdoor_demand;
+		std::map<int, std::vector<double> > grey_water;
+		std::map<int, std::vector<double> > black_water;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
