@@ -310,6 +310,7 @@ void GDALAttributeCalculator::run()
 	p->DefineFun(new dm::Num2Str);
 	p->DefineFun(new dm::Str2Num);
 	p->DefineFun(new dm::VecTimes);
+	p->DefineFun(new dm::DMInt);
 	p->DefineVar("counter", &mp_c);
 
 	for (varaible_map::const_iterator it = variables.begin(); it != variables.end(); ++it) {

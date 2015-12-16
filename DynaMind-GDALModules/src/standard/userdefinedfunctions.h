@@ -163,6 +163,30 @@ public:
 	}
 };
 
+class DMInt : public mup::ICallback {
+public:
+	DMInt() : ICallback(mup::cmFUNC, "int", 1)
+	{}
+	virtual void Eval(mup::ptr_val_type &ret, const mup::ptr_val_type *a_pArg, int a_iArgc)
+	{
+		// Get the argument from the argument input vector
+		mup::int_type a = (int)a_pArg[0]->GetFloat();
+		//int val = a
+		// The return value is passed by writing it to the reference ret
+		*ret = a;
+	}
+
+	const mup::char_type* GetDesc() const
+	{
+		return "int(x) - a int number";
+	}
+
+	IToken* Clone() const
+	{
+		return new DMInt(*this);
+	}
+};
+
 class Round : public mup::ICallback {
 public:
 	Round() : ICallback(mup::cmFUNC, "round", 1)

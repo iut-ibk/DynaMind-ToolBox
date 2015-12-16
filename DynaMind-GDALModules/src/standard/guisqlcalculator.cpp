@@ -17,6 +17,10 @@ GUISQLCalculator::GUISQLCalculator(DM::Module *m, QWidget *parent) :
     ct->setText(QString::fromStdString(m->getParameterAsString("query")));
     ui->groupBox_2->layout()->addWidget(ct);
 
+    MyHighlighter *highlighter = new MyHighlighter(ct->document());
+
+
+
 }
 
 void GUISQLCalculator::accept()
@@ -33,3 +37,27 @@ GUISQLCalculator::~GUISQLCalculator()
 {
 	delete ui;
 }
+
+
+MyHighlighter::MyHighlighter(QTextDocument *parent) : QSyntaxHighlighter(parent)
+{
+
+}
+
+void MyHighlighter::highlightBlock(const QString &text)
+{
+    std::cout << "highliht" << std::endl;
+    QTextCharFormat myClassFormat;
+    myClassFormat.setFontWeight(QFont::Bold);
+    myClassFormat.setForeground(Qt::darkMagenta);
+    QString pattern = "huhu";
+
+    QRegExp expression(pattern);
+    int index = text.indexOf(expression);
+    while (index >= 0) {
+        int length = expression.matchedLength();
+        setFormat(index, length, myClassFormat);
+        index = text.indexOf(expression, index + length);
+    }
+}
+
