@@ -305,8 +305,8 @@ only one feature exists within a view. (e.g. city or world)</p>
 attributeType:    INT
 variables:
      y : city.year
-     c : building.construction_year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
-equation:         <span class="nv">y</span> <span class="o">==</span> <span class="m">0</span> ? y : c <span class="c"># If year is not defined (0) the year is set to city.year, otherwise building.construction_year is assigned</span>
+     c : building.construction_year <span class="c1"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
+equation:         <span class="nv">y</span> <span class="o">==</span> <span class="m">0</span> ? y : c <span class="c1"># If year is not defined (0) the year is set to city.year, otherwise building.construction_year is assigned</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -318,7 +318,7 @@ equation:         <span class="nv">y</span> <span class="o">==</span> <span clas
 attributeType:     INT
 variables:
     pop : district.parcel.building.household.persons
-equation:          pop <span class="c"># Assigns the number of people living in a district. The data is derived from the linked feature.</span>
+equation:          pop <span class="c1"># Assigns the number of people living in a district. The data is derived from the linked feature.</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -329,7 +329,7 @@ equation:          pop <span class="c"># Assigns the number of people living in 
 <div class="highlight-bash"><div class="highlight"><pre>attribute:          city.year
 attributeType:      INT
 variables:
-     y : city.year <span class="c"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
+     y : city.year <span class="c1"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
 equation: y + 1
 </pre></div>
 </div>

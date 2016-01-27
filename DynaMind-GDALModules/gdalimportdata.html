@@ -253,35 +253,35 @@ name to be imported.</p>
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Load data from PostGIS database with GDALImport Data. Per default the module has no inport</span>
-<span class="n">catchment</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=elwood host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;elwood_catchment&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;catchment&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
-                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Load data from PostGIS database with GDALImport Data. Per default the module has no inport</span>
+<span class="n">catchment</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALImportData&#39;</span><span class="p">,{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=elwood host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;elwood_catchment&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;catchment&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s1">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
 
-<span class="c"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
-<span class="c"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
-<span class="n">land_use</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse_victoria&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
-                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+<span class="c1"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
+<span class="c1"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
+<span class="n">land_use</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALImportData&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;landuse_victoria&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;landuse&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s1">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
                          <span class="n">catchment</span><span class="p">,</span>
-                         <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
-                                              <span class="s">&#39;spatial&#39;</span><span class="p">:</span> <span class="s">&quot;catchment&quot;</span><span class="p">}</span>
+                         <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="s2">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
+                                              <span class="s1">&#39;spatial&#39;</span><span class="p">:</span> <span class="s2">&quot;catchment&quot;</span><span class="p">}</span>
                          <span class="p">})</span>
 
-<span class="c"># Import nodes with only the attribute leveltop as elevation</span>
-<span class="n">nodes</span>   <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,</span>
-                        <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span><span class="p">,</span>
-                         <span class="s">&#39;import_attribute_as&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;leveltop&#39;</span><span class="p">:</span> <span class="s">&#39;elevation&#39;</span><span class="p">},</span>
-                         <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
-                         <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">)</span>
+<span class="c1"># Import nodes with only the attribute leveltop as elevation</span>
+<span class="n">nodes</span>   <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALImportData&#39;</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;import_attribute_as&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;leveltop&#39;</span><span class="p">:</span> <span class="s1">&#39;elevation&#39;</span><span class="p">},</span>
+                         <span class="s1">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                         <span class="s1">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

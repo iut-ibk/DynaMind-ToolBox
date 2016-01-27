@@ -223,11 +223,11 @@
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Clean network with same start and end node</span>
-<span class="n">clean_network</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALRemoveComponets&#39;</span><span class="p">,</span>
-                              <span class="p">{</span><span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;network&#39;</span><span class="p">},</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Clean network with same start and end node</span>
+<span class="n">clean_network</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALRemoveComponets&#39;</span><span class="p">,</span>
+                              <span class="p">{</span><span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;network&#39;</span><span class="p">},</span>
                               <span class="n">nodes</span><span class="p">,</span>
-                              <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;network&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;start_id = 0 or end_id = 0&quot;</span><span class="p">}})</span>
+                              <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="s2">&quot;start_id = 0 or end_id = 0&quot;</span><span class="p">}})</span>
 </pre></div>
 </div>
 </div>

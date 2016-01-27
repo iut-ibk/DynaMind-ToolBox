@@ -172,18 +172,18 @@ folder (Native or Python).</p>
 the EPSG code is crucial otherwise the GIS database can not be correctly initialise which can
 make simulations painfully slow.</p>
 <p>After registering modules and defining a spatial reference the DynaMind simulation is ready.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Import DynaMind Python interface</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Import DynaMind Python interface</span>
 <span class="kn">import</span> <span class="nn">pydynamind</span> <span class="kn">as</span> <span class="nn">DM</span>
 
-<span class="c"># Create a new simulation</span>
+<span class="c1"># Create a new simulation</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">DM</span><span class="o">.</span><span class="n">Sim</span><span class="p">()</span>
 
-<span class="c"># Register modules from folder</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">register_modules</span><span class="p">(</span><span class="s">&quot;Modules&quot;</span><span class="p">)</span>
+<span class="c1"># Register modules from folder</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">register_modules</span><span class="p">(</span><span class="s2">&quot;Modules&quot;</span><span class="p">)</span>
 
-<span class="c"># Set EPSG code for the simulation. This is crucial, otherwise the GIS backend of the</span>
-<span class="c"># simulation database is disabled which makes simulations painfully slow</span>
-<span class="c"># EPSG 32755 : WGS 84/UTM zone 55S (works well for Melbourne)</span>
+<span class="c1"># Set EPSG code for the simulation. This is crucial, otherwise the GIS backend of the</span>
+<span class="c1"># simulation database is disabled which makes simulations painfully slow</span>
+<span class="c1"># EPSG 32755 : WGS 84/UTM zone 55S (works well for Melbourne)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">set_epsg_code</span><span class="p">(</span><span class="mi">32755</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -203,34 +203,34 @@ This functions adds a new module to the simulation and returns the generated mod
 <li>module_name: per default the module name is a randomly set; module_name can be used to define a specific name.</li>
 </ul>
 </div></blockquote>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Load data from PostGIS database with GDALImport Data. Per default the module has no import</span>
-<span class="n">catchment</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=elwood host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;elwood_catchment&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;catchment&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
-                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Load data from PostGIS database with GDALImport Data. Per default the module has no import</span>
+<span class="n">catchment</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALImportData&#39;</span><span class="p">,{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=elwood host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;elwood_catchment&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;catchment&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s1">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
 
-<span class="c"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
-<span class="c"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
-<span class="n">land_use</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALImportData&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse_victoria&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;landuse&#39;</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
-                                      <span class="s">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
-                                      <span class="s">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+<span class="c1"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
+<span class="c1"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
+<span class="n">land_use</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALImportData&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;landuse_victoria&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;landuse&#39;</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_from&#39;</span><span class="p">:</span> <span class="mi">4283</span><span class="p">,</span>
+                                      <span class="s1">&#39;epsg_to&#39;</span><span class="p">:</span> <span class="mi">32755</span><span class="p">,</span>
+                                      <span class="s1">&#39;append&#39;</span> <span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
                          <span class="n">catchment</span><span class="p">,</span>
-                         <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;attribute&#39;</span><span class="p">:</span> <span class="s">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
-                                              <span class="s">&#39;spatial&#39;</span><span class="p">:</span> <span class="s">&quot;catchment&quot;</span><span class="p">}</span>
+                         <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;landuse&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="s2">&quot;lu_desc = &#39;Road Void&#39;&quot;</span><span class="p">,</span>
+                                              <span class="s1">&#39;spatial&#39;</span><span class="p">:</span> <span class="s2">&quot;catchment&quot;</span><span class="p">}</span>
                          <span class="p">})</span>
-<span class="c"># Upload results to PostGIS database</span>
-<span class="n">export</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALPublishResults&#39;</span><span class="p">,</span>
-                           <span class="p">{</span><span class="s">&#39;sink&#39;</span><span class="p">:</span> <span class="s">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;driver_name&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;targetEPSG&#39;</span> <span class="p">:</span> <span class="s">&#39;4283&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;sourceEPSG&#39;</span> <span class="p">:</span> <span class="s">&#39;32755&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;view_name&#39;</span><span class="p">:</span> <span class="s">&#39;catchment&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s">&#39;result_catchment&#39;</span><span class="p">},</span>
+<span class="c1"># Upload results to PostGIS database</span>
+<span class="n">export</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALPublishResults&#39;</span><span class="p">,</span>
+                           <span class="p">{</span><span class="s1">&#39;sink&#39;</span><span class="p">:</span> <span class="s1">&#39;PG:dbname=melbourne host=localhost port=5432 user=user password=password&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;driver_name&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;targetEPSG&#39;</span> <span class="p">:</span> <span class="s1">&#39;4283&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;sourceEPSG&#39;</span> <span class="p">:</span> <span class="s1">&#39;32755&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;view_name&#39;</span><span class="p">:</span> <span class="s1">&#39;catchment&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;layer_name&#39;</span><span class="p">:</span> <span class="s1">&#39;result_catchment&#39;</span><span class="p">},</span>
                          <span class="n">land_use</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -238,7 +238,7 @@ This functions adds a new module to the simulation and returns the generated mod
 <div class="section" id="execute-simulation">
 <h2>Execute Simulation<a class="headerlink" href="#execute-simulation" title="Permalink to this headline">¶</a></h2>
 <p>After adding and linking the modules the simulation can be executed calling the <code class="docutils literal"><span class="pre">run()</span></code> method.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Execute simulation</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># Execute simulation</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -251,10 +251,10 @@ This functions adds a new module to the simulation and returns the generated mod
 <p>The simulation object is a complete DynaMind simulation. This means that when a simulation has been executed the simulation
 still holds the calculate data until the simulation is destroyed. This allows the data to be accessed within the Python
 script. To do this data (or the name of the database) can be retrieved from the last module in the simulation using <cite>getGDALDBName()</cite></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
-<span class="c"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1"># load land use data with the attribute lu_desc = &#39;Road Void&#39; and that are within the catchment.</span>
+<span class="c1"># the parameter append is set to true to allow to connect the module to the catchment module created before</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="c">#return db name from last module</span>
+<span class="c1">#return db name from last module</span>
 <span class="n">last_module</span><span class="o">.</span><span class="n">getGDALDBName</span><span class="p">()</span>
 </pre></div>
 </div>

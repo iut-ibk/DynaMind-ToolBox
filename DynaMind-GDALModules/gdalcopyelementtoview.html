@@ -268,12 +268,12 @@ Per default only the geometry is copied. To copy the attributes set <code class=
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Create conduits form node including reference</span>
-<span class="n">junctions</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALCopyElementToView&#39;</span><span class="p">,</span>
-                           <span class="p">{</span><span class="s">&#39;from_view&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;to_view&#39;</span><span class="p">:</span> <span class="s">&#39;conduit&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;add_link&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
-                            <span class="s">&#39;copy_attributes&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Create conduits form node including reference</span>
+<span class="n">junctions</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALCopyElementToView&#39;</span><span class="p">,</span>
+                           <span class="p">{</span><span class="s1">&#39;from_view&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;to_view&#39;</span><span class="p">:</span> <span class="s1">&#39;conduit&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;add_link&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+                            <span class="s1">&#39;copy_attributes&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
                             <span class="n">hotstart</span><span class="p">)</span>
 </pre></div>
 </div>

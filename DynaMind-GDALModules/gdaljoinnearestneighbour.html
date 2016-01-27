@@ -245,11 +245,11 @@
 </div>
 <div class="section" id="sample-code-for-python-simulation">
 <h2>Sample Code for Python Simulation<a class="headerlink" href="#sample-code-for-python-simulation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Join inlets to nodes with a search radius of 100m</span>
-<span class="n">node_join</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s">&#39;GDALJoinNearestNeighbour&#39;</span><span class="p">,</span>
-                           <span class="p">{</span><span class="s">&#39;leadingViewName&#39;</span><span class="p">:</span> <span class="s">&#39;inlet&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;linkViewName&#39;</span><span class="p">:</span> <span class="s">&#39;node&#39;</span>
-                            <span class="s">&#39;max_distance&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Join inlets to nodes with a search radius of 100m</span>
+<span class="n">node_join</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="s1">&#39;GDALJoinNearestNeighbour&#39;</span><span class="p">,</span>
+                           <span class="p">{</span><span class="s1">&#39;leadingViewName&#39;</span><span class="p">:</span> <span class="s1">&#39;inlet&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;linkViewName&#39;</span><span class="p">:</span> <span class="s1">&#39;node&#39;</span>
+                            <span class="s1">&#39;max_distance&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
                            <span class="n">inlets</span><span class="p">)</span>
 </pre></div>
 </div>

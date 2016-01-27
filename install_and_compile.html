@@ -184,25 +184,25 @@ sudo pip install sphinx
 sudo pip install sphinx_rtd_theme
 
 
-<span class="c">#install SFCGAL</span>
+<span class="c1">#install SFCGAL</span>
 wget https://github.com/Oslandia/SFCGAL/archive/v1.0.5.zip
 unzip v1.0.5.zip
-<span class="nb">cd </span>SFCGAL-1.0.5/
+<span class="nb">cd</span> SFCGAL-1.0.5/
 cmake . <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> sudo make install
 <span class="nb">cd</span> ..
-<span class="c">#rm -rf SFCGAL-1.0/</span>
+<span class="c1">#rm -rf SFCGAL-1.0/</span>
 rm v1.0.5.zip
 
 git clone git://github.com/iut-ibk/DynaMind-ToolBox.git
 
-<span class="nb">cd </span>DynaMind-ToolBox/
+<span class="nb">cd</span> DynaMind-ToolBox/
 
 
 git submodule update --init --recursive
 
 mkdir build
 
-<span class="nb">cd </span>build
+<span class="nb">cd</span> build
 
 cmake ../ -DWITH_PLUGIN_GDALMODULE<span class="o">=</span>TRUE -DWITH_DOC<span class="o">=</span>True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT<span class="o">=</span>True -DWITH_PLUGIN_GDALDRAINAGE<span class="o">=</span>True
 

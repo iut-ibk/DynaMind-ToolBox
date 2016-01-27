@@ -165,19 +165,19 @@ Python interface is used, however the Python API is similar to the C++ API. The 
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="n">Module</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-            <span class="c">#To use the GDAL API</span>
+            <span class="c1">#To use the GDAL API</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setIsGDALModule</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
-            <span class="c">#Parameter Definition</span>
+            <span class="c1">#Parameter Definition</span>
             <span class="o">...</span>
 
-            <span class="c">#Data Stream Definition</span>
+            <span class="c1">#Data Stream Definition</span>
             <span class="o">...</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Data Manipulation Process (DMP)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="c">#Data Stream Manipulation</span>
+            <span class="c1">#Data Stream Manipulation</span>
             <span class="o">....</span>
 </pre></div>
 </div>
@@ -194,10 +194,10 @@ To initalise the parameter with a default value use <code class="docutils litera
 <p>Parameters, once generated, are managed by DynaMind. This means that every time before the DMP is called the module parameter values are updated. Further, parameters
 are automatically saved and loaded from the DyanMind save file. Also DynaMind provides interfaces to change parameter from outside the
 module.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Create Parameter</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">createParameter</span><span class="p">(</span><span class="s">&quot;MyParameter&quot;</span><span class="p">,</span><span class="n">LONG</span><span class="p">,</span><span class="s">&quot;Sample Description&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Create Parameter</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">createParameter</span><span class="p">(</span><span class="s2">&quot;MyParameter&quot;</span><span class="p">,</span><span class="n">LONG</span><span class="p">,</span><span class="s2">&quot;Sample Description&quot;</span><span class="p">)</span>
 
-<span class="c">#Initalise Parameter (may be called after the parameter is created!)</span>
+<span class="c1">#Initalise Parameter (may be called after the parameter is created!)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">MyParameter</span> <span class="o">=</span> <span class="mi">5</span>
 </pre></div>
 </div>
@@ -245,13 +245,13 @@ To let the simulation know which data are used, views need to be registered duri
 <code class="docutils literal"><span class="pre">foo</span> <span class="pre">=</span> <span class="pre">View(&quot;name&quot;,</span> <span class="pre">GEOMETRY_TYPE,</span> <span class="pre">ACCESS)</span></code>. Attributes are attached with <code class="docutils literal"><span class="pre">foo.addAttribute(&quot;name&quot;,</span> <span class="pre">TYPE,</span> <span class="pre">ACCESS)</span></code>. For both
 geometry and attribute the following access modes are available:  READ, WRITE or MODIFY.
 The following code block shows how views are defined using the Python interface.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Data read by the module</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Data read by the module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s2">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
 
-<span class="c">#New data created by this module</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
+<span class="c1">#New data created by this module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="s2">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s2">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Available geometry types:</p>
@@ -308,13 +308,13 @@ The following code block shows how views are defined using the Python interface.
 </table>
 <p>To register the views in DynaMind, views compiled into a vector and with <code class="docutils literal"><span class="pre">self.addData(&quot;name&quot;,</span> <span class="pre">views)</span></code> registered at the module.
 The view definition is used by the simulation to check if all data are provided needed from a module, but also to optimise the data stream.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Compile views</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Compile views</span>
 <span class="n">views</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">street</span><span class="p">)</span>
 <span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span>
 
-<span class="c">#Add views to stream</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">addData</span><span class="p">(</span><span class="s">&quot;city&quot;</span><span class="p">,</span> <span class="n">views</span><span class="p">)</span>
+<span class="c1">#Add views to stream</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">addData</span><span class="p">(</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="n">views</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -327,20 +327,20 @@ defining a View. However, instead of adding the views to the data stream, ViewCo
 the module itself using <code class="docutils literal"><span class="pre">self.registerViewContainers(views)</span></code>. The following code block gives an example of how
 to define and register a ViewContainer. Note that, to access the data in the ViewContainer later, it is important to
 add the ViewContainer as Attribute to the class using the <code class="docutils literal"><span class="pre">self.</span></code> statement.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Data read by the module</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Data read by the module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s2">&quot;STREET&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span> <span class="n">READ</span><span class="p">)</span>
 
-<span class="c">#New data created by this module</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
+<span class="c1">#New data created by this module</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span> <span class="o">=</span> <span class="n">ViewContainer</span><span class="p">(</span><span class="s2">&quot;DRAIN&quot;</span><span class="p">,</span> <span class="n">EDGE</span><span class="p">,</span> <span class="n">WRITE</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">drain</span><span class="o">.</span><span class="n">addAttribute</span><span class="p">(</span><span class="s2">&quot;diameter&quot;</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>  <span class="n">WRITE</span><span class="p">)</span>
 
-<span class="c">#Compile views</span>
+<span class="c1">#Compile views</span>
 <span class="n">views</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">street</span><span class="p">)</span>
 <span class="n">views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">drain</span><span class="p">)</span>
 
-<span class="c">#Register ViewContainer to stream</span>
+<span class="c1">#Register ViewContainer to stream</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">registerViewContainers</span><span class="p">(</span><span class="n">views</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -366,13 +366,13 @@ feature is a &#8220;real&#8221; GDAL Feature. (Please have a look at <a class="r
 Before you start reading the components it is recommended to reset the iterator using <code class="docutils literal"><span class="pre">ViewContainer.reset_reading()</span></code>.
 Currently it is still required to clear the ViewContainer cache after it has been used with calling <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="c">#Rest read position</span>
+    <span class="c1">#Rest read position</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
 
-    <span class="c">#Iterate over all features of the ViewContainer</span>
+    <span class="c1">#Iterate over all features of the ViewContainer</span>
     <span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
-        <span class="n">street_width</span> <span class="o">=</span> <span class="n">street</span><span class="o">.</span><span class="n">GetFieldAsDouble</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">)</span>
-    <span class="c">#Clear container cache</span>
+        <span class="n">street_width</span> <span class="o">=</span> <span class="n">street</span><span class="o">.</span><span class="n">GetFieldAsDouble</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">)</span>
+    <span class="c1">#Clear container cache</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -381,30 +381,30 @@ Currently it is still required to clear the ViewContainer cache after it has bee
 does not contain either geometry or attributes. The features geometry and attributes can be created and set using the GDAL Python API.
 For performance reasons the features are not directly written into the data stream. To finally write the features and clear
 the ViewContainer cache please call <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Create 1000 new nodes</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Create 1000 new nodes</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="c">#Create new feature</span>
+    <span class="c1">#Create new feature</span>
     <span class="n">street</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">create_feature</span><span class="p">()</span>
 
-    <span class="c">#Create geometry</span>
+    <span class="c1">#Create geometry</span>
     <span class="n">pt</span> <span class="o">=</span> <span class="n">ogr</span><span class="o">.</span><span class="n">Geometry</span><span class="p">(</span><span class="n">ogr</span><span class="o">.</span><span class="n">wkbPoint</span><span class="p">)</span>
     <span class="n">pt</span><span class="o">.</span><span class="n">SetPoint_2D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="c">#Set geometry in feature</span>
+    <span class="c1">#Set geometry in feature</span>
     <span class="n">street</span><span class="o">.</span><span class="n">SetGeometry</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
-<span class="c">#Write create features into stream</span>
+<span class="c1">#Write create features into stream</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Modify Features</strong></p>
 <p>Similar to reading features, existing features can be modified while iterating over the features stored in the ViewContainer.
 To write the altered features to the data stream please use <code class="docutils literal"><span class="pre">ViewContainer.sync()</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#Rest read position</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c1">#Rest read position</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">reset_reading</span><span class="p">()</span>
-<span class="c">#Iterate over all features and set street width to 3</span>
+<span class="c1">#Iterate over all features and set street width to 3</span>
 <span class="k">for</span> <span class="n">street</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="p">:</span>
-    <span class="n">street</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s">&quot;width&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="c">#Write altered features to stream</span>
+    <span class="n">street</span><span class="o">.</span><span class="n">SetField</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1">#Write altered features to stream</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">streets</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
 </pre></div>
 </div>
