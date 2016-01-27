@@ -83,6 +83,23 @@ void DM_HELPER_DLL_EXPORT vector_sum(sqlite3_context *context, int argc, sqlite3
 	sqlite3_result_double(context, ress);        // save the result
 }
 
+/* vector sum new*/
+void DM_HELPER_DLL_EXPORT vector_sum_new(sqlite3_context *context, int argc, sqlite3_value **argv) {
+	if( sqlite3_value_type(argv[0])==SQLITE_NULL){
+		sqlite3_result_null(context);
+		return;
+	}
+
+	int size = sqlite3_value_bytes(argv[0]);
+	const double * data = static_cast<const double*>( sqlite3_value_blob(argv[0]) );
+
+
+	double ress = my_extension::vector_sum_new(size, data);
+
+	//sqlite3_result_text(context, ress.c_str(),ress.size(),SQLITE_TRANSIENT);
+	sqlite3_result_double(context, ress);        // save the result
+}
+
 
 typedef struct SumCtx SumCtx;
 struct SumCtx {
@@ -132,6 +149,7 @@ int DM_HELPER_DLL_EXPORT sqlite3_dmsqliteplugin_init(
 	sqlite3_create_function(db, "dm_vector_addition", 2, SQLITE_UTF8, 0, &addition_vector, 0, 0);
 	sqlite3_create_function(db, "dm_vector_sum", 1, SQLITE_UTF8, 0, &vector_sum, 0, 0);
 	sqlite3_create_function(db, "dm_sum_vectors", 1, SQLITE_UTF8, 0, 0, &sumVecStep, &sumVecFinalize);
+	sqlite3_create_function(db, "vector_sum_new", 1, SQLITE_UTF8, 0, &vector_sum_new, 0, 0);
 
 	return rc;
 }

@@ -2,6 +2,7 @@
 #include "sstream"
 #include <QStringList>
 #include <iostream>
+#include <numeric>
 
 std::string my_extension::multiply_vector(const unsigned char * vec, double mutiplyer) {
 
@@ -71,4 +72,15 @@ double my_extension::vector_sum(const unsigned char * vec) {
 
 	return d;
 }
+
+double my_extension::vector_sum_new(int size, const double * data) {
+	if (!data)
+		return 0;
+	std::vector<double> vec(data, data + size/8);
+
+	double sum = std::accumulate(vec.begin(), vec.end(), 0);
+
+	return sum;
+}
+
 
