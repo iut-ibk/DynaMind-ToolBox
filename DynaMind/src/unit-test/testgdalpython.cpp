@@ -240,6 +240,8 @@ TEST_F(TestGDALPython,AdvancedDataTypes) {
 	sim.addLink(m1, "city", m2, "city");
 
 	sim.run();
+
+	ASSERT_EQ(sim.getSimulationStatus(), DM::SIM_OK);
 }
 #endif
 #endif
