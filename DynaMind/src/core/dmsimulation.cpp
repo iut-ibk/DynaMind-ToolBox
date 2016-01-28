@@ -258,8 +258,10 @@ void Simulation::registerModulesFromDefaultLocation()
 	QVector<QDir> cpv;
 	cpv.push_back( QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/PythonModules/scripts") ) );
 	cpv.push_back(  QDir(QString::fromStdString(this->getSimulationConfig().getDefaultModulePath() + "/Modules" ) ) );
-	foreach (QDir cp, cpv)
+	foreach (QDir cp, cpv) {
+		DM::Logger(DM::Standard) << "Load modules from: " << cp.absolutePath().toStdString();
 		registerModulesFromDirectory(cp);
+	}
 }
 
 bool Simulation::isLinkingValid(Module* source, std::string outPort, Module* dest, std::string inPort,
