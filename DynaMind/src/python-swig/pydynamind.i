@@ -1252,5 +1252,19 @@ class Sim:
 			self.set_modules_parameter(parameter_set)
 			print self.serialise()
 			self.run()
+
+import struct
+import binascii
+
+def dm_set_double_list(feature, field_name, data):
+			buff = struct.pack('%sd' % len(data),  *data)
+			feature.SetFieldBinaryFromHexString(field_name, binascii.hexlify(buff))
+
+def dm_get_double_list(feature, field_name):
+			s = str(feature.GetFieldAsString(field_name))
+			buffer = binascii.unhexlify(s)
+			floats = struct.unpack('%sd' % (len(buffer) / 8) , buffer)
+			return floats
+
 %}
 

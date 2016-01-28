@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from osgeo import ogr
 from pydynamind import *
 
-
 class ReadAdvancedDataTypes(Module):
         def __init__(self):
             Module.__init__(self)
@@ -45,8 +44,12 @@ class ReadAdvancedDataTypes(Module):
             self.elements = 0
             self.__container.reset_reading()
             for feat in self.__container:
-                s = str(feat.GetFieldAsString("vector"))
-                floats = map(float, s.split())
+                floats = dm_get_double_list(feat, "vector")
+                if len(floats) == 0:
+                    log("DOUBLEVECTOR not loaded", Error)
+                    self.setStatus(DM.MOD_EXECUTION_ERROR)
+                    break
+
             self.__container.finalise()
 
 

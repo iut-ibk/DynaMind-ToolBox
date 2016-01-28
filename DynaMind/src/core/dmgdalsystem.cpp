@@ -236,7 +236,7 @@ void GDALSystem::updateView(const View &v)
 			continue;
 		}
 		if (v.getAttributeType(attribute_name) == DM::Attribute::DOUBLEVECTOR){
-			OGRFieldDefn oField ( attribute_name.c_str(), OFTString );
+			OGRFieldDefn oField ( attribute_name.c_str(), OFTBinary );
 			updateAttributeDefinition(v.getName(),attribute_name, "DOUBLEVECTOR" );
 			lyr->CreateField(&oField);
 			continue;

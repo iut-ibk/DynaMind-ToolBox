@@ -1,7 +1,6 @@
 from osgeo import ogr
 from pydynamind import *
 
-
 class AdvancedDataTypes(Module):
         def __init__(self):
             Module.__init__(self)
@@ -29,7 +28,7 @@ class AdvancedDataTypes(Module):
             for i in range(self.elements):
                 f = self.__container.create_feature()
                 a = [10.0, 11.0]
-                f.SetField("vector", " ".join(format(x, "10.10") for x in a))
+                dm_set_double_list(f, "vector", a)
                 if i % 100000 == 0:
                     self.__container.sync()
             self.__container.finalise()

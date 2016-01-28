@@ -2,26 +2,28 @@
 #include <QtGlobal>
 #include <sstream>
 #include <istream>
+#include <iostream>
 
 bool DM::DMFeature::SetDoubleList(OGRFeature *f, const std::string &name, const std::vector<double> &values)
 {
-	std::stringstream ss;
-	foreach (double val, values) {
-		ss << val;
-		ss << " ";
+	//convert to bytestream
+	std::stringbuf bytebuffer;
+	for (size_t i = 0; i < values.size(); i++) {
+		bytebuffer.sputn(reinterpret_cast<const char *>(&values[i]), 8);
 	}
-
-	f->SetField(name.c_str(), ss.str().c_str());
+	GByte * val= reinterpret_cast<unsigned char*>(const_cast<char*>(bytebuffer.str().c_str()));
+	f->SetField(f->GetFieldIndex(name.c_str()),values.size()*8,val);
 	return true;
 }
 
 bool DM::DMFeature::GetDoubleList(OGRFeature *f, const std::string &name, std::vector<double> &values)
 {
-
-	std::istringstream lineStream(f->GetFieldAsString(name.c_str()));
-
-	double num;
-	while (lineStream >> num) values.push_back(num);
+	int bytes;
+	double * buffer =  reinterpret_cast<double*>(f->GetFieldAsBinary(f->GetFieldIndex(name.c_str()), & bytes));
+	if (!buffer) {
+		return false;
+	}
+	values = std::vector<double>(buffer, buffer + bytes/8);
 	return true;
 }
 
