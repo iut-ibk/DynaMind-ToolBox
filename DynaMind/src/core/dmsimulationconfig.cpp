@@ -26,6 +26,9 @@ void SimulationConfig::setWorkingDir(const std::string &value)
 std::string SimulationConfig::getDefaultModulePath()
 {
 	QString currentPath = QCoreApplication::applicationDirPath();
+
+	if (currentPath.isEmpty())
+		currentPath = QDir::currentPath();
 	// Default path if run form compiled version
 	if (currentPath.contains("/output")) {
 		return currentPath.toStdString();
