@@ -88,8 +88,9 @@ class DMSEI(Module):
         if self.rain_vector_from_city != "":
             self.city.reset_reading()
             for c in self.city:
-                s = str(c.GetFieldAsString(self.rain_vector_from_city))
-                self.write_rain_file(filename, map(float, s.split()), 60 * 5)
+                # s = str(c.GetFieldAsString(self.rain_vector_from_city))
+
+                self.write_rain_file(filename, dm_get_double_list(c, self.rain_vector_from_city), 60 * 5)
                 swmm_rain_filename = "/tmp/" + filename + ".dat"
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2009', intervall=intervall,
                              sub_satchment=catchment)

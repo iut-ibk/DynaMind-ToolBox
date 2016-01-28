@@ -173,7 +173,7 @@ class LoadDAnCETimeseries(Module):
 
                     counter+=1
                 print counter, inserted
-                timeseries.SetField("values", ' '.join(str(d) for d in result_rain))
+                dm_set_double_list(timeseries, "values", result_rain)
                 timeseries.SetField("type", name)
 
 
