@@ -51,7 +51,7 @@ void GDALCreateCentroids::run()
 	while (f = leadingView.getNextFeature()) {
 		OGRGeometry * geo = f->GetGeometryRef();
 		if (!geo) {
-			DM::Logger(DM::Warning) << f->GetFID() << "Geometry is not valid";
+			DM::Logger(DM::Warning) <<(int) f->GetFID() << "Geometry is not valid";
 		}
 		OGRFeature * f_c = centroidView.createFeature();
 		OGRPoint p;

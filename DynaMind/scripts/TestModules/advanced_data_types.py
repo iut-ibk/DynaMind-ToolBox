@@ -27,7 +27,9 @@ class AdvancedDataTypes(Module):
         def run(self):
             for i in range(self.elements):
                 f = self.__container.create_feature()
-                a = [10.0, 11.0]
+                a = []
+                for i in range(1000):
+                    a.append(i*1.0)
                 dm_set_double_list(f, "vector", a)
                 if i % 100000 == 0:
                     self.__container.sync()

@@ -40,8 +40,8 @@
 #define DM_HELPER_DLL_EXPORT
 #endif
 
-class OGRDataSource;
-class OGRSFDriver;
+class GDALDataset;
+class GDALDriver;
 class OGRLayer;
 class OGRFeature;
 
@@ -144,7 +144,7 @@ public:
 	/**
 	 * @brief Returns OGRDataSource (the Spatilite DB)
 	 */
-	OGRDataSource *getDataSource();
+	GDALDataset *getDataSource();
 
 	/**
 	 * @brief Resets reader for givesn view
@@ -192,8 +192,8 @@ public:
 
 	void reConnect();
 private:
-	OGRDataSource						*poDS;
-	OGRSFDriver							*poDrive;
+	GDALDataset							*poDS;
+	GDALDriver							*poDrive;
 	std::map<std::string, OGRLayer *>	viewLayer;
 	std::vector<std::string>			state_ids;
 

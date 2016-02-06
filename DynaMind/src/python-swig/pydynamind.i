@@ -3,7 +3,7 @@
 %ignore "DM_HELPER_DLL_EXPORT";
 
 %pythoncode %{
-from osgeo import ogr
+from osgeo import ogr, gdal
 import tempfile
 %}
 
@@ -587,12 +587,17 @@ class DM::ViewContainer {
 		self.__features = []
 		if db_id not in self.__ds.keys():
 			log("Register Datasource " + str(db_id), Standard)
-			self.__ds[db_id] = ogr.Open(db_id)
+			self.__ds[db_id] = gdal.OpenEx(db_id, gdal.OF_UPDATE)
 			self.__connection_counter[db_id] = 0
 		else:
 			log("Reuse connection " + str(db_id), Standard)
 		table_name = str(self.getName())
-		#print "Register Layer " + str(table_name)
+		log("Register Layer " + str(table_name), Debug)
+
+		#print self.__ds[db_id]
+		#print self.__ds[db_id].GetLayerCount()
+		#print table_name
+
 		self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
 		self.__connection_counter[db_id]+=1
 
@@ -722,11 +727,17 @@ class DM::ViewContainer {
 
 		"""
 		self.sync()
-		log("Destroy Layer", Debug)
+		log("Destroy Layer " + str(self.getName()), Debug)
 		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:
 			log("Really Destroy Connection", Standard)
+			ds = self.__ds[self.getDBID()]
 			del self.__ds[self.getDBID()]
+			self.__ds[self.getDBID()] = None
+
+			# ds = None
+			print self.__ds[self.getDBID()]
+			self.__ds.pop(self.getDBID())
 			self.__ds = {}
 			self.__ogr_layer = None
 
@@ -1257,12 +1268,15 @@ import struct
 import binascii
 
 def dm_set_double_list(feature, field_name, data):
+			if len(data) == 0:
+				return
 			buff = struct.pack('%sd' % len(data),  *data)
 			feature.SetFieldBinaryFromHexString(field_name, binascii.hexlify(buff))
 
 def dm_get_double_list(feature, field_name):
-			s = str(feature.GetFieldAsString(field_name))
-			buffer = binascii.unhexlify(s)
+			buffer = feature.GetFieldAsBinary(field_name)
+			if not buffer:
+				return []
 			floats = struct.unpack('%sd' % (len(buffer) / 8) , buffer)
 			return floats
 

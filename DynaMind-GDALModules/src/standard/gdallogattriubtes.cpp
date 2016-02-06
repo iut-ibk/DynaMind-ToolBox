@@ -77,7 +77,7 @@ void GDALLogAttriubtes::run()
 	OGRFeature * f;
 	while (f = this->leadingView.getNextFeature()) {
 		if (printFeatureID) {
-			DM::Logger(DM::Error) << this->leadingViewName << " " << f->GetFID();
+			DM::Logger(DM::Error) << this->leadingViewName << " " << (int) f->GetFID();
 		}
 		std::stringstream ss;
 
