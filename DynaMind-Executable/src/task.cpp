@@ -21,6 +21,7 @@
 #include <dmlogsink.h>
 #include <dmdbconnector.h>
 #include <dmpythonenv.h>
+#include <QUuid>
 
 #include <fstream>
 
@@ -210,6 +211,25 @@ void showParameters(DM::Simulation* sim)
 
 
 
+std::string Task::unzipDataStructure(const string &workspace_uuid, const std::string & simulationfile)
+{
+	QProcess p;
+	QStringList arguments;
+	arguments << QString::fromStdString(simulationfile);
+	arguments << "-d /tmp/"  + QString::fromStdString(workspace_uuid);
+	DM::Logger(DM::Error) << arguments.join(" ").toStdString();
+	p.start("/usr/bin/unzip " + arguments.join(" "));
+	p.waitForFinished();
+
+	QString cleanFileName = QString::fromStdString(simulationfile).split("/").last();
+	//Create new simualtion_filename
+	DM::Logger(DM::Warning) <<  QFile(QString::fromStdString(simulationfile)).fileName().toStdString();
+	QString updatedSimulationFolder =  "/tmp/"
+			+  QString::fromStdString(workspace_uuid)
+			+ "/" + cleanFileName;
+	updatedSimulationFolder.replace(".zip", "");
+	return updatedSimulationFolder.toStdString();
+}
 
 void Task::run()
 {
@@ -245,6 +265,7 @@ void Task::run()
 
     std::string simulationfile, realsimulationfile;
     std::vector<std::string> pythonModules;
+	std::string workspace_uuid = QUuid::createUuid().toString().replace("{", "").replace("}", "").toStdString();
     int repeat = 1;
     bool verbose = false;
     bool withStatusUpdates = false;
@@ -309,7 +330,7 @@ void Task::run()
 
 
         if (vm.count("input-file"))
-            simulationfile =  vm["input-file"].as<string>();
+			simulationfile =  vm["input-file"].as<string>();
         else
         {
             std::cout << "Simulation file not set" << std::endl;
@@ -384,6 +405,22 @@ void Task::run()
         return;
     }
 
+	bool loadedFromArchive;
+	loadedFromArchive = false;
+	std::string simulation_folder;
+
+
+	if(simulationfile.substr(simulationfile.size() - 4, simulationfile.size()) == ".zip") {
+		DM::Logger(DM::Standard) << "Extract simulation file " << simulationfile;
+		simulation_folder = Task::unzipDataStructure(workspace_uuid, simulationfile);
+		DM::Logger(DM::Standard) << "Using simulation folder " << simulation_folder;
+		QString cleanFileName = QString::fromStdString(simulationfile).split("/").last();
+		simulationfile = simulation_folder + "/" + cleanFileName.replace(".zip", ".dyn").toStdString();
+		DM::Logger(DM::Standard) << "Dynamind name "<< simulationfile;
+		loadedFromArchive = true;
+
+	}
+
 #ifdef _OPENMP
     omp_set_num_threads(numThreads);
 #endif
@@ -398,6 +435,11 @@ void Task::run()
     s.registerModulesFromDefaultLocation();
     s.registerModulesFromSettings();
     realsimulationfile = replacestrings(replace, simulationfile);
+
+	if (loadedFromArchive) {
+		DM::Logger(DM::Standard) << "Load modules from " << simulation_folder + "/modules";
+		s.registerModulesFromDirectory(QDir(QString::fromStdString(simulation_folder + "/modules")));
+	}
 
     s.loadSimulation(realsimulationfile);
     OverloadParameters(&s, parameteroverloads);
