@@ -10,6 +10,10 @@ private:
     int  argc;
     char **argv;
     char **envp;
+
+	std::string unzipDataStructure(const std::string & workspace_uuid,
+								   const std::string & simulationfile);
+
 public:
     Task(int & argc, char ** argv, char **envp, QObject *parent = 0) : argc(argc), argv(argv), envp(envp), QObject(parent) {}
 
