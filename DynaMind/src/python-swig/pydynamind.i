@@ -736,7 +736,7 @@ class DM::ViewContainer {
 			self.__ds[self.getDBID()] = None
 
 			# ds = None
-			print self.__ds[self.getDBID()]
+			# print self.__ds[self.getDBID()]
 			self.__ds.pop(self.getDBID())
 			self.__ds = {}
 			self.__ogr_layer = None

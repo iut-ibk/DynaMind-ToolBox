@@ -212,7 +212,7 @@ void GDALSystem::updateView(const View &v)
 
 
 	}
-	std::cout << viewLayer.size() << std::endl;
+	// std::cout << viewLayer.size() << std::endl;
 
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Update Features

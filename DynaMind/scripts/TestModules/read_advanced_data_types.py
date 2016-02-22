@@ -45,7 +45,7 @@ class ReadAdvancedDataTypes(Module):
             self.__container.reset_reading()
             for feat in self.__container:
                 floats = dm_get_double_list(feat, "vector")
-                print len(floats)
+                # print len(floats)
                 if len(floats) == 0:
                     log("DOUBLEVECTOR not loaded", Error)
                     self.setStatus(DM.MOD_EXECUTION_ERROR)
