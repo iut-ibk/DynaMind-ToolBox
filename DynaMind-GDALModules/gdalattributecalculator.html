@@ -280,7 +280,7 @@ variables of linked components.</p>
 <div class="section" id="common-use-cases">
 <h3>Common use cases<a class="headerlink" href="#common-use-cases" title="Permalink to this headline">¶</a></h3>
 <p><em>Assign a constant</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:     building.construction_year
+<div class="highlight-bash"><div class="highlight"><pre><span></span>attribute:     building.construction_year
 attributeType: INT
 variables:
     <span class="o">(</span>empty<span class="o">)</span>
@@ -288,7 +288,7 @@ equation:      1990
 </pre></div>
 </div>
 <p><em>Assign a constant from global object</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:      building.construction_year
+<div class="highlight-bash"><div class="highlight"><pre><span></span>attribute:      building.construction_year
 attributeType:  INT
 variables:
      y : city.year
@@ -301,7 +301,7 @@ equation:       y
 only one feature exists within a view. (e.g. city or world)</p>
 </div>
 <p><em>Assign only to a subset</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:        building.construction_year
+<div class="highlight-bash"><div class="highlight"><pre><span></span>attribute:        building.construction_year
 attributeType:    INT
 variables:
      y : city.year
@@ -314,7 +314,7 @@ equation:         <span class="nv">y</span> <span class="o">==</span> <span clas
 <p class="last">For this use case setting a module filter is much more efficient. Use the  <em>Assign constant example</em> and set the module attribute filter to building: construction_year is null</p>
 </div>
 <p><em>Calculate Number of people in a city district</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:         district.population
+<div class="highlight-bash"><div class="highlight"><pre><span></span>attribute:         district.population
 attributeType:     INT
 variables:
     pop : district.parcel.building.household.persons
@@ -326,7 +326,7 @@ equation:          pop <span class="c1"># Assigns the number of people living in
 <p class="last">Links are resolved through a recursion and the sum of all the connected attributes is returned.</p>
 </div>
 <p><em>Increase increment in loop</em></p>
-<div class="highlight-bash"><div class="highlight"><pre>attribute:          city.year
+<div class="highlight-bash"><div class="highlight"><pre><span></span>attribute:          city.year
 attributeType:      INT
 variables:
      y : city.year <span class="c1"># Variables might have the be initialed before they can be overwritten. This can be done by assigning a constant</span>
