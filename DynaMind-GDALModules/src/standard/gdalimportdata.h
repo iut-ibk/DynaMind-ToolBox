@@ -54,7 +54,7 @@ private:
 
 	DM::ViewContainer dummy;
 
-	OGRDataSource *poDS;
+	GDALDataset *poDS;
 
 	OGRLayer *initLayer();
 

@@ -71,11 +71,11 @@ class ScaleOutdoorDemand(Module):
 
                 scaled_values = []
 
-                s = str(p.GetFieldAsString("outdoor_demand_daily"))
-                floats = map(float, s.split())
+
+                floats = dm_get_double_list(p, "outdoor_demand_daily")
 
                 for i in range(len(floats)):
                     scaled_values.append(floats[i] * scaling_factor[i])
+                dm_set_double_list(p, "outdoor_demand_daily", scaled_values)
 
-                p.SetField("outdoor_demand_daily", ' '.join(str(d) for d in scaled_values))
             self.parcel.finalise()

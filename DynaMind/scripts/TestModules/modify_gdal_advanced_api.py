@@ -30,10 +30,10 @@ class ModifyGDALComponentsAdvanced(Module):
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
-            self.__container = ViewContainer()
+            # self.__container = ViewContainer()
 
         def init(self):
-            self.__container = ViewContainer("component", COMPONENT, READ)
+            self.__container = ViewContainer("component", COMPONENT, MODIFY)
             self.__container.addAttribute("value", Attribute.DOUBLE, WRITE)
             views = []
             views.append(self.__container)

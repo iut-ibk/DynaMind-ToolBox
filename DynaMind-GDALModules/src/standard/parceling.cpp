@@ -63,11 +63,11 @@ void GDALParceling::run()
 		char* geo;
 		OGRGeometry * geo_ogr = poFeature->GetGeometryRef();
 		if (!geo_ogr) {
-			DM::Logger(DM::Warning) << "no geometry " << poFeature->GetFID();
+			DM::Logger(DM::Warning) << "no geometry " << (int) poFeature->GetFID();
 			continue;
 		}
 		if( !geo_ogr->IsValid() ) {
-			DM::Logger(DM::Warning) << "geometry not valid " << poFeature->GetFID();
+			DM::Logger(DM::Warning) << "geometry not valid " << (int) poFeature->GetFID();
 			continue;
 		}
 		geo_ogr->exportToWkt(&geo);

@@ -114,7 +114,7 @@ void GDALPublishResults::updateAttributes(OGRLayer* lyr)
 	}
 }
 
-OGRLayer * GDALPublishResults::openLayer(OGRDataSource *poDS, OGRSpatialReference* oTargetSRS, char** options, std::string layer_name)
+OGRLayer * GDALPublishResults::openLayer(GDALDataset *poDS, OGRSpatialReference* oTargetSRS, char** options, std::string layer_name)
 {
 	OGRLayer * lyr = NULL;
 
@@ -147,8 +147,8 @@ OGRLayer * GDALPublishResults::openLayer(OGRDataSource *poDS, OGRSpatialReferenc
 void GDALPublishResults::run()
 {
 	//Init Data Source
-	OGRSFDriver *poDriver;
-	OGRDataSource *poDS;
+	GDALDriver *poDriver;
+	GDALDataset *poDS;
 
 	DM::Group* lg = dynamic_cast<DM::Group*>(getOwner());
 	int interal_counter = -1;
@@ -192,7 +192,7 @@ void GDALPublishResults::run()
 	}
 
 	if (!driverName.empty()) {
-		poDriver  = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( this->driverName.c_str() );
+		poDriver  = (GDALDriver*) GDALGetDriverByName(this->driverName.c_str() );// OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( this->driverName.c_str() );
 		if( poDriver == NULL )
 		{
 			DM::Logger(DM::Error) << this->driverName << "driver not available.";
@@ -200,9 +200,11 @@ void GDALPublishResults::run()
 			return;
 		}
 		DM::Logger(DM::Error) << "create " << sink_name.str().c_str();
-		poDS = poDriver->CreateDataSource(sink_name.str().c_str());
+		poDS = poDriver->Create( sink_name.str().c_str(), 0, 0, 0, GDT_Unknown, NULL );
+		// poDS = poDriver->CreateDataSource(sink_name.str().c_str());
 	} else {
-		poDS = OGRSFDriverRegistrar::Open(sink.c_str(), true);
+		poDS = (GDALDataset*) GDALOpenEx( sink.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL );
+		//poDS = OGRSFDriverRegistrar::Open(sink.c_str(), true);
 	}
 	if( poDS == NULL )
 	{
@@ -270,7 +272,7 @@ void GDALPublishResults::run()
 		OGRFeature::DestroyFeature(f_new);
 	}
 	lyr->CommitTransaction();
-	OGRDataSource::DestroyDataSource(poDS);
+	GDALClose(poDS);
 }
 
 

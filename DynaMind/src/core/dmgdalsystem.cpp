@@ -48,7 +48,7 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 	keepDatabaseFile(keepDatabaseFile)
 {
 	//Init SpatialiteServer
-	OGRRegisterAll();
+	GDALAllRegister();
 
 	if (EPSG == 0) {
 		DM::Logger(DM::Warning) << "Please set EPSG code for simulation";
@@ -57,9 +57,10 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 	if (workingDir == "") {
 		this->workingDir = QString(QDir::tempPath() + "/dynamind").toStdString();
 	}
-	poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
+	poDrive = (GDALDriver*) GDALGetDriverByName("SQLite" );
+	//poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
-	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	//options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
 	if (EPSG != 0) {
 		options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 	} else {
@@ -70,8 +71,8 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 	DBID = QUuid::createUuid().toString();
 
 	QString dbname =  QString::fromStdString(this->getDBID());
-
-	poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
+	poDS = poDrive->Create( dbname.toStdString().c_str(), 0, 0, 0, GDT_Unknown, 0 );
+	//poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
 
 	if( poDS == NULL ) {
 		DM::Logger(DM::Error) << "couldn't create source";
@@ -104,7 +105,7 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 
 void GDALSystem::setGDALDatabase(const string & database)
 {
-	OGRDataSource::DestroyDataSource(poDS);
+	GDALClose(poDS);
 
 	DBID = QUuid::createUuid().toString();
 
@@ -112,8 +113,9 @@ void GDALSystem::setGDALDatabase(const string & database)
 	QString origin = QString::fromStdString(database);
 	QString dest = QString::fromStdString(this->getDBID());
 	QFile::copy(origin, dest);
-
-	poDS = poDrive->Open(dest.toStdString().c_str(), true);
+	//poDS = poDrive->( dest.toStdString().c_str(), 0, 0, 0, GDT_Unknown, NULL );
+	poDS = (GDALDataset*) GDALOpenEx( dest.toStdString().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE,NULL, NULL, NULL );
+	//poDS = poDrive->GDALOpenEx(dest.toStdString().c_str(), true);
 
 	//Create new state
 	state_ids.push_back(QUuid::createUuid().toString().toStdString());
@@ -159,8 +161,8 @@ GDALSystem::GDALSystem(const GDALSystem &s)
 	QString origin =  QString::fromStdString(s.getDBID());
 	QString dest = QString::fromStdString(this->getDBID());
 	QFile::copy(origin, dest);
-
-	poDS = poDrive->Open(dest.toStdString().c_str(), true);
+	poDS = (GDALDataset*) GDALOpenEx( dest.toStdString().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
+	// poDS = poDrive->Open(dest.toStdString().c_str(), true);
 
 	//Create new state
 	state_ids.push_back(QUuid::createUuid().toString().toStdString());
@@ -190,19 +192,27 @@ void GDALSystem::updateAttributeDefinition(std::string view_name,
 
 void GDALSystem::updateView(const View &v)
 {
+	std::vector<OGRLayer*> layers;
 	//if view is not in map create a new ogr layer
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
 		if ( v.getName() == "dummy" ) {
 			return;
 		}
-		OGRLayer * lyr = this->createLayer(v);
 
-		if (lyr == NULL) {
+		OGRLayer * lyr_tmp = this->createLayer(v);
+
+		if (lyr_tmp == NULL) {
 			DM::Logger(DM::Error) << "couldn't create layer " << v.getName();
 			return;
+		} else {
+			DM::Logger(DM::Debug) << "created layer " << v.getName();
 		}
-		viewLayer[v.getName()] = lyr;
+		this->viewLayer[v.getName()] = lyr_tmp;
+		layers.push_back(lyr_tmp);
+
+
 	}
+	// std::cout << viewLayer.size() << std::endl;
 
 	OGRLayer * lyr = viewLayer[v.getName()];
 	//Update Features
@@ -263,6 +273,7 @@ void GDALSystem::updateView(const View &v)
 			continue;
 		}
 	}
+	GDALFlushCache(poDS);
 }
 
 void GDALSystem::updateViewContainer(DM::ViewContainer v)
@@ -286,7 +297,7 @@ OGRLayer *GDALSystem::getOGRLayer(const View &v)
 	return viewLayer[v.getName()];
 }
 
-OGRDataSource *GDALSystem::getDataSource()
+GDALDataset *GDALSystem::getDataSource()
 {
 	return this->poDS;
 }
@@ -343,14 +354,17 @@ void GDALSystem::setNextByIndex(const View &v, long index){
 void GDALSystem::closeConnection()
 {
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		// OGRDataSource::DestroyDataSource(poDS);
+		DM::Logger(DM::Debug) << "close connection";
+		GDALClose(poDS);
 		poDS = NULL;
 	}
 }
 
 
 void GDALSystem::reConnect() {
-	poDS = poDrive->Open(this->getDBID().c_str(), true);
+	// poDS = poDrive->Open(this->getDBID().c_str(), true);
+	poDS = (GDALDataset*) GDALOpenEx( this->getDBID().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 	//RebuildViewLayer
 	for (std::map<std::string, OGRLayer *>::const_iterator it = viewLayer.begin();
 		 it != viewLayer.end(); ++it) {
@@ -373,7 +387,7 @@ string GDALSystem::getDBID() const
 GDALSystem::~GDALSystem()
 {
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		GDALClose(poDS);
 		poDS = NULL;
 
 		//Delete Database
@@ -416,6 +430,8 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPolygon, NULL );
 		break;
 	}
+
+
 
 	return NULL;
 }

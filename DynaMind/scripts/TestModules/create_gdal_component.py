@@ -38,15 +38,15 @@ class CreateGDALComponents(Module):
             self.CellSize = 20
 
             views = []
-            self.n = ViewContainer("OUT", NODE, WRITE)
+            self.n = ViewContainer("out", NODE, WRITE)
             print self.n
             views.append(self.n)
 
-            self.addGDALData("OUT", views)
+            self.addGDALData("out", views)
 
     
         def run(self):
-            system = self.getGDALData("OUT")
+            system = self.getGDALData("out")
             #print system
             #print self.n
             self.n.setCurrentGDALSystem(system)

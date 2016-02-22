@@ -431,7 +431,7 @@ void GDALAttributeCalculator::run()
 			}
 
 			if (counter%10000 == 0){
-				DM::Logger(DM::Debug) << "Sync Altered" << l_feat->GetFID();
+				DM::Logger(DM::Debug) << "Sync Altered " << (int) l_feat->GetFID();
 				leading_view->syncAlteredFeatures();
 				for (std::map<std::string, DM::ViewContainer *>::const_iterator it = helper_views_name.begin(); it != helper_views_name.end(); ++it ) {
 					it->second->syncAlteredFeatures();

@@ -35,7 +35,7 @@ class ReadAdvancedDataTypes(Module):
 
         def init(self):
             self.__container = ViewContainer("component", COMPONENT, READ)
-            self.__container.addAttribute("vector", Attribute.DOUBLEVECTOR, READ)
+            self.__container.addAttribute("vector", Attribute.DOUBLEVECTOR, MODIFY)
             views = []
             views.append(self.__container)
             self.registerViewContainers(views)
@@ -45,6 +45,7 @@ class ReadAdvancedDataTypes(Module):
             self.__container.reset_reading()
             for feat in self.__container:
                 floats = dm_get_double_list(feat, "vector")
+                # print len(floats)
                 if len(floats) == 0:
                     log("DOUBLEVECTOR not loaded", Error)
                     self.setStatus(DM.MOD_EXECUTION_ERROR)

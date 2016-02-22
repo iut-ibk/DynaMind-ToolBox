@@ -6,6 +6,8 @@
 
 bool DM::DMFeature::SetDoubleList(OGRFeature *f, const std::string &name, const std::vector<double> &values)
 {
+	if (values.size() == 0)
+		return true;
 	//convert to bytestream
 	std::stringbuf bytebuffer;
 	for (size_t i = 0; i < values.size(); i++) {
