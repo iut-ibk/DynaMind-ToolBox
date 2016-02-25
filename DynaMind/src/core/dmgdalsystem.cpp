@@ -405,6 +405,9 @@ GDALSystem::~GDALSystem()
 OGRLayer *GDALSystem::createLayer(const View &v)
 {
 
+	char ** options = NULL;
+	options = CSLSetNameValue( options, "FORMAT", "SPATIALITE" );
+
 	// Add Layer to definition database
 	addLayerToDef(v);
 
@@ -415,19 +418,19 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
 #ifdef _WIN32 //Use in windows since driver seems to have a problem to create wkbNone tables
-		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, options );
 #else
 		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbUnknown, NULL );
 #endif
 		break;
 	case DM::NODE:
-		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPoint, options );
 		break;
 	case DM::EDGE:
-		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbLineString, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbLineString, options );
 		break;
 	case DM::FACE:
-		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPolygon, NULL );
+		return poDS->CreateLayer(v.getName().c_str(), oSourceSRS, wkbPolygon, options );
 		break;
 	}
 
