@@ -38,6 +38,29 @@ typedef boost::error_info<struct tag_errno,int> errno_info;
 typedef boost::error_info<struct errinfo_type_info_name_,std::string> errinfo_type_info_name;
 
 
+bool removeDir(const QString & dirName)
+{
+	bool result = true;
+	QDir dir(dirName);
+
+	if (dir.exists(dirName)) {
+		Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+			if (info.isDir()) {
+				result = removeDir(info.absoluteFilePath());
+			}
+			else {
+				result = QFile::remove(info.absoluteFilePath());
+			}
+
+			if (!result) {
+				return result;
+			}
+		}
+		result = dir.rmdir(dirName);
+	}
+	return result;
+}
+
 void copyfiles(string &cpfile, int iteration)
 {
     QStringList filelist = QString::fromStdString(cpfile).split(";");
@@ -231,6 +254,15 @@ std::string Task::unzipDataStructure(const string &workspace_uuid, const std::st
 	return updatedSimulationFolder.toStdString();
 }
 
+Task::~Task()
+{
+	if (this->unzippedFolder.empty())
+			return;
+	DM::Logger(DM::Standard) << "Remove data folder " << this->unzippedFolder;
+	removeDir(QString::fromStdString(this->unzippedFolder));
+
+}
+
 void Task::run()
 {
     po::positional_options_description p;
@@ -407,15 +439,14 @@ void Task::run()
 
 	bool loadedFromArchive;
 	loadedFromArchive = false;
-	std::string simulation_folder;
 
 
 	if(simulationfile.substr(simulationfile.size() - 4, simulationfile.size()) == ".zip") {
 		DM::Logger(DM::Standard) << "Extract simulation file " << simulationfile;
-		simulation_folder = Task::unzipDataStructure(workspace_uuid, simulationfile);
-		DM::Logger(DM::Standard) << "Using simulation folder " << simulation_folder;
+		this->unzippedFolder = Task::unzipDataStructure(workspace_uuid, simulationfile);
+		DM::Logger(DM::Standard) << "Using simulation folder " << this->unzippedFolder;
 		QString cleanFileName = QString::fromStdString(simulationfile).split("/").last();
-		simulationfile = simulation_folder + "/" + cleanFileName.replace(".zip", ".dyn").toStdString();
+		simulationfile = this->unzippedFolder + "/" + cleanFileName.replace(".zip", ".dyn").toStdString();
 		DM::Logger(DM::Standard) << "Dynamind name "<< simulationfile;
 		loadedFromArchive = true;
 
@@ -437,8 +468,8 @@ void Task::run()
     realsimulationfile = replacestrings(replace, simulationfile);
 
 	if (loadedFromArchive) {
-		DM::Logger(DM::Standard) << "Load modules from " << simulation_folder + "/modules";
-		s.registerModulesFromDirectory(QDir(QString::fromStdString(simulation_folder + "/modules")));
+		DM::Logger(DM::Standard) << "Load modules from " << unzippedFolder + "/modules";
+		s.registerModulesFromDirectory(QDir(QString::fromStdString(unzippedFolder + "/modules")));
 	}
 
     s.loadSimulation(realsimulationfile);

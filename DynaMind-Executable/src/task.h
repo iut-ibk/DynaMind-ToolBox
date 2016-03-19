@@ -11,11 +11,14 @@ private:
     char **argv;
     char **envp;
 
+	std::string unzippedFolder;
+
 	std::string unzipDataStructure(const std::string & workspace_uuid,
 								   const std::string & simulationfile);
 
 public:
-    Task(int & argc, char ** argv, char **envp, QObject *parent = 0) : argc(argc), argv(argv), envp(envp), QObject(parent) {}
+	Task(int & argc, char ** argv, char **envp, QObject *parent = 0) : argc(argc), argv(argv), envp(envp), QObject(parent), unzippedFolder("") {}
+	~Task();
 
 public slots:
     void run();
