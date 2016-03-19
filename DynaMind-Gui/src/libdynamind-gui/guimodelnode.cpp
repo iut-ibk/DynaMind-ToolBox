@@ -44,7 +44,7 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QWebView>
+// #include <QWebView>
 #include <QUrl>
 #include <dmmodule.h>
 #include <dmgroup.h>
