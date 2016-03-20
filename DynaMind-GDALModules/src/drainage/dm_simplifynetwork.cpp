@@ -78,6 +78,13 @@ void DM_SimplifyNetwork::getNext(long edge_id, long start_node)
 
 void DM_SimplifyNetwork::run()
 {
+
+	edge_list.clear();
+	strahler_id.clear();
+	start_nodes.clear();
+	node_point_map.clear();
+	std::map<long, long> visited;
+
 	network.resetReading();
 	// [start_id] -----> [end_id]
 	OGRFeature * f;

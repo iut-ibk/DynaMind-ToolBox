@@ -81,6 +81,14 @@ void DM_Strahler::getNext(long node_id, long current_strahler, std::set<long> & 
 
 void DM_Strahler::run()
 {
+	// reset all data
+	edge_list.clear();
+	strahler_id.clear();
+	visitor_id.clear();
+	start_nodes.clear();
+	end_nodes.clear();
+	node_con_counter.clear();
+
 	network.resetReading();
 	// [end_id] -----> [start_id]
 	OGRFeature * f;

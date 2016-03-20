@@ -36,6 +36,14 @@ void DM_GaphAttributes::init()
 
 void DM_GaphAttributes::run()
 {
+
+	edge_list.clear(); // edge_id <start_id, end_id>
+	construction_age.clear();
+	visitor_id.clear();
+	start_nodes.clear(); // start_id <edge_id>
+	end_nodes.clear(); // end_id <edge_id>
+	node_con_counter.clear();
+
 	network.resetReading();
 	// [end_id] -----> [start_id]
 	OGRFeature * f;

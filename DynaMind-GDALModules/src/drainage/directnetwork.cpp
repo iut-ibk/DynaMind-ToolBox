@@ -74,6 +74,9 @@ double GDALDirectNetwork::walk_the_edge(std::map<long, std::pair<long, long> > &
 
 void GDALDirectNetwork::run()
 {
+	node_depth.clear();
+	n_id_to_fid.clear();
+
 	network.resetReading();
 
 	OGRFeature * f;
