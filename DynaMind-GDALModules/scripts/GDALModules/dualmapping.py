@@ -14,10 +14,12 @@ class Dualmapping(Module):
             self.setIsGDALModule(True)
 
             self.createParameter("file_name", STRING)
-            self.file_name = "/tmp/link.csv"
+            self.file_name = "/tmp/link"
 
             self.createParameter("view_name", STRING)
             self.view_name = "conduit"
+
+
 
         def getHelpUrl(self):
             return "/DynaMind-GDALModules/dualmapping.html"
@@ -28,7 +30,11 @@ class Dualmapping(Module):
             self.network.addAttribute("end_id", Attribute.INT, READ)
             self.network.addAttribute("segment_id", Attribute.INT, READ)
 
-            self.registerViewContainers([self.network])
+
+            self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+
+
+            self.registerViewContainers([self.network, self.dummy])
 
         def run(self):
             #Go from end_node up to every leaf, every conduit can only be accessed once.
@@ -67,10 +73,16 @@ class Dualmapping(Module):
                 except KeyError:
                     pass
             counter = 0
-            f = open(self.file_name, 'w')
+
+            file_name_internal = self.file_name + str(".csv")
+
+            if self.get_group_counter() != -1:
+                file_name_internal = self.file_name + str("_") + str(self.get_group_counter()) + str(".csv")
+            f = open(file_name_internal, 'w')
+
             f.write( "id;start_id;end_id\n")
             for l in self.links:
-                counter+=1
+                counter += 1
                 # print counter, l[0], l[1]
                 f.write(str(counter) + ";" + str(l[0]) + ";" + str(l[1]) + "\n")
 
