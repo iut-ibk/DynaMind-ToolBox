@@ -69,8 +69,8 @@ class SegmentationUndirected(Module):
                 #     print self.node_edge_list[start_node]
 
             # print len(self.node_list)
-            # self.deep = 0
-            # self.deeper = 0
+            self.deep = 0
+            self.deeper = 0
             for edge_id in self.node_edge_list.keys():
                 elements = []
                 attribute = self.edge_list[edge_id][2]
