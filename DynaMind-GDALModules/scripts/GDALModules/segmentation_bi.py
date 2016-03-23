@@ -54,7 +54,6 @@ class SegmentationUndirected(Module):
                 strahler_order = n.GetFieldAsInteger(self.segmentation_parameter)
 
                 self.edge_list[f_id] = (start_node, end_node, strahler_order, f_id)
-
                 if start_node not in self.node_list:
                     self.node_edge_list[start_node] = []
                     self.node_list.add(start_node)
@@ -65,13 +64,10 @@ class SegmentationUndirected(Module):
                 self.node_edge_list[start_node].append(f_id)
                 self.node_edge_list[end_node].append(f_id)
 
-                # if len(self.node_edge_list[start_node]) > 1:
-                #     print self.node_edge_list[start_node]
-
-            # print len(self.node_list)
+            print len(self.node_list)
             self.deep = 0
             self.deeper = 0
-            for edge_id in self.node_edge_list.keys():
+            for edge_id in self.edge_list.keys():
                 elements = []
                 attribute = self.edge_list[edge_id][2]
                 self.get_next_elements(edge_id, True, attribute, elements)
@@ -105,6 +101,7 @@ class SegmentationUndirected(Module):
                 return
             if top_level:
                 self.cluster_id += 1
+            # id does not exist
             self.cluster_list[edge_id] = self.cluster_id
             self.visited_edges.add(edge_id)
 
