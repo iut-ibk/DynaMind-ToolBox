@@ -34,3 +34,4 @@ from dm_value_from_raster import *
 from dm_create_graph import *
 from dualmapping import *
 from segmentation import *
+from segmentation_bi import *
