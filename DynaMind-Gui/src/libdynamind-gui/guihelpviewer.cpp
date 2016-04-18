@@ -45,22 +45,22 @@ GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::GUIHelpViewer)
 {
-//	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
-//		true);
+	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
+		true);
 	ui->setupUi(this);
 	this->url_view_not_avaiable = QUrl(getBaseUrl() + "/index.html");
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
 	if (!m){
-		//ui->webView->load(getBaseUrl() + "/index.html");
+		ui->webView->load(getBaseUrl() + "/index.html");
 		return;
 	}
 	if (!m->getHelpUrl().empty()) {
 		this->currentUrl =getBaseUrl() + "/" +QString::fromStdString(m->getHelpUrl());
-		//ui->webView->load(this->currentUrl);
+		ui->webView->load(this->currentUrl);
 		return;
 	}
-	//ui->webView->load(getBaseUrl() + "/index.html");
+	ui->webView->load(getBaseUrl() + "/index.html");
 }
 
 GUIHelpViewer::~GUIHelpViewer()
@@ -71,5 +71,5 @@ GUIHelpViewer::~GUIHelpViewer()
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
 	currentUrl = getBaseUrl() + "/index.html";
-//	ui->webView->load(this->currentUrl);
+	ui->webView->load(this->currentUrl);
 }
