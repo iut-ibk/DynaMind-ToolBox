@@ -25,7 +25,12 @@
  */
 
 #include "guihelpviewer.h"
-#include "ui_guihelpviewer.h"
+#if QT_VERSION >= 0x050000
+	#include <QWebEngineView>
+#else
+	#include "ui_guihelpviewer.h"
+#endif
+
 #include <QDir>
 #include <QFile>
 
@@ -41,13 +46,12 @@ QString GUIHelpViewer::getBaseUrl()
 	return "file:///" +  QCoreApplication::applicationDirPath().replace(" ", "%20") + "/doc";
 }
 
-GUIHelpViewer::GUIHelpViewer(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::GUIHelpViewer)
+GUIHelpViewer::GUIHelpViewer(QWidget *parent) : QWidget(parent)
 {
 #if QT_VERSION >= 0x050000
 
 #else
+	ui = new Ui::GUIHelpViewer();
 	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
 												 true);
 	ui->setupUi(this);
@@ -74,16 +78,30 @@ void GUIHelpViewer::showHelpForModule(DM::Module* m) {
 #endif
 		return;
 	}
+	this->currentUrl =getBaseUrl() + "/index.html";
 #if QT_VERSION >= 0x050000
 #else
+
 	ui->webView->load(getBaseUrl() + "/index.html");
+	this->parent()
 #endif
 }
+
 
 GUIHelpViewer::~GUIHelpViewer()
 {
 	delete ui;
 }
+
+#if QT_VERSION >= 0x050000
+void GUIHelpViewer::show()
+{
+	QWebEngineView *view = new QWebEngineView();
+	view->load(QUrl(this->currentUrl));
+	view->show();
+}
+#endif
+
 
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
