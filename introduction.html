@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
+  <title>Overview &mdash; DynaMind-ToolBox 0.11.5 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="DynaMind-ToolBox 0.9.0 documentation" href="index.html"/>
+    <link rel="top" title="DynaMind-ToolBox 0.11.5 documentation" href="index.html"/>
         <link rel="next" title="Install and Run" href="install_and_compile.html"/>
         <link rel="prev" title="Welcome to DynaMind’s User Guide" href="index.html"/> 
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.9.0
+                0.11.5
               </div>
             
           
@@ -82,7 +82,7 @@
             
             
                 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Overview</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simulations">Simulations</a></li>
 </ul>
 </li>
@@ -153,16 +153,16 @@
 <p>DynaMind follows a modular design concepts with <a class="reference external" href="https://github.com/iut-ibk/DynaMind">DynaMind</a> being the heart and sole of the workflow/simulation engine. <a class="reference external" href="https://github.com/iut-ibk/DynaMind">DynaMind</a>  provides the workflow logic and module handling, which can be accessed through following C++ or Python interfaces:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li><a class="reference internal" href="DynaMind/simulations_python.html"><em>Simulation interface</em></a> to create, modify and execute simulations</li>
-<li><a class="reference internal" href="DynaMind/module.html"><em>Module interface</em></a> that enables users to developed their own modules through an easy to use database interface building on in the <a class="reference external" href="http://www.gdal.org">GDAL</a> library.</li>
+<li><a class="reference internal" href="DynaMind/simulations_python.html"><span class="doc">Simulation interface</span></a> to create, modify and execute simulations</li>
+<li><a class="reference internal" href="DynaMind/module.html"><span class="doc">Module interface</span></a> that enables users to developed their own modules through an easy to use database interface building on in the <a class="reference external" href="http://www.gdal.org">GDAL</a> library.</li>
 </ol>
 </div></blockquote>
 <p>To provide a ready to use environment the DynaMind-Toolbox combines several tools building on <a class="reference external" href="https://github.com/iut-ibk/DynaMind">DynaMind</a> including:</p>
 <ul class="simple">
-<li>Standard modules to import and export data from GIS databases and Shapefiles and do simple manipulations <code class="xref doc docutils literal"><span class="pre">module</span> <span class="pre">interface</span></code></li>
-<li>Graphical user interface to build simulations <a class="reference internal" href="quick-intro-gui.html"><em>A Quick Introduction to the DynaMind GUI</em></a></li>
-<li><a class="reference internal" href="DynaMind-Executable/index.html"><em>Command line</em></a></li>
-<li><a class="reference internal" href="DynaMind/simulations_python.html"><em>Python interface</em></a> for setting up workflows</li>
+<li>Standard modules to import and export data from GIS databases and Shapefiles and do simple manipulations <span class="xref doc">module interface</span></li>
+<li>Graphical user interface to build simulations <a class="reference internal" href="quick-intro-gui.html"><span class="doc">A Quick Introduction to the DynaMind GUI</span></a></li>
+<li><a class="reference internal" href="DynaMind-Executable/index.html"><span class="doc">Command line</span></a></li>
+<li><a class="reference internal" href="DynaMind/simulations_python.html"><span class="doc">Python interface</span></a> for setting up workflows</li>
 </ul>
 <img alt="_images/overview.png" src="_images/overview.png" />
 <div class="section" id="simulations">
@@ -171,9 +171,9 @@
 <img alt="_images/workflow.png" src="_images/workflow.png" />
 <p>In a typical simulation a series of modules are combined to define a workflow.</p>
 <ul class="simple">
-<li><em>Data Import:</em>  Firstly, a simulation requires data, often from multiple sources. The standard modules provide therefore a set of modules building on the GDAL library supporting a variety of standard GIS exchange formats (<a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html"><em>see here</em></a>) as well as non GIS data.</li>
-<li><em>Interlinked Data Set:</em> An interlinked data set provides the foundation for complex simulations. The Standard Modules provide several modules to <a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html"><em>spatially</em></a> or <a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html"><em>non-spatially</em></a> link different data sets to an interlinked data model that reflects this interrelationships.</li>
-<li><em>Manipulate Data:</em> To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (<a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html"><em>see here</em></a>). Combining several of this modules allows complex processes to be described.</li>
+<li><em>Data Import:</em>  Firstly, a simulation requires data, often from multiple sources. The standard modules provide therefore a set of modules building on the GDAL library supporting a variety of standard GIS exchange formats (<a class="reference internal" href="DynaMind-GDALModules/gdalimportdata.html"><span class="doc">see here</span></a>) as well as non GIS data.</li>
+<li><em>Interlinked Data Set:</em> An interlinked data set provides the foundation for complex simulations. The Standard Modules provide several modules to <a class="reference internal" href="DynaMind-GDALModules/gdalspatiallinking.html"><span class="doc">spatially</span></a> or <a class="reference internal" href="DynaMind-GDALModules/nonspatiallinking.html"><span class="doc">non-spatially</span></a> link different data sets to an interlinked data model that reflects this interrelationships.</li>
+<li><em>Manipulate Data:</em> To manipulate the interlinked data set DynaMind provides a number of generic modules that allow to derive attributes from the interlinked data (<a class="reference internal" href="DynaMind-GDALModules/gdalattributecalculator.html"><span class="doc">see here</span></a>). Combining several of this modules allows complex processes to be described.</li>
 <li><em>Grouping of Modules:</em> Models can be combined to a module Group. Such a group can be executed repeatedly. Similar to a for loop, groups can be used to iteratively manipulate data to describe dynamic processes.</li>
 <li><em>Export and Publish Results</em> To publish the resulting data sets the Standard Modules provide modules to export data into common GIS exchange formats or GIS databases.</li>
 </ul>
@@ -221,7 +221,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.9.0',
+            VERSION:'0.11.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

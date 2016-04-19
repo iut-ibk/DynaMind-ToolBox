@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Consumption &mdash; DynaMind-ToolBox 0.9.0 documentation</title>
+  <title>Consumption &mdash; DynaMind-ToolBox 0.11.5 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="DynaMind-ToolBox 0.9.0 documentation" href="../index.html"/>
+    <link rel="top" title="DynaMind-ToolBox 0.11.5 documentation" href="../index.html"/>
         <link rel="up" title="CityDrain3" href="index.html"/>
         <link rel="next" title="CityDrain3" href="citydrain_api.html"/>
         <link rel="prev" title="RWHT" href="node_rwht.html"/> 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.9.0
+                0.11.5
               </div>
             
           
@@ -100,7 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="node_mixer.html">Mixer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_flowprobe.html">Flow Probe</a></li>
 <li class="toctree-l3"><a class="reference internal" href="node_rwht.html">RWHT</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Consumption</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Consumption</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#in-and-out">In and Out</a></li>
 </ul>
@@ -162,6 +162,41 @@
 <p>A simple node producing constant outflows</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>const_flow_potable</td>
+<td>double</td>
+<td>outflow potable</td>
+</tr>
+<tr class="row-odd"><td>const_flow_nonpotable</td>
+<td>double</td>
+<td>outflow non-potable</td>
+</tr>
+<tr class="row-even"><td>const_flow_greywater</td>
+<td>double</td>
+<td>outflow grey water</td>
+</tr>
+<tr class="row-odd"><td>const_flow_sewer</td>
+<td>double</td>
+<td>outflow sewer</td>
+</tr>
+<tr class="row-even"><td>const_flow_stormwater</td>
+<td>double</td>
+<td>outflow storm water</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="in-and-out">
 <h2>In and Out<a class="headerlink" href="#in-and-out" title="Permalink to this headline">¶</a></h2>
@@ -244,7 +279,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.9.0',
+            VERSION:'0.11.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

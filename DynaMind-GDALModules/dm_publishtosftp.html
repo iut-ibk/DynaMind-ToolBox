@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Subdivide Parcels &mdash; DynaMind-ToolBox 0.11.5 documentation</title>
+  <title>Publish Simulation Database to SFTP &mdash; DynaMind-ToolBox 0.11.5 documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
     <link rel="top" title="DynaMind-ToolBox 0.11.5 documentation" href="../index.html"/>
         <link rel="up" title="Standard Modules" href="index.html"/>
-        <link rel="next" title="Generate Simple Buildings" href="gdalcreatebuilding.html"/>
-        <link rel="prev" title="Parcel Faces" href="gdalparceling.html"/> 
+        <link rel="next" title="Spatial Linking" href="gdalspatiallinking.html"/>
+        <link rel="prev" title="Export Simulation Database" href="dm_exportsimulationdb.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -91,25 +91,28 @@
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html">DynaMind</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind/index.html#dynamind-python-api">DynaMind Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-Gui/index.html">DynaMind GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Standard Modules</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html#city-modules">City Modules</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#urban-form">Urban Form</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gdalparceling.html">Parcel Faces</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Subdivide Parcels</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Standard Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#data-import-and-export">Data Import and Export</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gdalhotstarter.html">Load Simulation Database</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalimportdata.html">Import GIS Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdalpublishresults.html">Export GIS Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gdallogattributes.html">Log Attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dm_exportsimulationdb.html">Export Simulation Database</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Publish Simulation Database to SFTP</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#parameter">Parameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#data-stream">Data-stream</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-name">Module Name</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-description">Detailed Description</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gdalcreatebuilding.html">Generate Simple Buildings</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#network-generation">Network Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#network-analysis">Network Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#performance-assessment">Performance Assessment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#linking">Linking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#data-handling">Data Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#geometry-processing">Geometry Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#workflow-control">Workflow Control</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#city-modules">City Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-Performance-Assessment/index.html">CityDrain3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../DynaMind-Executable/index.html">DynaMind Commandline</a></li>
 </ul>
@@ -144,11 +147,11 @@
       
           <li><a href="index.html">Standard Modules</a> &raquo;</li>
       
-    <li>Subdivide Parcels</li>
+    <li>Publish Simulation Database to SFTP</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/DynaMind-GDALModules/gdalparcelsplit.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/DynaMind-GDALModules/dm_publishtosftp.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -158,16 +161,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="subdivide-parcels">
-<h1>Subdivide Parcels<a class="headerlink" href="#subdivide-parcels" title="Permalink to this headline">¶</a></h1>
-<p>Splits a face into n parts with a defined width.</p>
+  <div class="section" id="publish-simulation-database-to-sftp">
+<h1>Publish Simulation Database to SFTP<a class="headerlink" href="#publish-simulation-database-to-sftp" title="Permalink to this headline">¶</a></h1>
+<p>The module exports the simulation database to a sftp server.</p>
 <div class="section" id="parameter">
 <h2>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="21%" />
-<col width="63%" />
+<col width="19%" />
+<col width="20%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Name</th>
@@ -176,25 +179,33 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>blockName</td>
+<tr class="row-even"><td>username</td>
 <td>STRING</td>
-<td>vew name of the faces to split</td>
+<td>username</td>
 </tr>
-<tr class="row-odd"><td>subdevisionName</td>
+<tr class="row-odd"><td>password</td>
 <td>STRING</td>
-<td>view name of the split faces</td>
+<td>password</td>
 </tr>
-<tr class="row-even"><td>width</td>
-<td>DOUBLE</td>
-<td>target width</td>
+<tr class="row-even"><td>port</td>
+<td>INT</td>
+<td>port of the server</td>
 </tr>
-<tr class="row-odd"><td>split_first</td>
-<td>BOOL</td>
-<td>split a given face along its short side first before start splitting</td>
+<tr class="row-odd"><td>host</td>
+<td>STRING</td>
+<td>address of host</td>
 </tr>
-<tr class="row-even"><td>target_length</td>
-<td>DOUBLE</td>
-<td>target length. If set split first is ignored</td>
+<tr class="row-even"><td>folder_name</td>
+<td>STRING</td>
+<td>folder name on server</td>
+</tr>
+<tr class="row-odd"><td>file_name</td>
+<td>STRING</td>
+<td>file name on server</td>
+</tr>
+<tr class="row-even"><td>step</td>
+<td>INT</td>
+<td>if executed in loop, at which increment the database is exported</td>
 </tr>
 </tbody>
 </table>
@@ -204,7 +215,7 @@
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
-<col width="23%" />
+<col width="24%" />
 <col width="16%" />
 <col width="6%" />
 <col width="37%" />
@@ -218,35 +229,18 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>blockName</td>
+<tr class="row-even"><td>dummy</td>
 <td>&nbsp;</td>
-<td>FACE</td>
-<td>read</td>
-<td>faces to split</td>
-</tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<td>SUBSYSYSTEM</td>
+<td>modify</td>
 <td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr class="row-even"><td>subdevisionName</td>
-<td>&nbsp;</td>
-<td>FACE</td>
-<td>write</td>
-<td>resulting faces</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="module-name">
 <h2>Module Name<a class="headerlink" href="#module-name" title="Permalink to this headline">¶</a></h2>
-<p><span class="target" id="index-0"></span>GDALParcelSplit</p>
-</div>
-<div class="section" id="detailed-description">
-<h2>Detailed Description<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h2>
-<p>Splits a polygon along its longer side into n faces. n is calculated as integer value of the
-longside of the polygon dived by the given width.</p>
+<p><span class="target" id="index-0"></span>DM_Publish_SFTP</p>
 </div>
 </div>
 
@@ -257,10 +251,10 @@ longside of the polygon dived by the given width.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="gdalcreatebuilding.html" class="btn btn-neutral float-right" title="Generate Simple Buildings" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gdalspatiallinking.html" class="btn btn-neutral float-right" title="Spatial Linking" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gdalparceling.html" class="btn btn-neutral" title="Parcel Faces" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dm_exportsimulationdb.html" class="btn btn-neutral" title="Export Simulation Database" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
