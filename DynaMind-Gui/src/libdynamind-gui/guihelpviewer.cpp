@@ -24,8 +24,9 @@
  *
  */
 
+#include <QtGlobal>
 #include "guihelpviewer.h"
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5,0, 0)
 	#include <QWebEngineView>
 #else
 	#include "ui_guihelpviewer.h"
@@ -48,12 +49,10 @@ QString GUIHelpViewer::getBaseUrl()
 
 GUIHelpViewer::GUIHelpViewer(QWidget *parent) : QWidget(parent)
 {
-#if QT_VERSION >= 0x050000
-
-#else
+#if QT_VERSION  <  QT_VERSION_CHECK(5, 0, 0)
 	ui = new Ui::GUIHelpViewer();
-	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
-												 true);
+//	QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled,
+//												 true);
 	ui->setupUi(this);
 	this->url_view_not_avaiable = QUrl(getBaseUrl() + "/index.html");
 #endif
@@ -62,28 +61,23 @@ GUIHelpViewer::GUIHelpViewer(QWidget *parent) : QWidget(parent)
 }
 void GUIHelpViewer::showHelpForModule(DM::Module* m) {
 	if (!m){
-#if QT_VERSION >= 0x050000
-#else
+
+#if QT_VERSION <  QT_VERSION_CHECK(5, 0, 0)
 		ui->webView->load(getBaseUrl() + "/index.html");
 #endif
-
-
 		return;
 	}
 	if (!m->getHelpUrl().empty()) {
 		this->currentUrl =getBaseUrl() + "/" +QString::fromStdString(m->getHelpUrl());
-#if QT_VERSION >= 0x050000
-#else
+
+#if QT_VERSION <  QT_VERSION_CHECK(5, 0, 0)
 		ui->webView->load(this->currentUrl);
 #endif
 		return;
 	}
 	this->currentUrl =getBaseUrl() + "/index.html";
-#if QT_VERSION >= 0x050000
-#else
-
+#if QT_VERSION<  QT_VERSION_CHECK(5, 0, 0)
 	ui->webView->load(getBaseUrl() + "/index.html");
-	this->parent()
 #endif
 }
 
@@ -93,7 +87,7 @@ GUIHelpViewer::~GUIHelpViewer()
 	delete ui;
 }
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 void GUIHelpViewer::show()
 {
 	QWebEngineView *view = new QWebEngineView();
@@ -106,8 +100,7 @@ void GUIHelpViewer::show()
 void GUIHelpViewer::on_commandBackToOvwerView_clicked()
 {
 	currentUrl = getBaseUrl() + "/index.html";
-#if QT_VERSION >= 0x050000
-#else
+#if QT_VERSION <  QT_VERSION_CHECK(5, 0, 0)
 	ui->webView->load(this->currentUrl);
 #endif
 }
