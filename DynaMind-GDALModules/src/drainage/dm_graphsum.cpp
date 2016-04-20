@@ -1,13 +1,13 @@
-#include "dm_gaphattributes.h"
+#include "dm_graphsum.h"
 #include <dm.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>
 
-DM_DECLARE_NODE_NAME(DM_GaphAttributes, Network Analysis)
+DM_DECLARE_NODE_NAME(DM_GaphSum, Network Analysis)
 
 
 
-DM_GaphAttributes::DM_GaphAttributes()
+DM_GaphSum::DM_GaphSum()
 {
 	GDALModule = true;
 
@@ -22,7 +22,7 @@ DM_GaphAttributes::DM_GaphAttributes()
 
 }
 
-void DM_GaphAttributes::init()
+void DM_GaphSum::init()
 {
 	network = DM::ViewContainer(view_name, DM::EDGE, DM::READ);
 	network.addAttribute(attribute_read,  DM::Attribute::DOUBLE, DM::READ);
@@ -34,15 +34,18 @@ void DM_GaphAttributes::init()
 	this->registerViewContainers(data_stream);
 }
 
-void DM_GaphAttributes::run()
+void DM_GaphSum::run()
 {
 
 	edge_list.clear(); // edge_id <start_id, end_id>
-	construction_age.clear();
+	edge_sum.clear();
 	visitor_id.clear();
 	start_nodes.clear(); // start_id <edge_id>
 	end_nodes.clear(); // end_id <edge_id>
 	node_con_counter.clear();
+	edge_sum.clear();
+	edge_vals.clear();
+	visited_global.clear();
 
 	network.resetReading();
 	// [end_id] -----> [start_id]
@@ -60,7 +63,8 @@ void DM_GaphAttributes::run()
 		if (start_id == end_id)
 			continue;
 
-		construction_age[f->GetFID()] = f->GetFieldAsInteger(this->attribute_read.c_str());
+		edge_vals[f->GetFID()] = f->GetFieldAsDouble(this->attribute_read.c_str());
+		edge_sum[f->GetFID()] = 0;
 		visitor_id[f->GetFID()] = -1;
 		edge_list[f->GetFID()] = std::pair<long, long>(start_id, end_id);
 
@@ -107,24 +111,27 @@ void DM_GaphAttributes::run()
 		}
 		// Get starting edge with inital strahler number 1
 		std::set<long> visted;
-		getNext(it->first, 9999, visted);
+		getNext(it->first, 0, visted);
 	}
 	DM::Logger(DM::Debug) << counter << "/" << start_nodes;
+
 	// Write Strahler
 	DM::Logger(DM::Debug) << "Write number";
 	network.resetReading();
 	// [end_id] -----> [start_id]
 	while (f = network.getNextFeature()) {
-		f->SetField(this->attribute_write.c_str(), construction_age[f->GetFID()]);
+		f->SetField(this->attribute_write.c_str(), edge_sum[f->GetFID()]);
 	}
 }
 
-void DM_GaphAttributes::getNext(long node_id, long current_min_age, std::set<long> &visted)
+void DM_GaphSum::getNext(long node_id, double current_sum, std::set<long> &visted)
 {
 	// [end_id] -----> [start_id]
 	if (start_nodes.count(node_id) == 0) {
 		return;
 	}
+
+
 
 	std::vector<long> start_edges = start_nodes[node_id];
 	bool change_next = false;
@@ -132,23 +139,25 @@ void DM_GaphAttributes::getNext(long node_id, long current_min_age, std::set<lon
 	// Start Node
 	std::vector<long> edges_at_start = end_nodes[node_id];
 
-
 	foreach (long edge, start_edges) {
 		// Get next edge
+		double sum_new = current_sum;
+		if (visited_global.find(edge) == visited_global.end())
+			sum_new = current_sum + edge_vals[edge];
 		std::pair<long, long> e = edge_list[edge];
-		long next = e.first;
 
-		if (construction_age[edge] < current_min_age)
-			current_min_age = construction_age[edge];
-
-		construction_age[edge] = current_min_age;
+		edge_sum[edge] += sum_new;
 
 		if (visted.find(edge) != visted.end()) {
 			DM::Logger(DM::Error) << "Break Loop";
 			continue;
 		}
 		visted.insert(edge);
-		getNext(next, current_min_age, visted);
+		visited_global.insert(edge);
+
+		long next = e.first;
+
+		getNext(next, sum_new, visted);
 		break; //Only follow one path
 	}
 }

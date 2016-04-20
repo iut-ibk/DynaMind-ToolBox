@@ -14,6 +14,7 @@ Data Import and Export
    gdalpublishresults
    gdallogattributes
    dm_exportsimulationdb
+   dm_publishtosftp
 
 
 

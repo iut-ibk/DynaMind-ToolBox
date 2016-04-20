@@ -29,3 +29,4 @@ from gdalpublishtogeoserver import *
 from dancestations import *
 from dancetimeseries import *
 from dm_simdb_dropbox import *
+from publishtosftp import *

@@ -44,7 +44,12 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QMessageBox>
+#if QT_VERSION >= 0x050000
+
+#else
 #include <QWebView>
+#endif
+
 #include <QUrl>
 #include <dmmodule.h>
 #include <dmgroup.h>

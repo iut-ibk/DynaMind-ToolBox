@@ -89,7 +89,7 @@ GDALDMSWMM::GDALDMSWMM()
 
 void GDALDMSWMM::init() {
 	hasWeir = false;
-    hasRaintanks = false;
+	hasRaintanks = false;
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("start_id", "node", DM::READ);
 	conduit.addAttribute("end_id", "node", DM::READ);
@@ -144,12 +144,12 @@ void GDALDMSWMM::init() {
 	}
 
 	if (inViews.find("rwht") != inViews.end() && explictly_consider_WSUD) {
-        this->hasRaintanks = true;
-        rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::READ);
-        rwhts.addAttribute("sub_catchment_id", DM::Attribute::LINK, DM::READ);
-        rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::READ);
-        rwhts.addAttribute("connected_area", DM::Attribute::DOUBLE, DM::READ);
-    }
+		this->hasRaintanks = true;
+		rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::READ);
+		rwhts.addAttribute("sub_catchment_id", DM::Attribute::LINK, DM::READ);
+		rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::READ);
+		rwhts.addAttribute("connected_area", DM::Attribute::DOUBLE, DM::READ);
+	}
 
 
 
@@ -169,8 +169,8 @@ void GDALDMSWMM::init() {
 	data_stream.push_back(&nodes);
 	if (this->hasWeir)
 		data_stream.push_back(&weir);
-    if (this->hasRaintanks)
-        data_stream.push_back(&rwhts);
+	if (this->hasRaintanks)
+		data_stream.push_back(&rwhts);
 	data_stream.push_back(&city);
 
 
@@ -183,8 +183,8 @@ void GDALDMSWMM::init() {
 	data_map["node"]  = &this->nodes;
 	if (this->hasWeir)
 		data_map["weir"]  = &this->weir;
-    if (this->hasRaintanks)
-        data_map["rwht"]  = &this->rwhts;
+	if (this->hasRaintanks)
+		data_map["rwht"]  = &this->rwhts;
 	data_map["city"]  = &this->city;
 
 	this->registerViewContainers(data_stream);
@@ -207,11 +207,12 @@ void GDALDMSWMM::run() {
 	double cf = this->climateChangeFactor;
 	std::vector<double> rainvec;
 
-	if (this->climateChangeFactorFromCity) {
+	if (this->climateChangeFactorFromCity || !this->rainfile_from_vector.empty()) {
 		this->city.resetReading();
 		OGRFeature * city_f;
 		while(city_f = this->city.getNextFeature()){
-			cf = city_f->GetFieldAsDouble("climate_change_factor");
+			if (this->climateChangeFactorFromCity)
+				cf = city_f->GetFieldAsDouble("climate_change_factor");
 			if (!this->rainfile_from_vector.empty())
 				DM::DMFeature::GetDoubleList(city_f, this->rainfile_from_vector, rainvec);
 		}
@@ -231,8 +232,8 @@ void GDALDMSWMM::run() {
 
 	SWMMWriteAndRead * swmm;
 	swmm = new SWMMWriteAndRead(data_map, this->RainFile, this->FileName);
-		if (!this->rainfile_from_vector.empty())
-			swmm->setRainVec(rainvec);
+	if (!this->rainfile_from_vector.empty())
+		swmm->setRainVec(rainvec);
 	swmm->setDeleteSWMMWhenDone(this->deleteSWMM);
 
 	if (!this->rainfile_from_vector.empty())
