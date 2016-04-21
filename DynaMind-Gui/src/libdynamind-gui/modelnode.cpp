@@ -593,7 +593,7 @@ void ModelNode::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event )
 
 void ModelNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	DM::Logger(DM::Standard) << "start";
+	// DM::Logger(DM::Standard) << "start";
 	if (!showModelEdit)
 		this->timer_mouse_click.start();
 
