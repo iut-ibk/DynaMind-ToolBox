@@ -71,7 +71,7 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 	DBID = QUuid::createUuid().toString();
 
 	QString dbname =  QString::fromStdString(this->getDBID());
-	poDS = poDrive->Create( dbname.toStdString().c_str(), 0, 0, 0, GDT_Unknown, 0 );
+	poDS = poDrive->Create( dbname.toStdString().c_str(), 0, 0, 0, GDT_Unknown, options );
 	//poDS = poDrive->CreateDataSource(dbname.toStdString().c_str() , options );
 
 	if( poDS == NULL ) {
