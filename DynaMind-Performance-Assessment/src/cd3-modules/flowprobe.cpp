@@ -24,6 +24,7 @@ int FlowProbe::f(ptime time, int dt) {
 
 bool FlowProbe::init(ptime start, ptime end, int dt) {
 	totalflow=0;
+	flow.clear();
 	return true;
 }
 
