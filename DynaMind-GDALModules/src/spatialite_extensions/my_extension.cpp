@@ -5,7 +5,7 @@
 
 
 
-std::string my_extension::multiply_vector(const std::vector<double> & vec, double mutiplyer, std::vector<double> & ress) {
+void my_extension::multiply_vector(const std::vector<double> & vec, double mutiplyer, std::vector<double> & ress) {
 
 	for (int i = 0; i < vec.size(); i++) {
 		ress[i] = vec[i] * mutiplyer;
@@ -29,8 +29,23 @@ void my_extension::vector_addition(std::vector<double> & dvec, const std::vector
 
 
 double my_extension::vector_sum(const std::vector<double> & data) {
-	double sum = std::accumulate(data.begin(), data.end(), 0);
+	double sum = std::accumulate(data.begin(), data.end(), 0.0);
 	return sum;
+}
+
+
+std::string my_extension::dm_vector_to_string(const std::vector<double> & vec) {
+	std::stringstream ss;
+	bool first = true;
+	foreach (double s, vec) {
+		if (!first)
+			ss << " ";
+		ss << s;
+		first  =false;
+	}
+	std::string ress = ss.str();
+
+	return ress;
 }
 
 
