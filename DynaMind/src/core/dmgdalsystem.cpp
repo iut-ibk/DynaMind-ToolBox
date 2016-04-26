@@ -60,7 +60,9 @@ GDALSystem::GDALSystem(int EPSG, std::string workingDir, bool keepDatabaseFile) 
 	poDrive = (GDALDriver*) GDALGetDriverByName("SQLite" );
 	//poDrive = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( "SQLite" );
 	char ** options = NULL;
-	//options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
+	options = CSLSetNameValue( options, "OGR_SQLITE_SYNCHRONOUS", "OFF" );
+	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "2048" );
+	options = CSLSetNameValue( options, "OGR_SQLITE_PRAGMA", "temp_store=2" );
 	if (EPSG != 0) {
 		options = CSLSetNameValue( options, "SPATIALITE", "YES" );
 	} else {
@@ -114,7 +116,18 @@ void GDALSystem::setGDALDatabase(const string & database)
 	QString dest = QString::fromStdString(this->getDBID());
 	QFile::copy(origin, dest);
 	//poDS = poDrive->( dest.toStdString().c_str(), 0, 0, 0, GDT_Unknown, NULL );
-	poDS = (GDALDataset*) GDALOpenEx( dest.toStdString().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE,NULL, NULL, NULL );
+
+	char ** options = NULL;
+	options = CSLSetNameValue( options, "OGR_SQLITE_SYNCHRONOUS", "OFF" );
+	options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "2048" );
+	options = CSLSetNameValue( options, "OGR_SQLITE_PRAGMA", "temp_store=2" );
+	if (EPSG != 0) {
+		options = CSLSetNameValue( options, "SPATIALITE", "YES" );
+	} else {
+		DM::Logger(DM::Warning) << "No EPSG code defined, disable spatialite backend";
+	}
+
+	poDS = (GDALDataset*) GDALOpenEx( dest.toStdString().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE,NULL, options, NULL );
 	//poDS = poDrive->GDALOpenEx(dest.toStdString().c_str(), true);
 
 	//Create new state
@@ -407,7 +420,7 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 
 	char ** options = NULL;
 	options = CSLSetNameValue( options, "FORMAT", "SPATIALITE" );
-
+	//options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
 	// Add Layer to definition database
 	addLayerToDef(v);
 
