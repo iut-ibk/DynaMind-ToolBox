@@ -60,7 +60,7 @@ IF(WIN32 AND NOT UNIX)
               ${Boost_LIBRARY_DIR}/boost_date_time-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_filesystem-*-mt-1_*.dll
               ${Boost_LIBRARY_DIR}/boost_program_options-*-mt-1_*.dll
-              ${SWMM_LIB_BINARY_DIR}/swmm*.dll
+              ${DynaMind-ToolBox_BINARY_DIR}/output/Modules/swmm*.dll
               ${GDALBIN}/*.dll
               ${SFCGALBIN}/*.dll)
 
