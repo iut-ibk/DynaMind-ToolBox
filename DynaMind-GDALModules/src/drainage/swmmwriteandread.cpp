@@ -715,8 +715,8 @@ void SWMMWriteAndRead::writeConduits(std::fstream &inp) {
 
         double length = line->get_Length();
 
-        if (length < 0.5)
-            continue;
+//		if (length < 0.05)
+//            continue;
 
         int StartNode = conduit->GetFieldAsInteger("start_id");
         int EndNode = conduit->GetFieldAsInteger("end_id");
@@ -883,8 +883,8 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
         std::vector<double> depth;
         std::vector<double> width;
 
-        DM::DMFeature::GetDoubleList(conduit, "cscol1", width);
-        DM::DMFeature::GetDoubleList(conduit, "cscol2", depth);
+		DM::DMFeature::GetDoubleListFromString(conduit, "cscol1", width);
+		DM::DMFeature::GetDoubleListFromString(conduit, "cscol2", depth);
 
         std::stringstream coordinates;
         coordinates << std::fixed;
