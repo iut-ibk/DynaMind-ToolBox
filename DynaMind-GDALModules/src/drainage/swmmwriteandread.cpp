@@ -883,8 +883,8 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
         std::vector<double> depth;
         std::vector<double> width;
 
-		DM::DMFeature::GetDoubleListFromString(conduit, "cscol1", width);
-		DM::DMFeature::GetDoubleListFromString(conduit, "cscol2", depth);
+		DM::DMFeature::GetDoubleList(conduit, "cscol1", width);
+		DM::DMFeature::GetDoubleList(conduit, "cscol2", depth);
 
         std::stringstream coordinates;
         coordinates << std::fixed;
