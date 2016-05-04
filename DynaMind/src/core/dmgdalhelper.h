@@ -16,6 +16,7 @@ public:
 	static bool SetDoubleList(OGRFeature * f, const std::string & name, const std::vector<double> & values);
 
 	static bool GetDoubleList(OGRFeature *f, const std::string & name, std::vector<double> & values);
+	static bool GetDoubleListFromString(OGRFeature *f, const std::string &name, std::vector<double> &values);
 };
 }
 

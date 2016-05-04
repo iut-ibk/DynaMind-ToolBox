@@ -29,4 +29,13 @@ bool DM::DMFeature::GetDoubleList(OGRFeature *f, const std::string &name, std::v
 	return true;
 }
 
+bool DM::DMFeature::GetDoubleListFromString(OGRFeature *f, const std::string &name, std::vector<double> &values)
+{
+	std::istringstream lineStream(f->GetFieldAsString(name.c_str()));
+
+	double num;
+	while (lineStream >> num) values.push_back(num);
+	return true;
+}
+
 
