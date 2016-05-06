@@ -33,22 +33,6 @@ DM::ViewContainer *GDALHotStarter::viewContainerFactory(OGRLayer *lyr, OGRLayer 
 		OGRFeature::DestroyFeature(f);
 		//def_lyr->GetNextFeature();
 	}
-
-	/*for (int i = 0; i < def->GetFieldCount(); i++){
-		OGRFieldDefn * fdef = def->GetFieldDefn(i);
-		//DM Datatype
-		DM::Attribute::AttributeType type = DM::GDALUtilities::OGRToDMAttribute(fdef);
-		if (type == DM::Attribute::NOTYPE)
-			continue;
-		DM::Logger(DM::Debug) << "Load attribute" << fdef->GetNameRef();
-
-		std::string attribute_name = fdef->GetNameRef();
-		std::transform(attribute_name.begin(), attribute_name.end(), attribute_name.begin(), ::tolower);
-
-		translator[attribute_name] = fdef->GetNameRef();
-
-		view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
-	}*/
 	return view;
 }
 
