@@ -131,6 +131,12 @@ public:
 	Filter(std::string viewName, DM::FilterArgument spatialFilter, DM::FilterArgument attributeFilter);
 };
 
+class DM::GDALSystem {
+public:
+	GDALSystem();
+	void setGDALDatabase(std::string filename);
+};
+
 %feature("autodoc", "
 
     The DynaMind module class
