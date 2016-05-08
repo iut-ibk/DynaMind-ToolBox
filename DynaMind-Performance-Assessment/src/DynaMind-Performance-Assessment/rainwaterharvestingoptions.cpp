@@ -54,6 +54,9 @@ RainWaterHarvestingOptions::RainWaterHarvestingOptions()
 	end_date_name = "end_date";
 	this->addParameter("end_data_name", DM::STRING, &this->end_date_name);
 
+	add_time_series_data = true;
+	this->addParameter("add_time_series_data", DM::BOOL, &this->add_time_series_data);
+
 	parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
 	parcels.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	parcels.addAttribute("potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::READ);
@@ -120,8 +123,10 @@ void RainWaterHarvestingOptions::run()
 		p->SetField("annual_outdoor_demand", outdoor_demand);
 		p->SetField("annual_non_potable_demand", non_potable_demand);
 
-		if (counter % 1000 == 0){
+		if (counter % 100000 == 0){
+			DM::Logger(DM::Standard) << counter;
 			this->parcels.syncAlteredFeatures();
+			this->parcels.syncReadFeatures();
 			this->rwhts.syncAlteredFeatures();
 			this->parcels.setNextByIndex(counter);
 		}
@@ -133,8 +138,7 @@ void RainWaterHarvestingOptions::init()
 	std::vector<DM::ViewContainer*> stream;
 	rwhts = DM::ViewContainer(this->rwht_view_name, DM::COMPONENT, DM::WRITE);
 	rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::WRITE);
-	rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-	rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+
 
 	rwhts.addAttribute("non_potable_savings", DM::Attribute::DOUBLE, DM::WRITE);
 	rwhts.addAttribute("outdoor_water_savings", DM::Attribute::DOUBLE, DM::WRITE);
@@ -143,6 +147,12 @@ void RainWaterHarvestingOptions::init()
     rwhts.addAttribute("dry_days", DM::Attribute::INT, DM::WRITE);
     rwhts.addAttribute("spills", DM::Attribute::INT, DM::WRITE);
     rwhts.addAttribute("spilled_volume", DM::Attribute::DOUBLE, DM::WRITE);
+
+	if (this->add_time_series_data) {
+		rwhts.addAttribute("storage_behaviour_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		rwhts.addAttribute("provided_volume_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+	}
+
 
 	if (start_date_from_global) {
 		global_object = DM::ViewContainer(this->global_viewe_name, DM::COMPONENT, DM::READ);
@@ -336,8 +346,10 @@ double RainWaterHarvestingOptions::createTankOption(OGRFeature * rwht_f, double 
 	if (!rwht_f) // for unit testing
 		return savings;
 
-	DM::DMFeature::SetDoubleList(rwht_f, "storage_behaviour_daily", storage_behaviour);
-	DM::DMFeature::SetDoubleList(rwht_f, "provided_volume_daily", provided_volume);
+	if (this->add_time_series_data) {
+		DM::DMFeature::SetDoubleList(rwht_f, "storage_behaviour_daily", storage_behaviour);
+		DM::DMFeature::SetDoubleList(rwht_f, "provided_volume_daily", provided_volume);
+	}
 
 	rwht_f->SetField("volume", storage_volume);
 	rwht_f->SetField("annual_water_savings", savings);
