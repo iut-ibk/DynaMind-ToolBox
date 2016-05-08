@@ -27,6 +27,7 @@ class RainWaterHarvestingOptions: public DM::Module
 		std::string timestep;
 
 		bool start_date_from_global;
+		bool add_time_series_data;
 		std::string global_viewe_name;
 		std::string start_date_name;
 		std::string end_date_name;
