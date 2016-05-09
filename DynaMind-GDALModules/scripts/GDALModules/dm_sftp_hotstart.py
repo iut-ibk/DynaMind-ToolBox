@@ -1,8 +1,7 @@
 from pydynamind import *
 
-
 import paramiko
-import time
+import os
 from osgeo import gdal
 
 
@@ -11,10 +10,10 @@ class DM_Hoststart_SFTP(Module):
         display_name = "Hotstart Simulation from SFTP"
         group_name = "Data Import and Export"
 
-
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
+            # self.setIsSQLExclusive(True)
 
             self.createParameter("username", STRING)
             self.username = ""
@@ -43,6 +42,8 @@ class DM_Hoststart_SFTP(Module):
 
             self.downloaded = False
 
+            self.real_file_name = ""
+
         def init(self):
 
             if self.downloaded:
@@ -53,13 +54,13 @@ class DM_Hoststart_SFTP(Module):
 
             print "get file"
 
-            file_name = self.get_file(self.file_name)
+            self.real_file_name = self.get_file(self.file_name)
 
             self.close()
 
             self.downloaded = True
 
-            ds = gdal.OpenEx(file_name, gdal.OF_VECTOR)
+            ds = gdal.OpenEx(self.real_file_name, gdal.OF_VECTOR)
 
             if ds is None:
                 print "Open failed.\n"
@@ -73,7 +74,7 @@ class DM_Hoststart_SFTP(Module):
             for feat in lyr:
                 view_name = feat.GetFieldAsString("view_name")
                 attribute_name = feat.GetFieldAsString("attribute_name")
-                datatype =  feat.GetFieldAsString("data_type")
+                datatype = feat.GetFieldAsString("data_type")
 
                 if attribute_name == "DEFINITION":
                     view_type[view_name] = datatype
@@ -85,23 +86,21 @@ class DM_Hoststart_SFTP(Module):
 
             self.view_containers = []
             for view in view_type.keys():
-                v = ViewContainer(view, self.StringToDMDataType(view_type[view]), WRITE)
+                v = ViewContainer(view, self.stringToDMDataType(view_type[view]), WRITE)
                 self.view_containers.append(v)
 
                 if  view not in views.keys():
                     continue
 
                 for attribute in views[view].keys():
-                    v.addAttribute(attribute, self.StringToDMDataType(views[view][attribute]), WRITE )
-
+                    v.addAttribute(attribute, self.stringToDMDataType(views[view][attribute]), WRITE)
 
             ds = None
             self.registerViewContainers(self.view_containers)
 
+        def stringToDMDataType(self, type):
 
-        def StringToDMDataType(self, type):
-
-            if type ==  "COMPONENT":
+            if type == "COMPONENT":
                 return COMPONENT
 
             if type == "NODE":
@@ -135,7 +134,6 @@ class DM_Hoststart_SFTP(Module):
             if type == "LINK":
                 return Attribute.LINK
 
-
         def connect(self):
             established = False
             while not established:
@@ -152,7 +150,6 @@ class DM_Hoststart_SFTP(Module):
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
             return True
 
-
         def close(self):
             log("close connection", Standard)
             self.sftp.close()
@@ -162,12 +159,22 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
 
         def get_file(self, file_name):
-            self.sftp.get(file_name, "/tmp/" + "huhu.sqlite")
-            return "/tmp/huhu.sqlite"
+
+            self.real_file_name = "/tmp/" + self.file_name
+
+            # Create folder if doesn't exist
+            if not os.path.exists('/'.join(self.real_file_name.split('/')[0:-1]) ):
+                os.makedirs('/'.join(self.real_file_name.split('/')[0:-1]) )
+            self.sftp.get(file_name, "/tmp/" + self.file_name)
+
+            return self.real_file_name
 
         def run(self):
             db = self.getGDALData("city")
-            db.setGDALDatabase("/tmp/" + self.file_name)
+            db.setGDALDatabase(self.real_file_name)
+
+            # Delete downloaded file
+            os.remove(self.real_file_name)
 
 
 

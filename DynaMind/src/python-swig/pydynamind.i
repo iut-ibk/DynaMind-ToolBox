@@ -246,6 +246,8 @@ protected:
 	void setIsGDALModule(bool b);
 	bool isGdalModule();
 
+	void setIsSQLExclusive(bool b);
+	bool isSQLExclusive();
     %feature("autodoc", "registerViewContainers(view_containers)
 
     Registers a list of view containers in the Module. This is used in the Constructor or in :func:`~pydynamind.Module.init`

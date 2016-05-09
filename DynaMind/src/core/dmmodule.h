@@ -378,13 +378,18 @@ protected:
 	/** @brief */
 	void setOutPortData(const std::string &name, ISystem *data);
 
-	/** @brief Returns if module uses GDAL in Data stream */
+	/** @brief Sets if module uses GDAL in Data stream */
 	void setIsGDALModule(bool b);
 
 	/** @brief True if module uses GDAL in Data stream. Default is False */
 	bool GDALModule;
 
 	bool SQLExclusive;
+
+	/** @brief Sets the exlicuve access to SQL. This means that viewcontainers are not used **/
+	void setIsSQLExclusive(bool b);
+
+	bool isSQLExclusive();
 
 	/** @brief Returns simulation */
 	DM::Simulation *getSimulation();

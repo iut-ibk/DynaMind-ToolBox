@@ -276,6 +276,16 @@ void Module::setIsGDALModule(bool b)
 	this->GDALModule = b;
 }
 
+void Module::setIsSQLExclusive(bool b)
+{
+	this->SQLExclusive = b;
+}
+
+bool Module::isSQLExclusive()
+{
+	return this->SQLExclusive;
+}
+
 Simulation *Module::getSimulation()
 {
 	return this->sim;
