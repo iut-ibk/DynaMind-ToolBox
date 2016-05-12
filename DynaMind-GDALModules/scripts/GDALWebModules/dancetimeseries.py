@@ -164,7 +164,10 @@ class LoadDAnCETimeseries(Module):
                 result_rain = []
                 inserted = 0
                 for entry in rows:
-                    r += float(entry[1])
+                    val = float(entry[1])
+                    if val < 0.0:
+                        val = 0
+                    r += val
                     if counter % skipper == 0:
                         result_rain.append(r)
                         r = 0
