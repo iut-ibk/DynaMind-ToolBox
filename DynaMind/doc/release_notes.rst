@@ -2,6 +2,44 @@
 Release Notes
 =============
 
+Release Notes v0.11
+-------------------
+
+Core
+____
+
+- Change form GDAL 1.xx to GDAL 2.0
+- New handing of DOUBLEVECTOR. This
+
+Modules
+_______
+
+- Bug and stability fixes
+
+
+
+
+
+Release Notes v0.10
+-------------------
+
+Upgrade Information
+-------------------
+- changes in the hotstart database component require and rerun of the simulation to create a new simulation database
+
+Core
+____
+
+- Bug and stability fixes
+- Simulation database structure is now saved in database
+
+Modules
+_______
+
+- Bug and stability fixes
+
+
+
 Release Notes v0.9
 ------------------
 
