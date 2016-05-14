@@ -4,6 +4,8 @@ from pydynamind import *
 import paramiko
 import time
 from osgeo import gdal
+import uuid
+import os
 
 
 class DM_Hoststart_SFTP(Module):
@@ -42,6 +44,8 @@ class DM_Hoststart_SFTP(Module):
             self.sftp = None
 
             self.downloaded = False
+
+            self.real_file_name = ""
 
         def init(self):
 
@@ -162,12 +166,18 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
 
         def get_file(self, file_name):
-            self.sftp.get(file_name, "/tmp/" + "huhu.sqlite")
-            return "/tmp/huhu.sqlite"
+            self.real_file_name = "/tmp/" + str(uuid.uuid4())+".sqlite"
+            self.sftp.get(file_name, self.real_file_name)
+
+            return self.real_file_name
 
         def run(self):
             db = self.getGDALData("city")
-            db.setGDALDatabase("/tmp/" + self.file_name)
+            db.setGDALDatabase(self.real_file_name)
+            os.remove(self.real_file_name)
+
+
+
 
 
 
