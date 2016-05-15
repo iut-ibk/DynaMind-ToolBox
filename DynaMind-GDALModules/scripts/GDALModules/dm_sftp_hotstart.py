@@ -1,8 +1,11 @@
 from pydynamind import *
 
+
 import paramiko
-import os
+import time
 from osgeo import gdal
+import uuid
+import os
 
 
 class DM_Hoststart_SFTP(Module):
@@ -10,10 +13,10 @@ class DM_Hoststart_SFTP(Module):
         display_name = "Hotstart Simulation from SFTP"
         group_name = "Data Import and Export"
 
+
         def __init__(self):
             Module.__init__(self)
             self.setIsGDALModule(True)
-            # self.setIsSQLExclusive(True)
 
             self.createParameter("username", STRING)
             self.username = ""
@@ -40,25 +43,36 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
             self.sftp = None
 
-            self.downloaded = False
+            self.downloaded_file = ""
 
             self.real_file_name = ""
 
+        def generate_downloaded_file_name(self):
+            return self.file_name + self.username + self.password+self.host
+
         def init(self):
 
-            if self.downloaded:
+            if not self.file_name or not self.host or not self.username or not self.password:
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
+                return
+
+            if self.downloaded_file == self.generate_downloaded_file_name():
                 return
 
             if not self.connect():
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
                 return
 
-            print "get file"
+            if not self.get_file(self.file_name):
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
+                self.close()
 
-            self.real_file_name = self.get_file(self.file_name)
+                return
 
             self.close()
-
-            self.downloaded = True
 
             ds = gdal.OpenEx(self.real_file_name, gdal.OF_VECTOR)
 
@@ -74,7 +88,7 @@ class DM_Hoststart_SFTP(Module):
             for feat in lyr:
                 view_name = feat.GetFieldAsString("view_name")
                 attribute_name = feat.GetFieldAsString("attribute_name")
-                datatype = feat.GetFieldAsString("data_type")
+                datatype =  feat.GetFieldAsString("data_type")
 
                 if attribute_name == "DEFINITION":
                     view_type[view_name] = datatype
@@ -86,21 +100,23 @@ class DM_Hoststart_SFTP(Module):
 
             self.view_containers = []
             for view in view_type.keys():
-                v = ViewContainer(view, self.stringToDMDataType(view_type[view]), WRITE)
+                v = ViewContainer(view, self.StringToDMDataType(view_type[view]), WRITE)
                 self.view_containers.append(v)
 
                 if  view not in views.keys():
                     continue
 
                 for attribute in views[view].keys():
-                    v.addAttribute(attribute, self.stringToDMDataType(views[view][attribute]), WRITE)
+                    v.addAttribute(attribute, self.StringToDMDataType(views[view][attribute]), WRITE )
+
 
             ds = None
             self.registerViewContainers(self.view_containers)
 
-        def stringToDMDataType(self, type):
 
-            if type == "COMPONENT":
+        def StringToDMDataType(self, type):
+
+            if type ==  "COMPONENT":
                 return COMPONENT
 
             if type == "NODE":
@@ -134,6 +150,7 @@ class DM_Hoststart_SFTP(Module):
             if type == "LINK":
                 return Attribute.LINK
 
+
         def connect(self):
             established = False
             while not established:
@@ -150,6 +167,7 @@ class DM_Hoststart_SFTP(Module):
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
             return True
 
+
         def close(self):
             log("close connection", Standard)
             self.sftp.close()
@@ -159,22 +177,25 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
 
         def get_file(self, file_name):
+            if self.real_file_name:
+                os.remove(self.real_file_name)
+            self.real_file_name = "/tmp/" + str(uuid.uuid4())+".sqlite"
+            try:
+                self.sftp.get(file_name,  self.real_file_name)
+            except:
+                self.real_file_name = ""
+                return False
+            self.downloaded_file = self.generate_downloaded_file_name()
+            return True
 
-            self.real_file_name = "/tmp/" + self.file_name
-
-            # Create folder if doesn't exist
-            if not os.path.exists('/'.join(self.real_file_name.split('/')[0:-1]) ):
-                os.makedirs('/'.join(self.real_file_name.split('/')[0:-1]) )
-            self.sftp.get(file_name, "/tmp/" + self.file_name)
-
-            return self.real_file_name
 
         def run(self):
             db = self.getGDALData("city")
             db.setGDALDatabase(self.real_file_name)
-
-            # Delete downloaded file
             os.remove(self.real_file_name)
+
+
+
 
 
 
