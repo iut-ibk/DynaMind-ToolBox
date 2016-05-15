@@ -43,27 +43,38 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
             self.sftp = None
 
-            self.downloaded = False
+            self.downloaded_file = ""
 
             self.real_file_name = ""
 
+        def generate_downloaded_file_name(self):
+            return self.file_name + self.username + self.password+self.host
+
         def init(self):
 
-            if self.downloaded:
+            if not self.file_name or not self.host or not self.username or not self.password:
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
+                return
+
+            if self.downloaded_file == self.generate_downloaded_file_name():
                 return
 
             if not self.connect():
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
                 return
 
-            print "get file"
+            if not self.get_file(self.file_name):
+                self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
+                self.registerViewContainers([self.dummy])
+                self.close()
 
-            file_name = self.get_file(self.file_name)
+                return
 
             self.close()
 
-            self.downloaded = True
-
-            ds = gdal.OpenEx(file_name, gdal.OF_VECTOR)
+            ds = gdal.OpenEx(self.real_file_name, gdal.OF_VECTOR)
 
             if ds is None:
                 print "Open failed.\n"
@@ -166,10 +177,17 @@ class DM_Hoststart_SFTP(Module):
             self.transport = None
 
         def get_file(self, file_name):
+            if self.real_file_name:
+                os.remove(self.real_file_name)
             self.real_file_name = "/tmp/" + str(uuid.uuid4())+".sqlite"
-            self.sftp.get(file_name, self.real_file_name)
+            try:
+                self.sftp.get(file_name,  self.real_file_name)
+            except:
+                self.real_file_name = ""
+                return False
+            self.downloaded_file = self.generate_downloaded_file_name()
+            return True
 
-            return self.real_file_name
 
         def run(self):
             db = self.getGDALData("city")
