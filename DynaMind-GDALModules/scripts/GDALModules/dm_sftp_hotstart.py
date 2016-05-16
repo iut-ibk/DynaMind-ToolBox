@@ -155,15 +155,14 @@ class DM_Hoststart_SFTP(Module):
 
         def connect(self):
             established = False
-            while not established:
-                try:
-                    log(str(self.host) + " " + str(self.port) + " " + str(self.username) + " " + str(self.password), Standard)
-                    self.transport = paramiko.Transport((self.host, self.port))
+            try:
+                log(str(self.host) + " " + str(self.port) + " " + str(self.username) + " " + str(self.password), Standard)
+                self.transport = paramiko.Transport((self.host, self.port))
 
-                    self.transport.connect(username=self.username, password=self.password)
-                    established = True
-                except:
-                    return False
+                self.transport.connect(username=self.username, password=self.password)
+                established = True
+            except:
+                return False
 
             log("connected", Standard)
             self.sftp = paramiko.SFTPClient.from_transport(self.transport)
