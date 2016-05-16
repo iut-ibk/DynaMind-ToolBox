@@ -203,7 +203,7 @@ void GDALPublishResults::run()
 		poDS = poDriver->Create( sink_name.str().c_str(), 0, 0, 0, GDT_Unknown, NULL );
 		// poDS = poDriver->CreateDataSource(sink_name.str().c_str());
 	} else {
-		poDS = (GDALDataset*) GDALOpenEx( sink.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL );
+		poDS = (GDALDataset*) GDALOpenEx( sink.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 		//poDS = OGRSFDriverRegistrar::Open(sink.c_str(), true);
 	}
 	if( poDS == NULL )
@@ -269,8 +269,10 @@ void GDALPublishResults::run()
 			f_new->SetGeometry(geo);
 		}
 		lyr->CreateFeature(f_new);
+
 		OGRFeature::DestroyFeature(f_new);
 	}
+	DM::Logger(DM::Standard) << "published features " << counter;
 	lyr->CommitTransaction();
 	GDALClose(poDS);
 }
