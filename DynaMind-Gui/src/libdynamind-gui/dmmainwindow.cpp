@@ -297,9 +297,9 @@ void DMMainWindow::runAnalysis()
 
 void DMMainWindow::showHelp()
 {
-	GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
-	ghv->showHelpForModule(0);
-	ghv->show();
+    GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
+    ghv->showHelpForModule(0);
+    ghv->show();
 }
 
 void DMMainWindow::simulationFinished() 
