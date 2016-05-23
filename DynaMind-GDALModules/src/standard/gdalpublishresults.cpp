@@ -264,7 +264,7 @@ void GDALPublishResults::run()
 			f_new->SetField(i, feat->GetRawFieldRef(i));
 		if (components.getType() != DM::COMPONENT) {
 			OGRGeometry * geo = feat->GetGeometryRef();
-			if (trans)
+            if (trans && geo != 0)
 				geo->transform(trans);
 			f_new->SetGeometry(geo);
 		}
