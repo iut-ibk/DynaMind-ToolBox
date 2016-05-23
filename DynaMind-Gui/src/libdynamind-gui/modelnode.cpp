@@ -51,8 +51,10 @@
 #endif
 
 #include <groupnode.h>
-
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 6, 0)
 #include <guihelpviewer.h>
+#endif
+
 #include <qdialog.h>
 #include <qtabwidget.h>
 #include <simulationtab.h>
@@ -808,7 +810,10 @@ void ModelNode::viewInportData(QString portName)
 
 void ModelNode::showHelp()
 {
-	GUIHelpViewer* ghv = new GUIHelpViewer();
-	ghv->showHelpForModule(module);
-	ghv->show();
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 6, 0)
+    GUIHelpViewer* ghv = new GUIHelpViewer();
+    ghv->showHelpForModule(module);
+    ghv->show();
+#endif
+
 }
