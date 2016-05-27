@@ -34,6 +34,20 @@ void ParcelSplitWorker::splitePoly(Polygon_with_holes_2 &p)
 	Polygon_2 p_c;
 	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
 
+    if (p.is_unbounded()) {
+        DM::Logger(DM::Error) << "Polygon is unbounded";
+        return;
+    }
+
+    if (!p_c.is_simple()) {
+        DM::Logger(DM::Error) << "Non simple polygon not split";
+        return;
+    }
+    if (!p.outer_boundary().is_simple()) {
+        DM::Logger(DM::Error) << "Polygon outerboundary not simple no split";
+        return;
+    }
+
 	//Cacluate Minimal Rect
 	Polygon_2 p_m;
 	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
@@ -41,7 +55,16 @@ void ParcelSplitWorker::splitePoly(Polygon_with_holes_2 &p)
 	Pwh_list_2 splitters(this->splitter(p_m));
 
 	foreach (Polygon_with_holes_2 pwh, splitters) {
+
 		Pwh_list_2 split_ress;
+        if (pwh.is_unbounded()) {
+            DM::Logger(DM::Error) << "Splitted polygon is unbounded no split";
+            continue;
+        }
+        if (!pwh.outer_boundary().is_simple()){
+            DM::Logger(DM::Error) << "Polygon outerboundary of splitted polygon not simple no split";
+            continue;
+        }
 		CGAL::intersection(p, pwh,  std::back_inserter(split_ress));
 		foreach(Polygon_with_holes_2 pwh_split, split_ress) {
 			SFCGAL::Polygon split_geo(pwh_split);
