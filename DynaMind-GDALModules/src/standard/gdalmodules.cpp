@@ -52,6 +52,7 @@
 #include "gdalcalculatelength.h"
 #include "dm_calculatedistance.h"
 #include "dmloopgroup.h"
+#include "dmboostloop.h"
 #include "dmcontainergroup.h"
 #include "dm_exportsimulationdb.h"
 #include "dm_sqlitecalculator.h"
@@ -87,6 +88,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<GDALCalculateLength>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_CalculateDistance>());
 	registry->addNodeFactory(new DM::NodeFactory<DMLoopGroup>());
+    registry->addNodeFactory(new DM::NodeFactory<DMBoostLoop>());
 	registry->addNodeFactory(new DM::NodeFactory<DMContainerGroup>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_ExportSimulationDB>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_SQliteCalculator>());
