@@ -290,9 +290,13 @@ class DMSEI(Module):
             #
             SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp}}, peak_flows)
             for i in SEIs.keys():
-                stream_index = SEIs[i] / SEIs_0[i]
+                try:
+                    stream_index = SEIs[i] / SEIs_0[i]
+                except ZeroDivisionError:
+                    log("SEIs_0 is 0", Error)
+                    stream_index = 0
                 c.SetField("stream_erosion_index", stream_index)
-                log(str(stream_index), Standard)
+            log(str(stream_index), Standard)
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 50}}, peak_flows)
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
