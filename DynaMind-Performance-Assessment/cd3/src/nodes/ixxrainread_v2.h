@@ -24,12 +24,9 @@
 #include <flow.h>
 #include <QString>
 
-
-#include <QDateTime>
-
 struct IxxRainRead_v2_Private;
 
-CD3_DECLARE_NODE(IxxRainRead_v2)
+class IxxRainRead_v2 : public Node {
 public:
 	IxxRainRead_v2();
 	virtual ~IxxRainRead_v2();
@@ -43,7 +40,6 @@ private:
 	Flow out;
 	std::string rain_file;
     std::string datestring;
-	QDateTime qdt_start;
     QString q_datestring; //Same as datestring but avoids converting all the time
 	IxxRainRead_v2_Private *data;
 };

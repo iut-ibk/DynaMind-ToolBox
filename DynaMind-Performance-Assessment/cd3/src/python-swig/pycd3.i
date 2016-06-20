@@ -331,7 +331,7 @@ public:
 	virtual void deinit();
 	virtual void start();
 	virtual void stop();
-	virtual const char *getClassName() const = 0;
+	virtual std::string getClassName() const;
 	std::string getId() const;
 
 	template<class T>
@@ -387,7 +387,7 @@ public:
 		nt = [Integer, Double, String, Flow, DoubleVector]
 		if state.__class__ not in nt:
 			msg = "state %s has wrong type" % name
-			msg += "states can only have type Integer(), Double(), String(), Flow, DoubleVector(), IntegerVector(), StringVector(), FlowVector()"
+			msg += "states can only have type Integer(), Double(), String(), Flow, DoubleVector()"
 			raise TypeError(msg)
 
 		log("adding parameter %s with type %s" % (name, state.__class__))
@@ -454,10 +454,17 @@ protected:
 	%template(getStringVectorState)	getState<std::vector<std::string> >;
 	%template(getFlowState)		getState<Flow>;
 
+    NodeParameter &intern_addParameter(std::string name, std::vector<double> *v) {
+        return $self->addParameter(name, v);
+    }
 
-	NodeParameter &intern_addParameter(std::string name, std::vector<double> *v) {
-		return $self->addParameter(name, v);
-	}
+    NodeParameter &intern_addParameter(std::string name, std::vector<string> *v) {
+        return $self->addParameter(name, v);
+    }
+
+    NodeParameter &intern_addParameter(std::string name, std::vector<int> *v) {
+        return $self->addParameter(name, v);
+    }
 
 	NodeParameter &intern_addParameter(std::string name, Flow *v) {
 		return $self->addParameter(name, v);
@@ -607,7 +614,7 @@ class ISimulation {
 public:
 	ISimulation();
 	virtual ~ISimulation();
-	virtual const char *getClassName() const = 0;
+	virtual std::string getClassName() const;
 	virtual int run(ptime time, int dt) = 0;
 	virtual void setSimulationParameters(const SimulationParameters &params);
 	virtual SimulationParameters getSimulationParameters() const;
@@ -679,7 +686,6 @@ class Redirector:
 		self.currentstring = ""
 
 	def write(self, text):
-		self.orig_out.write(text + "\n")
 		self.currentstring = self.currentstring + " " + text
 
 		if text.rfind("\n") == -1:
@@ -693,7 +699,7 @@ class Redirector:
 		self.currentstring=""
 
 	def close(self):
-		self.orig_out.close()
+		return
 
 def install_redirector():
 	import sys

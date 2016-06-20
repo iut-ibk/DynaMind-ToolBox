@@ -31,7 +31,7 @@ struct IxxRainRead_v2_Private {
 
 typedef std::pair<QDateTime, double> IxxEntry;
 
-CD3_DECLARE_NODE_NAME(IxxRainRead_v2)
+
 
 IxxRainRead_v2::IxxRainRead_v2() {
 	data = new IxxRainRead_v2_Private();
@@ -84,7 +84,7 @@ bool IxxRainRead_v2::init(ptime start, ptime end, int dt) {
 		//return false;
 	}
 
-	qdt_start = pttoqt(start);
+	QDateTime qdt_start = pttoqt(start);
 	QDateTime qdt_end = pttoqt(end);
 
 	int secs_to_start = qdt_start < data->first ? qdt_start.secsTo(data->first) : data->first.secsTo(qdt_start);
@@ -134,11 +134,6 @@ int IxxRainRead_v2::f(ptime _time, int dt) {
 	double sum =entry.second;
 	while (entry.first.secsTo(time) - this->data->file_dt > 0) {
 		entry = parseIxxLine(data->file.readLine(), this->q_datestring);
-		if (qdt_start > entry.first) {
-			sum = 0;
-			continue;
-		}
-
 		sum+=entry.second;
 
 		//cd3assert(time > entry.first && entry.first.secsTo(time) == dt, "time slipped through a dark worm hole");
