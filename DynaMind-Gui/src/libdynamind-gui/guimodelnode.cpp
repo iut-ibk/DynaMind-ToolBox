@@ -45,8 +45,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #if QT_VERSION >= QT_VERSION_CHECK(5,6, 0)
-
-#include <QWebView>
+	#include <QWebEngineView>
 #endif
 
 #include <QUrl>
