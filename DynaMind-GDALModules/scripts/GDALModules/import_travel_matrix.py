@@ -48,12 +48,24 @@ class ImportOriginDesinationMatrix(Module):
                 origin_id = None
                 for idx, val in enumerate(line.split(",")):
                     if idx == 0:
-                        origin_id = idx
+                        try:
+                            origin_id = int(val)
+                        except:
+                            break
                         continue
+                    try:
+                        destination_id = int(headers[idx])
+                    except:
+                        continue
+
                     element = self.matrix.create_feature()
-                    element.SetField("origin_id", origin_id)
-                    element.SetField("destination_id", headers[idx])
-                    element.SetField("value", val)
+                    element.SetField("origin_id", int(origin_id))
+                    element.SetField("destination_id", destination_id)
+                    try:
+                        value = float(val)
+                    except:
+                        value = 0
+                    element.SetField("value", value)
 
         self.matrix.finalise()
 
