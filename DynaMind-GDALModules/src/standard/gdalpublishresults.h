@@ -46,6 +46,7 @@ public:
 private:
 	DM::ViewContainer components;
 	DM::ViewContainer dummy;
+	DM::ViewContainer city;
 	OGRLayer * openLayer(GDALDataset *poDS, OGRSpatialReference* oTargetSRS, char** options, std::string layer_name);
 	std::string sink;
 	std::string driverName;
@@ -56,6 +57,7 @@ private:
 	int internal_counter;
 	bool overwrite;
 	bool append;
+	bool scenario_id_from_city;
 
 	void writeFeatures(OGRLayer *lyr, std::vector<OGRFeature *> &feats);
 };

@@ -40,6 +40,10 @@ GDALPublishResults::GDALPublishResults()
 	this->append = false;
 	this->addParameter("append", DM::BOOL, &append);
 
+
+	this->scenario_id_from_city = false;
+	this->addParameter("scenario_id_as_prefix", DM::BOOL, &this->scenario_id_from_city);
+
 	DM::ViewContainer v("dummy", DM::SUBSYSTEM, DM::MODIFY);
 
 
@@ -62,10 +66,22 @@ void GDALPublishResults::init()
 	this->components = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::READ);
 	this->dummy = DM::ViewContainer(viewName, inViews[viewName].getType(), DM::MODIFY);
 
+
 	std::vector<DM::ViewContainer *> data_stream;
 
 	data_stream.push_back(&components);
 	data_stream.push_back(&dummy);
+
+	if (this->scenario_id_from_city) {
+		if (inViews.find("city") == inViews.end()) {
+			DM::Logger(DM::Error) << "view " << "city" << " not found in in stream";
+			return;
+		}
+		this->city = DM::ViewContainer("city", inViews["city"].getType(), DM::READ);
+		this->city.addAttribute("scenario_id", DM::Attribute::INT, DM::READ);
+		data_stream.push_back(&this->city);
+	}
+
 	this->registerViewContainers(data_stream);
 }
 
@@ -160,6 +176,8 @@ void GDALPublishResults::run()
 	if (interal_counter % this->steps != 0 && interal_counter != -1) {
 		return;
 	}
+
+
 	DM::Logger(DM::Debug) << "Start Inster";
 
 	char ** options = NULL;
@@ -174,6 +192,7 @@ void GDALPublishResults::run()
 
 	//Extend string_stream with _xx;
 	std::stringstream sink_name;
+
 	if (!append) {
 		if (!driverName.empty()) {
 			int pos = this->sink.find(".");
@@ -230,6 +249,20 @@ void GDALPublishResults::run()
 		return;
 	}
 	std::stringstream layer_name;
+
+	int scenario_id = -1;
+	if(this->scenario_id_from_city) {
+		this->city.resetReading();
+		OGRFeature * f;
+		while (f = this->city.getNextFeature()) {
+			scenario_id = f->GetFieldAsInteger("scenario_id");
+		}
+		if(scenario_id > -1) {
+			layer_name << scenario_id << "_";
+		}
+	}
+	DM::Logger(DM::Standard) << "layer name "<< layer_name.str();
+
 	layer_name << this->layerName;
 	if (!append) {
 		if (interal_counter != -1) {

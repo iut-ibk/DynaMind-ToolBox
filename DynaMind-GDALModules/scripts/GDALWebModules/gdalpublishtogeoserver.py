@@ -77,11 +77,14 @@ class GDALPublishPostgisLayerInGeoserver(Module):
         self.styleUsed='standard'        
 
         
-        self.dummy = ViewContainer("city", COMPONENT, MODIFY)
-        self.registerViewContainers([self.dummy])
+        self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+
         
         self.createParameter("step", INT)
         self.step = 1 #export every x step
+
+        self.createParameter("scenario_id_as_prefix", BOOL)
+        self.scenario_id_as_prefix = False
         
     
     def init(self):
@@ -95,10 +98,26 @@ class GDALPublishPostgisLayerInGeoserver(Module):
 
         # self.registerViewContainers(views)
 
+
+        views = []
+        views.append(self.dummy)
+
+
+        if self.scenario_id_as_prefix:
+            self.city = ViewContainer("city", COMPONENT, READ)
+            self.city.addAttribute("scenario_id", Attribute.INT, READ)
+            views.append(self.city)
+        self.registerViewContainers(views)
+
         self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
                                          self.geoserverWorkSpace)
 
     def run(self):
+        if self.scenario_id_as_prefix:
+            self.city.reset_reading()
+            for c in self.city:
+                scenario_id = c.GetFieldAsInteger("scenario_id")
+
         #only exort on x step
         if self.get_group_counter() != -1 and (self.get_group_counter()  % self.step != 0):
             return
@@ -118,11 +137,21 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             return
 
         try:
+            name_on_server = ""
             #check for counter:  "_" + str(self.get_group_counter() for postGisTable #if self.counter is set
+            if self.scenario_id_as_prefix:
+                self.city.reset_reading()
+                for c in self.city:
+                    name_on_server+=str(scenario_id) + "_"
+
             if self.get_group_counter() != -1:
-                self.geoHelper.publishPostGISLayer(self.postGisTable+"_"+str(self.get_group_counter()), self.geoserverDataStoreName, self.EPSG)
+                name_on_server += self.postGisTable+"_"+str(self.get_group_counter())
+
             else:
-                self.geoHelper.publishPostGISLayer(self.postGisTable, self.geoserverDataStoreName, self.EPSG)
+                name_on_server += self.postGisTable
+
+            self.geoHelper.publishPostGISLayer(name_on_server, self.geoserverDataStoreName, self.EPSG)
+
         except FailedRequestError as e:
             log(str(e),Error)
             self.setStatus(MOD_EXECUTION_ERROR)
@@ -132,4 +161,7 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             ret = self.geoHelper.setDefaultStyleForLayer(self.postGisTable, self.styleUsed)
             if ret != 0:
                 log("Could not set the supplied style, standard style used.",Warning)
+
+        if self.scenario_id_as_prefix:
+            self.city.finalise()
         return
