@@ -140,7 +140,7 @@ void WaterDemandModel::init()
 	station = DM::ViewContainer("station", DM::COMPONENT, DM::WRITE);
 
 	timeseries = DM::ViewContainer("timeseries", DM::COMPONENT, DM::READ);
-	timeseries.addAttribute("values", DM::Attribute::DOUBLEVECTOR, DM::READ);
+	timeseries.addAttribute("data", DM::Attribute::DOUBLEVECTOR, DM::READ);
 	timeseries.addAttribute("station_id", "station", DM::READ);
 	timeseries.addAttribute("type", DM::Attribute::STRING, DM::READ);
 
@@ -473,7 +473,7 @@ void WaterDemandModel::initRain()
 
 	while (r = this->timeseries.getNextFeature()) {
 		std::vector<double> vec;
-		DM::DMFeature::GetDoubleList(r, "values", vec);
+		DM::DMFeature::GetDoubleList(r, "data", vec);
 		std::string type = r->GetFieldAsString("type");
 		int station_id = r->GetFieldAsInteger("station_id");
 		if (type == "rainfall intensity")

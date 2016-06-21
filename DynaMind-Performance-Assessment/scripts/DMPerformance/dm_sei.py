@@ -81,15 +81,16 @@ class DMSEI(Module):
         filename = str(uuid.uuid4())
 
         fo = open("/tmp/" + filename + ".inp", 'w')
-        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(seconds=self.time_delta)).strftime('%H:%M:%S')
+        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(secconds=self.time_delta)).strftime('%H:%M:%S')
         dt = datetime.timedelta(seconds=self.time_delta)
 
         swmm_rain_filename = self.swmm_rain_file
         if self.rain_vector_from_city != "":
             self.city.reset_reading()
             for c in self.city:
-                s = str(c.GetFieldAsString(self.rain_vector_from_city))
-                self.write_rain_file(filename, map(float, s.split()), 60 * 5)
+                # s = str(c.GetFieldAsString(self.rain_vector_from_city))
+
+                self.write_rain_file(filename, dm_get_double_list(c, self.rain_vector_from_city), 60 * 5)
                 swmm_rain_filename = "/tmp/" + filename + ".dat"
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2009', intervall=intervall,
                              sub_satchment=catchment)
@@ -288,10 +289,15 @@ class DMSEI(Module):
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
             #
             SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp}}, peak_flows)
+            stream_index = 0
             for i in SEIs.keys():
-                stream_index = SEIs[i] / SEIs_0[i]
-                c.SetField("stream_erosion_index", stream_index)
-                log(str(stream_index), Standard)
+                try:
+                    stream_index = SEIs[i] / SEIs_0[i]
+                except ZeroDivisionError:
+                    log("SEIs_0 is 0", Error)
+                    stream_index = 0
+            c.SetField("stream_erosion_index", stream_index)
+            log(str(stream_index), Standard)
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 50}}, peak_flows)
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
