@@ -82,7 +82,7 @@ void GDALImportData::init()
 		if (this->append)
 			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		else
-			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::READ);
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE);
 		data.push_back(&dummy);
 		this->registerViewContainers(data);
 		return;
@@ -100,7 +100,7 @@ void GDALImportData::init()
 		if (this->append)
 			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY);
 		else
-			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::READ);
+			dummy = DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::WRITE);
 		data.push_back(&dummy);
 		this->registerViewContainers(data);
 		return;
