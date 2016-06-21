@@ -81,7 +81,7 @@ class DMSEI(Module):
         filename = str(uuid.uuid4())
 
         fo = open("/tmp/" + filename + ".inp", 'w')
-        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(secconds=self.time_delta)).strftime('%H:%M:%S')
+        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(seconds=self.time_delta)).strftime('%H:%M:%S')
         dt = datetime.timedelta(seconds=self.time_delta)
 
         swmm_rain_filename = self.swmm_rain_file
