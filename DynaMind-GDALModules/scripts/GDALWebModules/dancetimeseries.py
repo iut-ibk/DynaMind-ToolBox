@@ -50,7 +50,7 @@ class LoadDAnCETimeseries(Module):
 
             self.timeseries = ViewContainer("timeseries", COMPONENT, WRITE)
             self.timeseries.addAttribute(self.view_name+"_id", Attribute.INT, WRITE)
-            self.timeseries.addAttribute("values", Attribute.DOUBLEVECTOR, WRITE)
+            self.timeseries.addAttribute("data", Attribute.DOUBLEVECTOR, WRITE)
             self.timeseries.addAttribute("start", Attribute.STRING, WRITE)
             self.timeseries.addAttribute("end", Attribute.STRING, WRITE)
             self.timeseries.addAttribute("timestep", Attribute.INT, WRITE)
@@ -175,8 +175,8 @@ class LoadDAnCETimeseries(Module):
 
 
                     counter+=1
-                print counter, inserted
-                dm_set_double_list(timeseries, "values", result_rain)
+                log( str(counter) + " " + str(inserted), Standard)
+                dm_set_double_list(timeseries, "data", result_rain)
                 timeseries.SetField("type", name)
 
 

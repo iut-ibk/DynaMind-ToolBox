@@ -81,7 +81,7 @@ class DMSEI(Module):
         filename = str(uuid.uuid4())
 
         fo = open("/tmp/" + filename + ".inp", 'w')
-        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(seconds=self.time_delta)).strftime('%H:%M:%S')
+        intervall = (datetime.datetime(2000, 1, 1) + datetime.timedelta(secconds=self.time_delta)).strftime('%H:%M:%S')
         dt = datetime.timedelta(seconds=self.time_delta)
 
         swmm_rain_filename = self.swmm_rain_file
@@ -289,13 +289,14 @@ class DMSEI(Module):
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
             #
             SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp}}, peak_flows)
+            stream_index = 0
             for i in SEIs.keys():
                 try:
                     stream_index = SEIs[i] / SEIs_0[i]
                 except ZeroDivisionError:
                     log("SEIs_0 is 0", Error)
                     stream_index = 0
-                c.SetField("stream_erosion_index", stream_index)
+            c.SetField("stream_erosion_index", stream_index)
             log(str(stream_index), Standard)
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 50}}, peak_flows)
             # for i in SEIs.keys():

@@ -62,6 +62,7 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	footprint.outer_boundary().push_back( centre + e1*w - e2*h );
 	footprint.outer_boundary().push_back( centre + e1*w + e2*h );
 	footprint.outer_boundary().push_back( centre - e1*w + e2*h );
+	//footprint.outer_boundary().push_back( centre - e1*w - e2*h );
 
 	SFCGAL::Polygon f(footprint);
 
