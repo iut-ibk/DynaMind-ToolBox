@@ -713,7 +713,7 @@ class DM::ViewContainer {
 		self.register_layer()
 		self.__ogr_layer.ResetReading()
 
-	def sync(self):
+	def __sync(self):
 		"""
 		Synchronises the ViewContainer writing the data to the database and freeing the memory.
 
@@ -728,13 +728,28 @@ class DM::ViewContainer {
 
 		#self.__ds[self.getDBID()].Destroy()
 
+	def set_next_by_index(self, index):
+		""""
+		Set Index to read from next
+		"""
+		self.register_layer()
+		self.__ogr_layer.SetNextByIndex(index)
+
+	def sync(self):
+		"""
+		Synchronises the ViewContainer writing the data to the database and freeing the memory.
+
+		"""
+		self.finalise()
+
 	def finalise(self):
 		"""
 		Closes the ViewContainer writing the data to the database and freeing the memory.
 		May be used before the end of the run method.
 
 		"""
-		self.sync()
+		self.reset_reading()
+		self.__sync()
 		log("Destroy Layer " + str(self.getName()), Debug)
 		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:

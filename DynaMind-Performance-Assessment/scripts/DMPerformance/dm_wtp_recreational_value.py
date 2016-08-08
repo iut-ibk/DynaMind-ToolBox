@@ -32,8 +32,13 @@ class WTP_Recreational_Value_AU(Module):
 
     def run(self):
         self.households.reset_reading()
+        counter = 0
         for h in self.households:
+            counter+=1
             education = h.GetFieldAsString("education")
             wtp = max(0.0, (2.844952 - 11.62263*self.education_levels[education] + 6.))
             h.SetField("wtp_recreational_value", wtp)
+            if counter % 100000 == 0:
+                self.households.sync()
+                self.__container.set_next_by_index(counter)
         self.households.finalise()

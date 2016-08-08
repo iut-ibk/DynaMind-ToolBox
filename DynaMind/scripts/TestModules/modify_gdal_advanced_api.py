@@ -41,10 +41,29 @@ class ModifyGDALComponentsAdvanced(Module):
 
         def run(self):
             self.elements = 0
+            counter = 0
             self.__container.reset_reading()
             for feat in self.__container:
+                counter+=1
                 feat.SetField("value", 3)
-            self.__container.finalise()
+                if counter % 100000 == 0:
+                    self.__container.sync()
+                    self.__container.set_next_by_index(counter)
+                    log("counter " + str(counter), Warning)
+
+
+
+            # self.__container.set_next_by_index(counter)
+            # for feat in self.__container:
+            #     counter+=1
+            #     feat.SetField("value", 3)
+            #     if counter % 100000:
+            #         self.__container.finalise()
+            #         log("counter " + str(counter), Warning)
+            #         break
+            #
+            #
+            # self.__container.finalise()
 
 
 

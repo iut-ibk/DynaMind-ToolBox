@@ -31,11 +31,19 @@ class WTP_Water_Restrictions_AU(Module):
         self.education_levels["tertiary"] = 1.
 
     def run(self):
+        counter = 0
         self.households.reset_reading()
         for h in self.households:
+            counter+=1
             age = h.GetFieldAsInteger("age")
             education = h.GetFieldAsString("education")
             bedrooms = h.GetFieldAsInteger("bedrooms")
             wtp = max(0.0, (3.208593 - 0.6362358 * bedrooms + 0.356186 * age - 0.0027977 * age * age - 1.883466 * self.education_levels[education]))
             h.SetField("wtp_water_restrictions", wtp)
+            if counter % 100000 == 0:
+                self.households.sync()
+                self.__container.set_next_by_index(counter)
+                
+
+
         self.households.finalise()

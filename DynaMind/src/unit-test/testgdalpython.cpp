@@ -20,8 +20,8 @@
 #define TESTLINK
 #define TESTADVANCEDDATATYPES
 
-#define FEATURES "1000"
-#define FEATURES_2 "2000"
+#define FEATURES "500000"
+#define FEATURES_2 "1000000"
 #define DEFAULTEPSG 31254
 
 #ifndef PYTHON_EMBEDDING_DISABLED
@@ -130,7 +130,7 @@ TEST_F(TestGDALPython,PythonReadTest) {
 #ifdef MODIFYAPI
 TEST_F(TestGDALPython,PythonModifyTest) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
 	DM::Logger(DM::Standard) << "Create Simulation";
 	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
 

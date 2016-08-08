@@ -15,10 +15,10 @@ class AdvancedDataTypes(Module):
         def init(self):
             if self.append:
                 self.__container = ViewContainer("component", NODE, MODIFY)
-                self.__container.addAttribute("vector", DM.Attribute.DOUBLEVECTOR, WRITE)
             else:
                 self.__container = ViewContainer("component", NODE, WRITE)
-                self.__container.addAttribute("vector", DM.Attribute.DOUBLEVECTOR, WRITE)
+            self.__container.addAttribute("vector", DM.Attribute.DOUBLEVECTOR, WRITE)
+            self.__container.addAttribute("integer",DM.Attribute.INT, WRITE)
 
             views = []
             views.append(self.__container)
@@ -31,6 +31,7 @@ class AdvancedDataTypes(Module):
                 for i in range(1000):
                     a.append(i*1.0)
                 dm_set_double_list(f, "vector", a)
+                f.SetField("integer", i)
                 if i % 100000 == 0:
                     self.__container.sync()
             self.__container.finalise()

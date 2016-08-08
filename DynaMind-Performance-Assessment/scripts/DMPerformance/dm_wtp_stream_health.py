@@ -42,10 +42,15 @@ class WTP_Stream_Health_AU(Module):
 
     def run(self):
         self.households.reset_reading()
+        counter = 0
         for h in self.households:
+            counter += 1
             age = h.GetFieldAsInteger("age")
             education = h.GetFieldAsString("education")
             bedrooms = h.GetFieldAsInteger("bedrooms")
             wtp = 10.99824 + 0.3368328 * bedrooms - 0.0334691 * age - 0.0765181 * self.education_levels[education]
             h.SetField("wtp_stream_health", wtp)
+            if counter % 100000 == 0:
+                self.households.sync()
+                self.__container.set_next_by_index(counter)
         self.households.finalise()
