@@ -40,6 +40,9 @@ class DM_Publish_SFTP(Module):
             self.transport = None
             self.sftp = None
 
+            self.createParameter("scenario_id_as_prefix", BOOL)
+            self.scenario_id_as_prefix = False
+
         def init(self):
             self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
             self.registerViewContainers([self.dummy])
@@ -84,11 +87,21 @@ class DM_Publish_SFTP(Module):
             self.close()
 
         def run(self):
+
+            scenario_id = ""
+            if self.scenario_id_as_prefix:
+                self.city.reset_reading()
+                for c in self.city:
+                    scenario_id = str(c.GetFieldAsInteger("scenario_id"))
+
             #only export on x step
             if self.get_group_counter() != -1 and ( (self.get_group_counter()-1) % self.step != 0):
                 return
 
-            file_name = self.file_name
+            if scenario_id:
+                file_name = scenario_id+"_"+self.file_name
+            else:
+                file_name = self.file_name
             if self.get_group_counter() != -1:
                 file_name = self.file_name + "_" + str(self.get_group_counter())
             file_name += ".sqlite"
