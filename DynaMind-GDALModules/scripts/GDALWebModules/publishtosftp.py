@@ -44,8 +44,14 @@ class DM_Publish_SFTP(Module):
             self.scenario_id_as_prefix = False
 
         def init(self):
-            self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
-            self.registerViewContainers([self.dummy])
+            views = []
+            views.append(self.dummy)
+
+            if self.scenario_id_as_prefix:
+                self.city = ViewContainer("city", COMPONENT, READ)
+                self.city.addAttribute("scenario_id", Attribute.INT, READ)
+                views.append(self.city)
+            self.registerViewContainers(views)
 
         def connect(self):
             established = False
@@ -117,9 +123,13 @@ class DM_Publish_SFTP(Module):
 
                 self.sftp.put(self.getGDALDBName(), file_name)
                 self.close()
+                if self.scenario_id_as_prefix:
+                    self.city.finalise()
 
             except Exception, e:
                 log(str(e), Error)
                 self.close()
+                if self.scenario_id_as_prefix:
+                    self.city.finalise()
                 return
 
