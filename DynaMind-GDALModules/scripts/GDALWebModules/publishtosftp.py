@@ -43,6 +43,8 @@ class DM_Publish_SFTP(Module):
             self.createParameter("scenario_id_as_prefix", BOOL)
             self.scenario_id_as_prefix = False
 
+            self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+
         def init(self):
             views = []
             views.append(self.dummy)
