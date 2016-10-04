@@ -109,7 +109,7 @@ class DM_Publish_SFTP(Module):
 
             prefix = ""
             if scenario_id:
-                prefix = scenario_id
+                prefix = scenario_id + "_"
 
             file_name = prefix + self.file_name
 
