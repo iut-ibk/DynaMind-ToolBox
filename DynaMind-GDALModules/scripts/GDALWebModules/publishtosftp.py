@@ -106,12 +106,17 @@ class DM_Publish_SFTP(Module):
             if self.get_group_counter() != -1 and ( (self.get_group_counter()-1) % self.step != 0):
                 return
 
+
+            prefix = ""
             if scenario_id:
-                file_name = scenario_id+"_"+self.file_name
-            else:
-                file_name = self.file_name
+                prefix = scenario_id
+
+            file_name = prefix + self.file_name
+
             if self.get_group_counter() != -1:
-                file_name = self.file_name + "_" + str(self.get_group_counter())
+                file_name = prefix + self.file_name + "_" + str(self.get_group_counter())
+
+
             file_name += ".sqlite"
 
             try:
