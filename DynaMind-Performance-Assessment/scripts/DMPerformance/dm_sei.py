@@ -41,7 +41,7 @@ class DMSEI(Module):
         self.view_catchments = ViewContainer("catchment", DM.COMPONENT, DM.READ)
         self.view_catchments.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
-        # self.view_catchments.addAttribute("stream_erosion_index", DM.Attribute.DOUBLE, DM.WRITE)
+        self.view_catchments.addAttribute("stream_erosion_index", DM.Attribute.DOUBLE, DM.WRITE)
 
         view_register = [self.view_catchments]
 
@@ -92,14 +92,14 @@ class DMSEI(Module):
         if self.rain_vector_from_city != "":
             self.city.reset_reading()
             for c in self.city:
-                print "wite",self.rain_vector_from_city
+                # print "wite",self.rain_vector_from_city
                 import ogr
-                print c.GetGeomFieldCount()
+                # print c.GetGeomFieldCount()
                 # print c.GetFieldDefnRef().GetType("data")
 
                 #ogr.FieldDefn.GetType("data")
-                print c.GetFieldAsBinary("data")
-                print dm_get_double_list(c, self.rain_vector_from_city)
+                # print c.GetFieldAsBinary("data")
+                # print dm_get_double_list(c, self.rain_vector_from_city)
                 self.write_rain_file(filename, dm_get_double_list(c, self.rain_vector_from_city), 60 * 6)
                 swmm_rain_filename = "/tmp/" + filename + ".dat"
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2009', intervall=intervall,
@@ -146,7 +146,7 @@ class DMSEI(Module):
         fo.close()
 
     def write_rain_file(self, filename, vector, timestep):
-        print vector
+        # print vector
         dt = datetime.timedelta(seconds=timestep)
         start = datetime.datetime(2000, 1, 1)
         with open("/tmp/" + filename + ".dat", 'w') as f:
