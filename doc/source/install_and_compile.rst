@@ -33,6 +33,56 @@ For OSX the DynaMind-ToolBox can be installed with the highly recommended `Homeb
 To start DynaMind open a console and run ``dynamind`` or ``dynamind-gui``
 
 
+Linux (Ubuntu 16.04)
+====================
+
+.. code-block:: bash
+
+    sudo apt-add-repository -y ppa:ubuntugis/ubuntugis-unstable
+    sudo apt-get update
+    sudo apt-get install build-essential cmake git swig python-dev python-pip libgdal-dev libcgal-dev libboost-system-dev libboost-graph-dev python-numpy python-scipy python-gdal python-matplotlib libboost-all-dev libsfcgal-dev ﻿libcgal-qt5-dev
+﻿sudo apt-get install libqt5webkit5-dev
+
+    sudo pip install reimport
+    sudo pip install netCDF4
+    sudo pip install sphinx
+    sudo pip install sphinx_rtd_theme
+    sudo pip install gsconfig
+    sudo pip install psycopg2
+
+
+    #install SFCGAL
+    wget https://github.com/Oslandia/SFCGAL/archive/v1.0.5.zip
+    unzip v1.0.5.zip
+    cd SFCGAL-1.0.5/
+    cmake . && make && sudo make install
+    cd ..
+    #rm -rf SFCGAL-1.0/
+    rm v1.0.5.zip
+
+
+
+    make -j 16 && make install && rm ../libspatialite-4.3.0a.tar.gz && rm -rf *
+
+    git clone git://github.com/iut-ibk/DynaMind-ToolBox.git
+
+    cd DynaMind-ToolBox/
+
+
+    git submodule update --init --recursive
+
+    mkdir build
+
+    cd build
+
+    cmake ../ -DWITH_PLUGIN_GDALMODULE=TRUE -DWITH_DOC=True -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=True -DWITH_PLUGIN_GDALDRAINAGE=True
+
+    make
+
+    make install
+
+..
+
 Linux (Ubuntu)
 ==============
 
