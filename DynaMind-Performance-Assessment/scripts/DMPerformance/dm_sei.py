@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 __author__ = 'christianurich'
 
 import swmmread
@@ -41,6 +44,8 @@ class DMSEI(Module):
         self.view_catchments = ViewContainer("catchment", DM.COMPONENT, DM.READ)
         self.view_catchments.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
+        self.view_catchments.addAttribute("rwht_total_volume", DM.Attribute.DOUBLE, DM.READ)
+        self.view_catchments.addAttribute("rwht_connected_imp_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("stream_erosion_index", DM.Attribute.DOUBLE, DM.WRITE)
 
         view_register = [self.view_catchments]
@@ -124,11 +129,11 @@ class DMSEI(Module):
 
             SEIs[c] = sum
 
-        os.remove("/tmp/" + filename + ".inp")
-        os.remove("/tmp/" + filename + ".rep")
-        os.remove("/tmp/" + filename + ".out")
-        if self.rain_vector_from_city != "":
-            os.remove("/tmp/" + filename + ".dat")
+        # os.remove("/tmp/" + filename + ".inp")
+        # os.remove("/tmp/" + filename + ".rep")
+        # os.remove("/tmp/" + filename + ".out")
+        #if self.rain_vector_from_city != "":
+        #    os.remove("/tmp/" + filename + ".dat")
         return SEIs
 
     def transform_rain_file(self):
@@ -157,6 +162,9 @@ class DMSEI(Module):
         f.close()
 
     def init_swmm_model(self, out_file, rainfile, start, stop, intervall, sub_satchment):
+
+        
+
         out_file.write('[TITLE]\n')
         out_file.write('\n')
         out_file.write('[OPTIONS]\n')
@@ -207,7 +215,7 @@ class DMSEI(Module):
         out_file.write(
             ';;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- --------\n')
         for c in sub_satchment.keys():
-            out_file.write(c + '               RG1              ' + c + '                ' + str(
+            out_file.write(c + '               RG1              ' + 'o'+c + '                ' + str(
                 sub_satchment[c]["area"]) + '        ' + str(sub_satchment[c]["imp"]) + '       ' + str(
                 math.sqrt(sub_satchment[c]["area"]) * 100) + '      0.5      0\n')
 
@@ -225,11 +233,31 @@ class DMSEI(Module):
         for c in sub_satchment.keys():
             out_file.write(c + '                 3.0        0.5        4          7          0\n')
         out_file.write('\n')
-        out_file.write('[OUTFALLS]\n')
-        out_file.write(';;               Invert     Outfall    Stage/Table      Tide\n')
-        out_file.write(';;Name           Elev.      Type       Time Series      Gate\n')
-        out_file.write(';;-------------- ---------- ---------- ---------------- ----\n')
-        # out_file.write('4                0          FREE                        NO\n')
+        out_file.write('[JUNCTIONS]\n')
+        out_file.write(';;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded\n')
+        out_file.write(';;-------------- ---------- ---------- ---------- ---------- ---------\n')
+        for c in sub_satchment.keys():
+            out_file.write('o' + c + '                 0        0       0          0          0\n')
+        for c in sub_satchment.keys():
+            out_file.write('n' + c + '                 0        0       0          0          0\n')
+
+        out_file.write('\n')
+        out_file.write('[LID_CONTROLS]\n')
+        out_file.write(';;Name           Type/Layer Parameters\n')
+        out_file.write(';;-------------- ---------- ----------\n')
+        out_file.write('barrel           RB\n')
+        out_file.write('barrel           STORAGE    1000       0.75       0.5        0  \n')
+        out_file.write('barrel           DRAIN      6.25        0          0          0  \n')
+
+        out_file.write('\n')
+        out_file.write('[LID_USAGE]\n')
+        out_file.write(';;Subcatchment   LID Process      Number  Area       Width      InitSat    FromImp    ToPerv     RptFile                  DrainTo    \n')
+        out_file.write(';;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------\n')
+        for c in sub_satchment.keys():
+            out_file.write(c + '                barrel           '+ str(sub_satchment[c]["rwht"]) +'   1          0.5        0          ' +str(sub_satchment[c]["rwht_connected_imp_fraction"] * 100) + '        0          *                        n' + c + '     \n')
+   
+
+
         out_file.write('\n')
         out_file.write('[REPORT]\n')
         out_file.write('INPUT      NO\n')
@@ -289,17 +317,19 @@ class DMSEI(Module):
         for c in self.view_catchments:
             area = c.GetFieldAsDouble("area") / 10000. # Convert area to ha for SWMM
             imp = c.GetFieldAsDouble("impervious_fraction") * 100. # Convert to %
-            peak_flows = self.peakflow({"1": {"id": 1, "area": area, "imp": 0}})
+            rwht_total_volume = c.GetFieldAsDouble("rwht_total_volume")	
+            rwht_connected_imp_fraction = c.GetFieldAsDouble("rwht_connected_imp_fraction")	
+            peak_flows = self.peakflow({"1": {"id": 1, "area": area, "imp": 0, "rwht" : 0, "rwht_connected_imp_fraction" : 0 }})
             log(str(peak_flows), Standard)
 
-            SEIs_0 = self.SEI({"1": {"id": 1, "area": area, "imp": 0}}, peak_flows)
+            SEIs_0 = self.SEI({"1": {"id": 1, "area": area, "imp": 0, "rwht" : 0, "rwht_connected_imp_fraction" : 0 }}, peak_flows)
             log(str(SEIs_0), Standard)
             #
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 0}}, peak_flows)
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
             #
-            SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp}}, peak_flows)
+            SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp, "rwht" :  rwht_total_volume, "rwht_connected_imp_fraction" : rwht_connected_imp_fraction}}, peak_flows)
             stream_index = 0
             for i in SEIs.keys():
                 try:
