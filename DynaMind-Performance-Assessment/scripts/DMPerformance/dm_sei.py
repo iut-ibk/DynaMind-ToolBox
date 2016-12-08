@@ -82,8 +82,8 @@ class DMSEI(Module):
             a = np.array([row[1][4] for row in timeseries])
             natural_peaks[c] = a.max()
 
-        os.remove("/tmp/" + filename + ".inp")
-        os.remove("/tmp/" + filename + ".rep")
+        #os.remove("/tmp/" + filename + ".inp")
+        #os.remove("/tmp/" + filename + ".rep")
         os.remove("/tmp/" + filename + ".out")
         os.remove("/tmp/" + filename + ".dat")
 
@@ -255,7 +255,7 @@ class DMSEI(Module):
         out_file.write('bc              SURFACE    300        0.15       0.24       0.5        5   \n')
         out_file.write('bc              SOIL       500        0.5        0.2        0.1        0.5        10.0       3.5\n')       
         out_file.write('bc              STORAGE    200        0.75       0.5        0      \n')
-        out_file.write('bc              DRAIN      200        0.5        6          6     \n')    
+        out_file.write('bc              DRAIN      200        0         0          0     \n')    
 
 
         out_file.write('\n')
@@ -264,7 +264,7 @@ class DMSEI(Module):
         out_file.write(';;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------\n')
         for c in sub_satchment.keys():
             out_file.write(c + '                barrel           '+ str(sub_satchment[c]["rwht"]["number"]) +'   1          0.5        0          ' +str(sub_satchment[c]["rwht"]["connected_imp_fraction"] * 100) + '        0          *                        n' + c + '     \n')
-            out_file.write(c + '                bc           '+ str(sub_satchment[c]["bc"]["number"]) +'   5          1        0          ' +str(sub_satchment[c]["bc"]["connected_imp_fraction"] * 100) + '        0          *                        o' + c + '     \n')   
+            out_file.write(c + '                bc           '+ str(sub_satchment[c]["bc"]["number"]) +'   25          1        0          ' +str(sub_satchment[c]["bc"]["connected_imp_fraction"] * 100) + '        0          *                        o' + c + '     \n')   
 
 
         out_file.write('\n')
