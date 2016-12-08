@@ -84,8 +84,8 @@ class DMSEI(Module):
 
         #os.remove("/tmp/" + filename + ".inp")
         #os.remove("/tmp/" + filename + ".rep")
-        os.remove("/tmp/" + filename + ".out")
-        os.remove("/tmp/" + filename + ".dat")
+        #os.remove("/tmp/" + filename + ".out")
+        #os.remove("/tmp/" + filename + ".dat")
 
         return natural_peaks
 
