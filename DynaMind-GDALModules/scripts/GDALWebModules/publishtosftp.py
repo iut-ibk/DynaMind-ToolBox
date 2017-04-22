@@ -40,9 +40,20 @@ class DM_Publish_SFTP(Module):
             self.transport = None
             self.sftp = None
 
-        def init(self):
+            self.createParameter("scenario_id_as_prefix", BOOL)
+            self.scenario_id_as_prefix = False
+
             self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
-            self.registerViewContainers([self.dummy])
+
+        def init(self):
+            views = []
+            views.append(self.dummy)
+
+            if self.scenario_id_as_prefix:
+                self.city = ViewContainer("city", COMPONENT, READ)
+                self.city.addAttribute("scenario_id", Attribute.INT, READ)
+                views.append(self.city)
+            self.registerViewContainers(views)
 
         def connect(self):
             established = False
@@ -84,13 +95,28 @@ class DM_Publish_SFTP(Module):
             self.close()
 
         def run(self):
+
+            scenario_id = ""
+            if self.scenario_id_as_prefix:
+                self.city.reset_reading()
+                for c in self.city:
+                    scenario_id = str(c.GetFieldAsInteger("scenario_id"))
+
             #only export on x step
             if self.get_group_counter() != -1 and ( (self.get_group_counter()-1) % self.step != 0):
                 return
 
-            file_name = self.file_name
+
+            prefix = ""
+            if scenario_id:
+                prefix = scenario_id + "_"
+
+            file_name = prefix + self.file_name
+
             if self.get_group_counter() != -1:
-                file_name = self.file_name + "_" + str(self.get_group_counter())
+                file_name = prefix + self.file_name + "_" + str(self.get_group_counter())
+
+
             file_name += ".sqlite"
 
             try:
@@ -104,9 +130,13 @@ class DM_Publish_SFTP(Module):
 
                 self.sftp.put(self.getGDALDBName(), file_name)
                 self.close()
+                if self.scenario_id_as_prefix:
+                    self.city.finalise()
 
             except Exception, e:
                 log(str(e), Error)
                 self.close()
+                if self.scenario_id_as_prefix:
+                    self.city.finalise()
                 return
 

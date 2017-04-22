@@ -847,6 +847,7 @@ void SWMMWriteAndRead::writeLID_Usage(std::fstream &inp)
             double treated_area =  rwht->GetFieldAsDouble("connected_area") / (area * imp) * 100.;
             if (treated_area > 100) {
                 treated_area = 100;
+				DM::Logger(DM::Warning) << "Treated area is larger than catchment area set area to 100% rwht_id: " << (int) rwht->GetFID();
             }
 
             inp << "sub" <<  rwht->GetFieldAsInteger("sub_catchment_id") << "\t" << "barrel" << rwht->GetFID() << "\t" << 1 << "\t" << "1.0" << "\t" << "0.5" << "\t" << "0" << "\t" << treated_area << "\t" << "0" << "\n"; // << "\"report" << UUIDtoINT[CATCHMENT_ID] << ".txt\"" << "\n";
@@ -883,8 +884,8 @@ void SWMMWriteAndRead::writeTransetcts(fstream &inp)
         std::vector<double> depth;
         std::vector<double> width;
 
-		DM::DMFeature::GetDoubleList(conduit, "cscol1", width);
-		DM::DMFeature::GetDoubleList(conduit, "cscol2", depth);
+		DM::DMFeature::GetDoubleListFromString(conduit, "cscol1", width);
+		DM::DMFeature::GetDoubleListFromString(conduit, "cscol2", depth);
 
         std::stringstream coordinates;
         coordinates << std::fixed;

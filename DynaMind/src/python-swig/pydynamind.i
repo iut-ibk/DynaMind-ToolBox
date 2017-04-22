@@ -3,7 +3,7 @@
 %ignore "DM_HELPER_DLL_EXPORT";
 
 %pythoncode %{
-from osgeo import ogr
+from osgeo import ogr, gdal
 import tempfile
 %}
 
@@ -246,6 +246,8 @@ protected:
 	void setIsGDALModule(bool b);
 	bool isGdalModule();
 
+	void setIsSQLExclusive(bool b);
+	bool isSQLExclusive();
     %feature("autodoc", "registerViewContainers(view_containers)
 
     Registers a list of view containers in the Module. This is used in the Constructor or in :func:`~pydynamind.Module.init`
@@ -593,12 +595,17 @@ class DM::ViewContainer {
 		self.__features = []
 		if db_id not in self.__ds.keys():
 			log("Register Datasource " + str(db_id), Standard)
-			self.__ds[db_id] = ogr.Open(db_id)
+			self.__ds[db_id] = gdal.OpenEx(db_id, gdal.OF_UPDATE)
 			self.__connection_counter[db_id] = 0
 		else:
 			log("Reuse connection " + str(db_id), Standard)
 		table_name = str(self.getName())
-		#print "Register Layer " + str(table_name)
+		log("Register Layer " + str(table_name), Debug)
+
+		#print self.__ds[db_id]
+		#print self.__ds[db_id].GetLayerCount()
+		#print table_name
+
 		self.__ogr_layer = self.__ds[db_id].GetLayerByName(table_name)
 		self.__connection_counter[db_id]+=1
 
@@ -706,7 +713,7 @@ class DM::ViewContainer {
 		self.register_layer()
 		self.__ogr_layer.ResetReading()
 
-	def sync(self):
+	def __sync(self):
 		"""
 		Synchronises the ViewContainer writing the data to the database and freeing the memory.
 
@@ -721,18 +728,39 @@ class DM::ViewContainer {
 
 		#self.__ds[self.getDBID()].Destroy()
 
+	def set_next_by_index(self, index):
+		""""
+		Set Index to read from next
+		"""
+		self.register_layer()
+		self.__ogr_layer.SetNextByIndex(index)
+
+	def sync(self):
+		"""
+		Synchronises the ViewContainer writing the data to the database and freeing the memory.
+
+		"""
+		self.finalise()
+
 	def finalise(self):
 		"""
 		Closes the ViewContainer writing the data to the database and freeing the memory.
 		May be used before the end of the run method.
 
 		"""
-		self.sync()
-		log("Destroy Layer", Debug)
+		self.reset_reading()
+		self.__sync()
+		log("Destroy Layer " + str(self.getName()), Debug)
 		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:
 			log("Really Destroy Connection", Standard)
+			ds = self.__ds[self.getDBID()]
 			del self.__ds[self.getDBID()]
+			self.__ds[self.getDBID()] = None
+
+			# ds = None
+			# print self.__ds[self.getDBID()]
+			self.__ds.pop(self.getDBID())
 			self.__ds = {}
 			self.__ogr_layer = None
 
@@ -1258,5 +1286,22 @@ class Sim:
 			self.set_modules_parameter(parameter_set)
 			print self.serialise()
 			self.run()
+
+import struct
+import binascii
+
+def dm_set_double_list(feature, field_name, data):
+			if len(data) == 0:
+				return
+			buff = struct.pack('%sd' % len(data),  *data)
+			feature.SetFieldBinaryFromHexString(field_name, binascii.hexlify(buff))
+
+def dm_get_double_list(feature, field_name):
+			buffer = feature.GetFieldAsBinary(field_name)
+			if not buffer:
+				return []
+			floats = struct.unpack('%sd' % (len(buffer) / 8) , buffer)
+			return floats
+
 %}
 

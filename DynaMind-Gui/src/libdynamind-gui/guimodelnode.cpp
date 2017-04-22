@@ -44,10 +44,8 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QMessageBox>
-#if QT_VERSION >= 0x050000
-
-#else
-#include <QWebView>
+#if QT_VERSION >= QT_VERSION_CHECK(5,6, 0)
+	#include <QWebEngineView>
 #endif
 
 #include <QUrl>
@@ -274,10 +272,10 @@ void GUIModelNode::help()
 
 	helpWindow->setLayout(vbox);
 	helpWindow->layout()->addWidget(text);
-	helpWindow->show();*/
-	GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
-	ghv->showHelpForModule(modelnode->getModule());
-	ghv->show();
+    helpWindow->show();*/
+    GUIHelpViewer* ghv = new GUIHelpViewer(this->parentWidget());
+    ghv->showHelpForModule(modelnode->getModule());
+    ghv->show();
 }
 
 GUIModelNode::~GUIModelNode() 

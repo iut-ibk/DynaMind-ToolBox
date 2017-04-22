@@ -1,4 +1,5 @@
 #include "gdallogattriubtes.h"
+#include <dmgdalhelper.h>
 #include "ogr_feature.h"
 #include <sstream>
 #include <fstream>
@@ -76,7 +77,7 @@ void GDALLogAttriubtes::run()
 	OGRFeature * f;
 	while (f = this->leadingView.getNextFeature()) {
 		if (printFeatureID) {
-			DM::Logger(DM::Error) << this->leadingViewName << " " << f->GetFID();
+			DM::Logger(DM::Error) << this->leadingViewName << " " << (int) f->GetFID();
 		}
 		std::stringstream ss;
 
@@ -100,6 +101,20 @@ void GDALLogAttriubtes::run()
 					ss << "\t" << attr_name << "\t" << f->GetFieldAsString(attr_name.c_str());
 				else
 					DM::Logger(DM::Error) << "\t" << attr_name << "\t" << f->GetFieldAsString(attr_name.c_str());
+				break;
+			case DM::Attribute::DOUBLEVECTOR:
+				std::stringstream buffer;
+				std::vector<double> attribute_vector;
+				DM::DMFeature::GetDoubleList(f, attr_name, attribute_vector);
+				buffer << "[";
+				foreach (double val, attribute_vector) {
+					buffer << " " << val;
+				}
+				buffer << "]";
+				if (excelFriendly)
+					ss << "\t" << attr_name << "\t" << buffer.str();
+				else
+					DM::Logger(DM::Error) << "\t" << attr_name << "\t" << buffer.str();
 				break;
 			}
 		}

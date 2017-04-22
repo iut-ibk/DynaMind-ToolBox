@@ -93,7 +93,7 @@ void GDALImportData::init()
 
 	if (!vc) {
 		if (poDS) {
-			OGRDataSource::DestroyDataSource(poDS);
+			GDALClose(poDS);
 			poDS = 0;
 		}
 		std::vector<DM::ViewContainer*> data;
@@ -130,7 +130,7 @@ void GDALImportData::init()
 	}
 	this->addGDALData("city", views);
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		GDALClose(poDS);
 		poDS = 0;
     }
 }
@@ -149,7 +149,7 @@ GDALImportData::~GDALImportData()
 		delete vc;
 	}
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		GDALClose(poDS);
 	}
 }
 
@@ -228,20 +228,20 @@ void GDALImportData::run()
 			}
 			OGRGeometry * geo_ref = poFeature->GetGeometryRef();
 			if (!geo_ref) {
-				DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, no geometry";
+				DM::Logger(DM::Warning) << "Feature "<< (int) poFeature->GetFID() << "not imported, no geometry";
 				continue;
 			}
 			if (!geo_ref->IsValid()) {
 				OGRGeometry * buf =  geo_ref->Buffer(0);
 				if (!buf) {
-					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, geometry buffering failed";
+					DM::Logger(DM::Warning) << "Feature "<< (int) poFeature->GetFID() << "not imported, geometry buffering failed";
 					continue;
 				}
 				if (!buf->IsValid()) {
-					DM::Logger(DM::Warning) << "Feature "<< poFeature->GetFID() << "not imported, geometry is not valid";
+					DM::Logger(DM::Warning) << "Feature "<< (int) poFeature->GetFID() << "not imported, geometry is not valid";
 					continue;
 				}
-				DM::Logger(DM::Warning) << "Try to use buffered feature for "<< poFeature->GetFID();
+				DM::Logger(DM::Warning) << "Try to use buffered feature for "<< (int) poFeature->GetFID();
 				geo_ref = buf;
 
 			}
@@ -287,7 +287,7 @@ void GDALImportData::run()
 			//Check Type is fine
 			if (wkbFlatten(geo_single->getGeometryType()) != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
 				DM::Logger(DM::Warning) << "Feature "
-										<< poFeature->GetFID()
+										<< (int)poFeature->GetFID()
 										<< " not imported, expected "
 										<< (int) DM::GDALUtilities::DMToOGRGeometry(vc->getType())
 										<< " instead of " << (int) wkbFlatten(geo_single->getGeometryType())
@@ -319,7 +319,7 @@ void GDALImportData::run()
 	if (filterView)
 		filterView->syncReadFeatures();
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		GDALClose(poDS);
 		poDS = 0;
 	}
 }
@@ -397,15 +397,16 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 OGRLayer *GDALImportData::initLayer()
 {
 	if (poDS) {
-		OGRDataSource::DestroyDataSource(poDS);
+		GDALClose(poDS);
 		poDS = 0;
 	}
-	poDS = OGRSFDriverRegistrar::Open(this->source.c_str());
+	poDS = (GDALDataset*) GDALOpenEx( this->source.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL );
+	//poDS = OGRSFDriverRegistrar::Open(this->source.c_str());
 	if (!poDS) {
 		DM::Logger(DM::Warning) << "Error loading " << this->source;
 		return 0;
 	}
-	this->driver_name = poDS->GetDriver()->GetName();
+	this->driver_name = poDS->GetDriverName();
 	OGRLayer * lyr = poDS->GetLayerByName(this->layername.c_str());
 	if (!lyr) {
 		DM::Logger(DM::Warning) << "Error loading " << this->layername;

@@ -7,14 +7,14 @@
 DM_DECLARE_CUSTOM_NODE_NAME(DM_CreateGrid, Create Grid, Geometry Processing)
 
 int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName){
-	if (argc == 0)
+	if (argc == 0  )
 		return 0;
 
 	DM_CreateGrid* db_worker = reinterpret_cast<DM_CreateGrid*>(db_w);
 
 
-	std::vector<std::string> values(argv , argv + argc);
-	std::vector<std::string> names(azColName, azColName + argc);
+	//std::vector<std::string> values(argv , argv + argc);
+	//std::vector<std::string> names(azColName, azColName + argc);
 
 	OGRGeometry * geo_ref = OGRGeometryFactory::createGeometry(wkbMultiPolygon);
 	OGRGeometryFactory::createFromWkt(argv,db_worker->getGridView()->getSpatialReference(), &geo_ref);

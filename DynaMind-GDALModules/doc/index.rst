@@ -15,6 +15,7 @@ Data Import and Export
    gdallogattributes
    dm_exportsimulationdb
    dm_publishtosftp
+   dm_sftp_hotstart
 
 
 

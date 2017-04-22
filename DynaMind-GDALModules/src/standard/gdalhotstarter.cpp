@@ -51,7 +51,8 @@ void GDALHotStarter::init()
 		DM::Logger(DM::Warning) << "No database set";
 		return;
 	}
-	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->hotStartDatabase.c_str());
+	GDALDataset* poDS = (GDALDataset*) GDALOpenEx( this->hotStartDatabase.c_str(), GDAL_OF_VECTOR, NULL, NULL, NULL );
+	//OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->hotStartDatabase.c_str());
 	if (!poDS) {
 		DM::Logger(DM::Warning) << "Error loading database: " << this->hotStartDatabase;
 		return;
@@ -72,7 +73,7 @@ void GDALHotStarter::init()
 	}
 	this->registerViewContainers(datastream);
 
-	OGRDataSource::DestroyDataSource(poDS);
+	GDALClose(poDS);
 }
 
 
