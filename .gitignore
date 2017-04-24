@@ -20,5 +20,4 @@ build
 *.bat
 bin
 BuildWin/
-*.dyn
 *.user*
