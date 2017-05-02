@@ -14,11 +14,20 @@ DM_DECLARE_CUSTOM_NODE_NAME(GDALCreateBuilding,Generate Simple Buildings, Urban 
 
 OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 {
+
+
 	char* geo;
 	ogr_poly->exportToWkt(&geo);
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 	OGRFree(geo); //Not needed after here
+
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
+
+	if (!poly.toPolygon_2(false).is_simple()) {
+		DM::Logger(DM::Warning) << "Polygon is not simple";
+		return NULL;
+	}
+
 
 	//Transfer to GDAL polygon
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
