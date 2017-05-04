@@ -27,7 +27,10 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 		DM::Logger(DM::Warning) << "Polygon is not simple";
 		return NULL;
 	}
-
+	if (poly.toPolygon_2(false).area() < 0.001){
+		DM::Logger(DM::Warning) << "Not a polygon";
+		return NULL;
+	}
 
 	//Transfer to GDAL polygon
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
