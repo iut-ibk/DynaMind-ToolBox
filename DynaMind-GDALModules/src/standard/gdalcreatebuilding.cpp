@@ -27,8 +27,8 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 		DM::Logger(DM::Warning) << "Polygon is not simple";
 		return NULL;
 	}
-	if (poly.toPolygon_2(false).area() < 0.001){
-		DM::Logger(DM::Warning) << "Not a polygon";
+	if (poly.toPolygon_2(false).area() < 0.001 && poly.toPolygon_2(false).area() > -0.001){
+		DM::Logger(DM::Warning) << "Not a polygon " << CGAL::to_double(poly.toPolygon_2(false).area());
 		return NULL;
 	}
 
