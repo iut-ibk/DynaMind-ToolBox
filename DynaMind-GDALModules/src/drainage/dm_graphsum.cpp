@@ -127,19 +127,20 @@ void DM_GaphSum::run()
 void DM_GaphSum::getNext(long node_id, double current_sum, std::set<long> &visted)
 {
 	// [end_id] -----> [start_id]
+	int node_count = start_nodes.count(node_id);
 	if (start_nodes.count(node_id) == 0) {
 		return;
 	}
 
 
 
-	std::vector<long> start_edges = start_nodes[node_id];
+	//std::vector<long> start_edges = start_nodes[node_id];
 	bool change_next = false;
 
 	// Start Node
-	std::vector<long> edges_at_start = end_nodes[node_id];
+	//std::vector<long> edges_at_start = end_nodes[node_id];
 
-	foreach (long edge, start_edges) {
+	foreach (long edge, start_nodes[node_id]) {
 		// Get next edge
 		double sum_new = current_sum;
 		if (visited_global.find(edge) == visited_global.end())
