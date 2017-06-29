@@ -34,6 +34,9 @@ GDALImportData::GDALImportData()
 	this->epsg_from = -1;
 	this->addParameter("epsg_from", DM::INT, &epsg_from);
 
+	this->geoemtry_type = -1;
+	this->addParameter("geometry_type", DM::INT, &geoemtry_type);
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	//data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -86,6 +89,7 @@ void GDALImportData::init()
 		data.push_back(&dummy);
 		this->registerViewContainers(data);
 		return;
+
 	}
 
 
@@ -351,7 +355,7 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 
 	int dm_geometry = DM::GDALUtilities::OGRtoDMGeometry(def);
 	translator.clear();
-	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, dm_geometry, DM::WRITE);
+	DM::ViewContainer * view = new DM::ViewContainer(this->viewName, (this->geoemtry_type == -1) ? dm_geometry : this->geoemtry_type, DM::WRITE);
 	if (import_attribute_as.empty()) { //If no attribtue set import everthing
 		for (int i = 0; i < def->GetFieldCount(); i++){
 			OGRFieldDefn * fdef = def->GetFieldDefn(i);
@@ -391,6 +395,7 @@ DM::ViewContainer *GDALImportData::initShapefile() // Init view container
 				view->addAttribute(attribute_name.c_str(), type, DM::WRITE);
 		}
 	}
+
 	return view;
 }
 

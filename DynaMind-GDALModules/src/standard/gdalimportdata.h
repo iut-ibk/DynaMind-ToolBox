@@ -62,6 +62,8 @@ private:
 
 	int epsg_from; //Needed to set spatial filter
 
+	int geoemtry_type;
+
 
 public:
 	GDALImportData();
