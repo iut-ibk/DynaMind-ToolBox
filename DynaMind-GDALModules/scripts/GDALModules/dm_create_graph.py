@@ -45,9 +45,13 @@ class DM_CreateNeighbourhoodNetwork(Module):
         def run(self):
             node_weights = {}
 
+            global_min = 99999.99
+
             for n in self.leading_view:
                 n_id = n.GetFID()
                 weight = n.GetFieldAsDouble(self.weight)
+                if global_min < weight:
+                    global_min = weight
 
                 node_weights[n_id] = weight
 
@@ -66,6 +70,69 @@ class DM_CreateNeighbourhoodNetwork(Module):
                 con_vec = connections[start_id]
                 con_vec.append(end_id)
 
+
+            # Filling the sinks
+            corrected = 1
+            ids = []
+
+
+            while corrected > 0:
+                log(str(corrected), Standard)
+                log(str(",".join( str(v) for v in ids)) , Standard)
+                corrected = 0
+                ids = []
+                for n_id in node_weights.keys():
+
+                    try:
+                        neigh = connections[n_id]
+                    except KeyError:
+                        continue
+
+                    n_height = node_weights[n_id]
+                    v_neigh = []
+                    for n in neigh:
+                        if (n == n_id):
+                            continue
+                        v_neigh.append(node_weights[n])
+
+
+                    min_neigh = min(v_neigh)
+                    if n_height < global_min - 0.0001: #global min
+                        continue
+                    delta = n_height - min_neigh # 9 - 8
+                    if delta > 0.:
+                        continue
+                    # log(str(min_neigh), Standard)
+                    # log(str(n_height), Standard)
+                    # log(str(delta), Standard)
+                    if delta < -0.05: #Threshold for actual depression
+                        continue
+
+
+
+                    node_weights[n_id] = min_neigh - delta + 0.001
+                    corrected += 1
+                    ids.append(n_id)
+                    ids.append(n_height)
+                    ids.append(min_neigh)
+                    ids.append(node_weights[n_id])
+
+
+
+
+
+                # n_next = -1
+                # n_height = node_weights[n_id]
+
+                # for n in neigh:
+                #     if node_weights[n] <= n_height:
+                #         n_next = n
+                #         n_height = node_weights[n]
+                # if n_next == -1:
+                #     continue
+
+
+
             for n_id in node_weights.keys():
 
                 try:
@@ -77,7 +144,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
                 n_height = node_weights[n_id]
 
                 for n in neigh:
-                    if node_weights[n] < n_height:
+                    if node_weights[n] <= n_height:
                         n_next = n
                         n_height = node_weights[n]
                 if n_next == -1:
