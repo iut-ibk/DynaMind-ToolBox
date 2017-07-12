@@ -50,7 +50,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
             for n in self.leading_view:
                 n_id = n.GetFID()
                 weight = n.GetFieldAsDouble(self.weight)
-                if global_min < weight:
+                if global_min > weight and weight > 0:
                     global_min = weight
 
                 node_weights[n_id] = weight
@@ -77,6 +77,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
 
 
             while corrected > 0:
+                log(str(global_min), Standard)
                 log(str(corrected), Standard)
                 log(str(",".join( str(v) for v in ids)) , Standard)
                 corrected = 0
@@ -90,14 +91,18 @@ class DM_CreateNeighbourhoodNetwork(Module):
 
                     n_height = node_weights[n_id]
                     v_neigh = []
+
                     for n in neigh:
-                        if (n == n_id):
+                        if n == n_id:
                             continue
                         v_neigh.append(node_weights[n])
 
+                    # if len(v_neigh) != 8:
+                    #     continue
+
 
                     min_neigh = min(v_neigh)
-                    if n_height < global_min - 0.0001: #global min
+                    if n_height < global_min + 0.0001: #global min 9 9.1
                         continue
                     delta = n_height - min_neigh # 9 - 8
                     if delta > 0.:
