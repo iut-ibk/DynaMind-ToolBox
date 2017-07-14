@@ -74,9 +74,9 @@ class DM_CreateNeighbourhoodNetwork(Module):
             # Filling the sinks
             corrected = 1
             ids = []
-
-
-            while corrected > 0:
+            counter = 0
+            while corrected > 0 and counter < 10:
+                counter += 1
                 log(str(global_min), Standard)
                 log(str(corrected), Standard)
                 log(str(",".join( str(v) for v in ids)) , Standard)
@@ -122,22 +122,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
                     ids.append(min_neigh)
                     ids.append(node_weights[n_id])
 
-
-
-
-
-                # n_next = -1
-                # n_height = node_weights[n_id]
-
-                # for n in neigh:
-                #     if node_weights[n] <= n_height:
-                #         n_next = n
-                #         n_height = node_weights[n]
-                # if n_next == -1:
-                #     continue
-
-
-
+            # Create the graph
             for n_id in node_weights.keys():
 
                 try:
