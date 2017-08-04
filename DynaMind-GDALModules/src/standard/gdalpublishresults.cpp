@@ -139,6 +139,7 @@ OGRLayer * GDALPublishResults::openLayer(GDALDataset *poDS, OGRSpatialReference*
 
 		lyr = poDS->GetLayerByName(layer_name.c_str());
 		updateAttributes(lyr);
+		DM::Logger(DM::Standard) << "Append to Layer " << layer_name;
 		return lyr;
 	}
 
@@ -156,6 +157,7 @@ OGRLayer * GDALPublishResults::openLayer(GDALDataset *poDS, OGRSpatialReference*
 		lyr = poDS->CreateLayer(layer_name.c_str(), oTargetSRS, wkbPolygon, options );
 		break;
 	}
+	DM::Logger(DM::Standard) << "Created  Layer " << layer_name;
 
 	return lyr;
 }
