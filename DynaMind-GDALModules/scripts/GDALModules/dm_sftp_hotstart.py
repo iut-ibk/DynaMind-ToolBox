@@ -189,6 +189,7 @@ class DM_Hoststart_SFTP(Module):
 
 
         def run(self):
+            log("not me", Error)
             db = self.getGDALData("city")
             if self.real_file_name == "":
                 log("File not downloaded", Error)
@@ -196,6 +197,7 @@ class DM_Hoststart_SFTP(Module):
                 return
             log("Set me", Error)
             db.setGDALDatabase(self.real_file_name)
+
             log("Sent me 1", Error)
             os.remove(self.real_file_name)
             log("Sent me 2", Error)

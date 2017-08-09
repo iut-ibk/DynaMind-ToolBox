@@ -55,10 +55,18 @@ void Module::preRun()
 	if (!this->regiseredViewContainers.size())
 		return;
 	GDALSystem * sys = this->getGDALData("city");
+	// std::cout << this->getClassName() << std::endl;
+
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		if (v->getName() == "dummy")
 			continue;
+		if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0) {
+			continue;
+		}
 		v->setCurrentGDALSystem(sys);
+
+
+
 		//Set Filter, currently only attribute filter
 		foreach (DM::Filter f, this->moduleFilter){
 			if (f.getViewName() != v->getName())
@@ -86,6 +94,22 @@ void Module::afterRun()
 		reconnect_sys->reConnect();
 		return;
 	}
+
+
+
+
+	std::cout << "clenaing" << std::endl;
+	if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0) {
+		std::vector<View> views;
+		mforeach(const View& v, accessedViews["city"])
+			views.push_back(v);
+
+		std::cout << "asdf" << std::endl;
+		ISystem *sys = getOutPortData("city");
+		sys->updateViews(views);
+	}
+	std::cout << "asdf" << std::endl;
+
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		//Clean Views
 		v->syncAlteredFeatures();
@@ -461,7 +485,10 @@ ISystem* Module::getIData(const std::string& streamName)
 	mforeach(const View& v, accessedViews[streamName])
 		views.push_back(v);
 
-	sys->updateViews(views);
+	std::cout << this->getClassName() << std::endl;
+	if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") != 0) {
+		sys->updateViews(views);
+	}
 
 	if (DBConnector::getInstance()->getConfig().peterDatastream)
 	{
