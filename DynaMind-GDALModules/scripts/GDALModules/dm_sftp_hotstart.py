@@ -51,7 +51,7 @@ class DM_Hoststart_SFTP(Module):
             return self.file_name + self.username + self.password+self.host
 
         def init(self):
-
+            log("Rerun init", Error)
             if not self.file_name or not self.host or not self.username or not self.password:
                 self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
                 self.registerViewContainers([self.dummy])
@@ -194,8 +194,11 @@ class DM_Hoststart_SFTP(Module):
                 log("File not downloaded", Error)
                 self.setStatus(MOD_EXECUTION_ERROR)
                 return
+            log("Set me", Error)
             db.setGDALDatabase(self.real_file_name)
+            log("Sent me 1", Error)
             os.remove(self.real_file_name)
+            log("Sent me 2", Error)
 
 
 
