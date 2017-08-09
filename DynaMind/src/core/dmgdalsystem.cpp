@@ -423,12 +423,11 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	//options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
 	// Add Layer to definition database
 
-	OGRLayer * l = poDS->GetLayerByName(v.getName().c_str());
+	OGRLayer * l = poDS->GetLayerByName(v.getName().c_str()); //Check if alread in db and return
 	if (l != NULL) {
 		return l;
 	}
 
-	DM::Logger(DM::Debug) << "Start start";
 	addLayerToDef(v);
 
 

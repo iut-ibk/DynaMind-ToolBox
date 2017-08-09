@@ -7,7 +7,11 @@ from osgeo import gdal
 import uuid
 import os
 
-
+"""
+Module to load data from an SFTP server. This has been quite slow on the cloud. 
+To improve the speed a small hack has been included in the dynamind core in the 
+module preperation and clean up
+"""
 class DM_Hoststart_SFTP(Module):
 
         display_name = "Hotstart Simulation from SFTP"
@@ -51,7 +55,6 @@ class DM_Hoststart_SFTP(Module):
             return self.file_name + self.username + self.password+self.host
 
         def init(self):
-            log("Rerun init", Error)
             if not self.file_name or not self.host or not self.username or not self.password:
                 self.dummy = ViewContainer("dummy", SUBSYSTEM, WRITE)
                 self.registerViewContainers([self.dummy])
@@ -189,18 +192,13 @@ class DM_Hoststart_SFTP(Module):
 
 
         def run(self):
-            log("not me", Error)
             db = self.getGDALData("city")
             if self.real_file_name == "":
                 log("File not downloaded", Error)
                 self.setStatus(MOD_EXECUTION_ERROR)
                 return
-            log("Set me", Error)
             db.setGDALDatabase(self.real_file_name)
-
-            log("Sent me 1", Error)
             os.remove(self.real_file_name)
-            log("Sent me 2", Error)
 
 
 

@@ -55,11 +55,12 @@ void Module::preRun()
 	if (!this->regiseredViewContainers.size())
 		return;
 	GDALSystem * sys = this->getGDALData("city");
-	// std::cout << this->getClassName() << std::endl;
 
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		if (v->getName() == "dummy")
 			continue;
+		//Special rule to prevent createLayer to be called which is really slow. However this required a hack in
+		//after run to build the file structure correctly
 		if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0) {
 			continue;
 		}
@@ -95,20 +96,14 @@ void Module::afterRun()
 		return;
 	}
 
-
-
-
-	std::cout << "clenaing" << std::endl;
+	//Special hack to build datastrucutre correclty since this is not done in the pre run to prevent createLayer to be called
 	if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0) {
 		std::vector<View> views;
 		mforeach(const View& v, accessedViews["city"])
-			views.push_back(v);
-
-		std::cout << "asdf" << std::endl;
+				views.push_back(v);
 		ISystem *sys = getOutPortData("city");
 		sys->updateViews(views);
 	}
-	std::cout << "asdf" << std::endl;
 
 	foreach ( DM::ViewContainer * v, this->regiseredViewContainers) {
 		//Clean Views
