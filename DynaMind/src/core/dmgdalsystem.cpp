@@ -218,7 +218,7 @@ void GDALSystem::updateView(const View &v)
 			DM::Logger(DM::Error) << "couldn't create layer " << v.getName();
 			return;
 		} else {
-			DM::Logger(DM::Debug) << "created layer " << v.getName();
+			DM::Logger(DM::Standard) << "created layer " << v.getName();
 		}
 		this->viewLayer[v.getName()] = lyr_tmp;
 		layers.push_back(lyr_tmp);
@@ -304,7 +304,7 @@ OGRFeature *GDALSystem::createFeature(const View &v)
 OGRLayer *GDALSystem::getOGRLayer(const View &v)
 {
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
-		Logger(Error) << "Layer not found";
+		Logger(Error) << "OGR Layer not found ";
 		return 0;
 	}
 	return viewLayer[v.getName()];
@@ -318,7 +318,7 @@ GDALDataset *GDALSystem::getDataSource()
 bool GDALSystem::resetReading(const View &v)
 {
 	if (viewLayer.find(v.getName()) == viewLayer.end()) {
-		Logger(Error) << "Layer not found";
+		Logger(Error) << "Layer not found for rest";
 		return false;
 	}
 	OGRLayer * lyr = viewLayer[v.getName()];
@@ -422,12 +422,19 @@ OGRLayer *GDALSystem::createLayer(const View &v)
 	options = CSLSetNameValue( options, "FORMAT", "SPATIALITE" );
 	//options = CSLSetNameValue( options, "OGR_SQLITE_CACHE", "1024" );
 	// Add Layer to definition database
+
+	OGRLayer * l = poDS->GetLayerByName(v.getName().c_str()); //Check if alread in db and return
+	if (l != NULL) {
+		return l;
+	}
+
 	addLayerToDef(v);
 
 
 	OGRSpatialReference* oSourceSRS;
 	oSourceSRS = new OGRSpatialReference();
 	oSourceSRS->importFromEPSG(this->EPSG);
+
 	switch ( v.getType() ) {
 	case DM::COMPONENT:
 #ifdef _WIN32 //Use in windows since driver seems to have a problem to create wkbNone tables
