@@ -51,11 +51,7 @@ class DM_ImportSWMM(Module):
 
         # self.conduits.addLinkAttribute("XSECTION", "XSECTION", WRITE)
 
-        # self.junctions = View("JUNCTION", NODE, WRITE)
-        # self.junctions.addAttribute("Z", DOUBLE, WRITE)
-        # self.junctions.addAttribute("D", DOUBLE, WRITE)
-        # self.junctions.addAttribute("invert_elevation", DOUBLE, WRITE)
-        # self.junctions.addAttribute("built_year", DOUBLE, WRITE)
+
         #
         # self.outfalls = View("OUTFALL", NODE, WRITE)
         # self.outfalls.addAttribute("Z", DOUBLE, WRITE)
@@ -106,48 +102,63 @@ class DM_ImportSWMM(Module):
         # self.curves = {}
         # self.curves_types = {}
 
-    def readCurves(self):
-        try:
-            f = open(self.filename)
-            startReading = False
-
-            for line in f:
-                line = line.strip()
-                if line is '':
-                    continue
-                if line[0] is ';':
-                    continue
-                if startReading == True and line[0] is '[':
-                    startReading = False
-                    break
-                if startReading == True:
-                    # print line
-                    content = line.split()
-                    if content[0] not in self.curves:
-                        self.curves[content[0]] = []
-                    values = self.curves[content[0]]
-                    if (len(content) == 4):
-                        values.append((float(content[2]), float(content[3])))
-                    if (len(content) == 3):
-                        values.append((float(content[1]), float(content[2])))
-                    self.curves[content[0]] = values
-
-                    if (len(content) == 4):
-                        if content[1] != "":
-                            self.curves_types[content[0]] = str(content[1])
-
-                if line == "[CURVES]":
-                    startReading = True
-            f.close()
-
-        except Exception, e:
-            print e
-            print sys.exc_info()
+    # def readCurves(self):
+    #     try:
+    #         f = open(self.filename)
+    #         startReading = False
+    #
+    #         for line in f:
+    #             line = line.strip()
+    #             if line is '':
+    #                 continue
+    #             if line[0] is ';':
+    #                 continue
+    #             if startReading == True and line[0] is '[':
+    #                 startReading = False
+    #                 break
+    #             if startReading == True:
+    #                 # print line
+    #                 content = line.split()
+    #                 if content[0] not in self.curves:
+    #                     self.curves[content[0]] = []
+    #                 values = self.curves[content[0]]
+    #                 if (len(content) == 4):
+    #                     values.append((float(content[2]), float(content[3])))
+    #                 if (len(content) == 3):
+    #                     values.append((float(content[1]), float(content[2])))
+    #                 self.curves[content[0]] = values
+    #
+    #                 if (len(content) == 4):
+    #                     if content[1] != "":
+    #                         self.curves_types[content[0]] = str(content[1])
+    #
+    #             if line == "[CURVES]":
+    #                 startReading = True
+    #         f.close()
+    #
+    #     except Exception, e:
+    #         print e
+    #         print sys.exc_info()
 
     def init(self):
+
         self.conduits = ViewContainer("conduit", EDGE, WRITE)
         self.conduits.addAttribute("start_id", Attribute.INT, WRITE)
         self.conduits.addAttribute("end_id", Attribute.INT, WRITE)
+
+        self.conduits.addAttribute("inlet_offset", Attribute.DOUBLE, WRITE)
+        self.conduits.addAttribute("outlet_offset", Attribute.DOUBLE, WRITE)
+        self.conduits.addAttribute("diameter", Attribute.DOUBLE, WRITE)
+        self.conduits.addAttribute("width", Attribute.DOUBLE, WRITE)
+        self.conduits.addAttribute("type", Attribute.STRING, WRITE)
+
+        self.junctions = ViewContainer("junction", NODE, WRITE)
+        self.junctions.addAttribute("node_id", Attribute.INT, WRITE)
+
+        self.junctions.addAttribute("d", Attribute.DOUBLE, WRITE)
+        self.junctions.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
+        # self.junctions.addAttribute("built_year", DOUBLE, WRITE)
+        # self.junctions.addAttribute("Z", DOUBLE, WRITE)
 
         self.pumps = ViewContainer("pump", EDGE, WRITE)
         self.pumps.addAttribute("start_id", Attribute.INT, WRITE)
@@ -156,9 +167,10 @@ class DM_ImportSWMM(Module):
         self.weirs = ViewContainer("weir", EDGE, WRITE)
         self.weirs.addAttribute("start_id", Attribute.INT, WRITE)
         self.weirs.addAttribute("end_id", Attribute.INT, WRITE)
-        # self.conduits.addAttribute("inlet_offset", Attribute.DOUBLE, WRITE)
-        # self.conduits.addAttribute("outlet_offset", Attribute.DOUBLE, WRITE)
-        # self.conduits.addAttribute("diameter", Attribute.DOUBLE, WRITE)
+
+        self.outfall = ViewContainer("outfall", NODE, WRITE)
+        self.outfall.addAttribute("node_id", Attribute.INT, WRITE)
+        self.outfall.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
 
         # self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
 
@@ -166,7 +178,14 @@ class DM_ImportSWMM(Module):
         # self.xsections.addAttribute("type", STRING, WRITE)
         # self.xsections.addAttribute("shape", STRING, WRITE)
         self.nodes_container = ViewContainer("node", NODE, WRITE)
-        views = [self.nodes_container, self.conduits, self.pumps, self.weirs]
+
+        views = [self.nodes_container,
+                 self.junctions,
+                 self.conduits,
+                 self.pumps,
+                 self.weirs,
+                 self.outfall]
+
         if self.name_outlet != "":
             self.outlet = ViewContainer("outlet", NODE, WRITE)
             self.outlet.addAttribute("node_id", Attribute.INT, WRITE)
@@ -174,8 +193,6 @@ class DM_ImportSWMM(Module):
         self.registerViewContainers(views)
 
     def run(self):
-        # try:
-        # sewer = self.getData("Sewer")
         results = {}
         f = open(self.filename)
         currentContainer = ""
@@ -237,6 +254,7 @@ class DM_ImportSWMM(Module):
                 outfall = self.outlet.create_feature()
                 outfall.SetGeometry(n_pt)
                 outfall.SetField("node_id", node_id)
+
         self.nodes_container.finalise()
         if self.name_outlet != "":
             self.outlet.finalise()
@@ -244,33 +262,51 @@ class DM_ImportSWMM(Module):
 
 
         # #Add Nodes
-        # junctions = results["[JUNCTIONS]"]
-        # for c in junctions:
-        #     attributes = junctions[c]
-        #     juntion = nodes[c]
-        #     sewer.addComponentToView(juntion, self.junctions)
-        #
-        #     juntion.addAttribute("SWMM_ID", str(c))
-        #     juntion.addAttribute("invert_elevation", (float(attributes[0])))
-        #     juntion.addAttribute("D", (float(attributes[1])))
-        #     juntion.addAttribute("Z", (float(attributes[0])) + (float(attributes[1])))
-        #     juntion.addAttribute("built_year", self.defaultBuiltYear)
-        #     if (c == self.NameWWTP):
-        #         print "wwtp found"
-        #         sewer.addComponentToView(juntion, self.wwtps)
+        junctions = results["[JUNCTIONS]"]
+        for c in junctions:
+            attributes = junctions[c]
+            #juntion = nodes[c]
+            juntion = self.junctions.create_feature()
+
+            n_pt = ogr.Geometry(ogr.wkbPoint)
+
+            n_pt.SetPoint_2D(0, nodes[c][1], nodes[c][2])
+
+            juntion.SetGeometry(n_pt)
+            juntion.SetField("node_id", nodes[c][0])
+
+            juntion.SetField("invert_elevation", (float(attributes[0])))
+            juntion.SetField("d", (float(attributes[1])))
+        self.junctions.finalise()
+            # juntion.addAttribute("Z", (float(attributes[0])) + (float(attributes[1])))
+            # juntion.addAttribute("built_year", self.defaultBuiltYear)
+            # juntion.addAttribute("SWMM_ID", str(c))
+            # if (c == self.NameWWTP):
+            #     print "wwtp found"
+            #     sewer.addComponentToView(juntion, self.wwtps)
+
         #
         # #Write Outfalls
-        # outfalls = results["[OUTFALLS]"]
-        # for o in outfalls:
-        #     vals = outfalls[o]
-        #     attributes = outfalls[o]
-        #     outfall = nodes[o]
-        #     sewer.addComponentToView(outfall, self.outfalls)
-        #     outfall.addAttribute("Z", float(vals[0]))
-        #     if (o == self.NameWWTP):
-        #         print "wwtp found"
-        #         sewer.addComponentToView(outfall, self.wwtps)
-        #         outfall.addAttribute("WWTP", 1.0)
+        outfalls = results["[OUTFALLS]"]
+        for o in outfalls:
+            vals = outfalls[o]
+            attributes = outfalls[o]
+            # outfall = nodes[o]
+            outfall = self.outfall.create_feature()
+
+            n_pt = ogr.Geometry(ogr.wkbPoint)
+
+            n_pt.SetPoint_2D(0, nodes[o][1], nodes[o][2])
+            outfall.SetGeometry(n_pt)
+            outfall.SetField("node_id", nodes[c][0])
+            outfall.SetField("invert_elevation", (float(attributes[0])))
+            # sewer.addComponentToView(outfall, self.outfalls)
+            # outfall.addAttribute("Z", float(vals[0]))
+            # if (o == self.NameWWTP):
+            #     print "wwtp found"
+            #     sewer.addComponentToView(outfall, self.wwtps)
+            #     outfall.addAttribute("WWTP", 1.0)
+
         # #Write Storage Units
         # if "[STORAGE]" in results:
         #     storages = results["[STORAGE]"]
@@ -293,16 +329,14 @@ class DM_ImportSWMM(Module):
         #
         #
         #
-        # if "[XSECTIONS]" in results:
-        #     xsections = results["[XSECTIONS]"]
-        #
+        if "[XSECTIONS]" in results:
+            xsections = results["[XSECTIONS]"]
+
         ress = results["[CONDUITS]"]
         counter = 0
         for c in ress:
             counter += 1
             vals = ress[c]
-            end_id = nodes[vals[0]]
-            start_id = nodes[vals[1]]
 
             # if end_id not in node_ids:
             #     continue
@@ -311,8 +345,7 @@ class DM_ImportSWMM(Module):
 
             conduit = self.conduits.create_feature()
             line = ogr.Geometry(ogr.wkbLineString)
-            # print start_id
-            # print nodes[start_id][1], nodes[start_id][2]
+
             line.SetPoint_2D(0, nodes[vals[0]][1], nodes[vals[0]][2])
             line.SetPoint_2D(1, nodes[vals[1]][1], nodes[vals[1]][2])
 
@@ -321,13 +354,18 @@ class DM_ImportSWMM(Module):
             # Create XSection
             conduit.SetField("start_id", nodes[vals[0]][0])
             conduit.SetField("end_id", nodes[vals[1]][0])
-            # conduit.SetField("inlet_offset", float(vals[4]))
-            # conduit.SetField("outlet_offset", float(vals[5]))
+            conduit.SetField("inlet_offset", float(vals[4]))
+            conduit.SetField("outlet_offset", float(vals[5]))
+
+            # log(str(vals), DM.Standard)
             # e.addAttribute("built_year", self.defaultBuiltYear)
-            # if c in xsections:
-            #     e.addAttribute("Diameter", float(xsections[c][1]))
-            #     xsection = self.createXSection(sewer, xsections[c])
-            #     e.getAttribute("XSECTION").addLink(xsection, "XSECTION")
+            if c in xsections:
+                conduit.SetField("diameter", float(xsections[c][1]))
+                conduit.SetField("width", float(xsections[c][2]))
+                conduit.SetField("type", str(xsections[c][0]))
+
+                # xsection = self.createXSection(sewer, xsections[c])
+                # e.getAttribute("XSECTION").addLink(xsection, "XSECTION")
         self.conduits.finalise()
         if "[WEIRS]" in results:
             c_weirs = results["[WEIRS]"]
@@ -414,8 +452,6 @@ class DM_ImportSWMM(Module):
         # except Exception, e:
         #     print e
         #     print sys.exc_info()
-
-        # self.nodes_container.finalise()
 
 
         # def createXSection(self, sewer, attributes):
