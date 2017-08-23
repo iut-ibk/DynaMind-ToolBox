@@ -97,7 +97,8 @@ void Module::afterRun()
 	}
 
 	//Special hack to build datastrucutre correclty since this is not done in the pre run to prevent createLayer to be called
-	if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0) {
+	if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0 ||
+		std::string(this->getClassName()).compare("GDALHotStarter") == 0	) {
 		std::vector<View> views;
 		mforeach(const View& v, accessedViews["city"])
 				views.push_back(v);
