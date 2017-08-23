@@ -172,7 +172,7 @@ class DM_ImportSWMM(Module):
         self.outfall.addAttribute("node_id", Attribute.INT, WRITE)
         self.outfall.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
 
-        # self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+        self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
 
         # self.xsections = ViewContainer("xsection",COMPONENT,WRITE)
         # self.xsections.addAttribute("type", STRING, WRITE)
@@ -184,7 +184,8 @@ class DM_ImportSWMM(Module):
                  self.conduits,
                  self.pumps,
                  self.weirs,
-                 self.outfall]
+                 self.outfall,
+                 self.dummy]
 
         if self.name_outlet != "":
             self.outlet = ViewContainer("outlet", NODE, WRITE)
