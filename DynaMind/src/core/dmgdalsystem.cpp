@@ -218,7 +218,7 @@ void GDALSystem::updateView(const View &v)
 			DM::Logger(DM::Error) << "couldn't create layer " << v.getName();
 			return;
 		} else {
-			DM::Logger(DM::Standard) << "created layer " << v.getName();
+			DM::Logger(DM::Debug) << "created layer " << v.getName();
 		}
 		this->viewLayer[v.getName()] = lyr_tmp;
 		layers.push_back(lyr_tmp);
