@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import sys
 
 from pydynamind import *
-
+import gdal, osr
 
 class DM_ImportSWMM(Module):
 
@@ -48,6 +48,8 @@ class DM_ImportSWMM(Module):
         self.createParameter("name_outlet", STRING, "Identifier Outlet")
         self.name_outlet = ""
 
+        self.createParameter("epsg_from", INT, "EPSG Coce")
+        self.epsg_from = -1
 
         # self.conduits.addLinkAttribute("XSECTION", "XSECTION", WRITE)
 
@@ -154,11 +156,11 @@ class DM_ImportSWMM(Module):
 
         self.junctions = ViewContainer("junction", NODE, WRITE)
         self.junctions.addAttribute("node_id", Attribute.INT, WRITE)
+        self.junctions.addAttribute("swmm_id", Attribute.INT, WRITE)
 
         self.junctions.addAttribute("d", Attribute.DOUBLE, WRITE)
         self.junctions.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
-        # self.junctions.addAttribute("built_year", DOUBLE, WRITE)
-        # self.junctions.addAttribute("Z", DOUBLE, WRITE)
+
 
         self.pumps = ViewContainer("pump", EDGE, WRITE)
         self.pumps.addAttribute("start_id", Attribute.INT, WRITE)
@@ -233,13 +235,30 @@ class DM_ImportSWMM(Module):
         # Add Coordinates
         node_id = 0  # We assume that the node id increases incrementally
         ress = results["[COORDINATES]"]
+
+        target_srs = osr.SpatialReference()
+        target_srs.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
+
+        source_srs = osr.SpatialReference()
+        if self.epsg_from > -1:
+            source_srs.ImportFromEPSG(self.epsg_from)
+        else:
+            source_srs.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
+
+        # (353136,5776456)
+        ct = osr.CoordinateTransformation(source_srs, target_srs)
+
         for c in ress:
             node_id += 1
             coords = ress[c]
             node = self.nodes_container.create_feature()
 
             # Create geometry
+
             n_pt = ogr.Geometry(ogr.wkbPoint)
+
+            n_pt.Transform(ct)
+
             x1 = float(coords[0])
             y1 = float(coords[1])
 
@@ -278,6 +297,7 @@ class DM_ImportSWMM(Module):
 
             juntion.SetField("invert_elevation", (float(attributes[0])))
             juntion.SetField("d", (float(attributes[1])))
+            juntion.SetField("swmm_id", str(c))
         self.junctions.finalise()
             # juntion.addAttribute("Z", (float(attributes[0])) + (float(attributes[1])))
             # juntion.addAttribute("built_year", self.defaultBuiltYear)
