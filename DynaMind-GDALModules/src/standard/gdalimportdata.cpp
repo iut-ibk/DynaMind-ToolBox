@@ -414,7 +414,15 @@ OGRLayer *GDALImportData::initLayer()
 	this->driver_name = poDS->GetDriverName();
 	OGRLayer * lyr = poDS->GetLayerByName(this->layername.c_str());
 	if (!lyr) {
+		int lcounter = poDS->GetLayerCount();
+
+
 		DM::Logger(DM::Warning) << "Error loading " << this->layername;
+		DM::Logger(DM::Warning) << "Availible layers ";
+		for (int i = 0; i < lcounter; i++) {
+			DM::Logger(DM::Warning) << poDS->GetLayer(i)->GetName();
+		}
+
 		return 0;
 	}
 	return lyr;
