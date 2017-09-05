@@ -23,11 +23,6 @@ ELSE()
 	ELSE()
 		MESSAGE(FATAL_ERROR "Could not find dynamind. Maybe not installed ?")
 	ENDIF()
-	ELSE()
-		MESSAGE(STATUS "Compiled from toolbox")
-		MESSAGE(STATUS "DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")
-		SET (DYNAMIND_CORE_LIBRARY dynamindcore)
-		MESSAGE(STATUS "${DYNAMIND_CORE_LIBRARY}")
 ENDIF()
 
 
