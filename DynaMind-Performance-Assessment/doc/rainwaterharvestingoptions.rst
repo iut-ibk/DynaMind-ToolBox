@@ -1,10 +1,11 @@
-==========================
-RainWaterHarvestingOptions
-==========================
+=============================
+Rain Water Harvesting Options
+=============================
 
-Assesses the potential of water savings for different sized rain water harvesting tanks. For the assessment the module uses
+Assesses the potential of water savings for different sized rain water harvesting tanks.
+The assessment is conducted for each parcel within the data stream. To select specific parcel apply a filter.
 CityDrain3 to simulate the storage behaviour of the tank using a daily time step. As in-flow into the tank the *run_off_roof_daily*
-is required. As demand the sum *potable_demand_daily* and *outdoor_demand_daily* is applied. For the calculation of
+is required. As demand the sum of the *potable_demand_daily* and *outdoor_demand_daily* is applied. For the calculation of the
 *non_potable_savings* and *outdoor_water_savings* the in-door use is prioritized.
 
 Parameter
