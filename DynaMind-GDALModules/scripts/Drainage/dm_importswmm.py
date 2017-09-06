@@ -169,7 +169,9 @@ class DM_ImportSWMM(Module):
         self.weirs = ViewContainer("weir", EDGE, WRITE)
         self.weirs.addAttribute("start_id", Attribute.INT, WRITE)
         self.weirs.addAttribute("end_id", Attribute.INT, WRITE)
-
+        self.weirs.addAttribute("crest_height", Attribute.DOUBLE, WRITE)
+        self.weirs.addAttribute("discharge_coefficient", Attribute.DOUBLE, WRITE)
+        self.weirs.addAttribute("end_coefficient", Attribute.DOUBLE, WRITE)
         self.outfall = ViewContainer("outfall", NODE, WRITE)
         self.outfall.addAttribute("node_id", Attribute.INT, WRITE)
         self.outfall.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
@@ -319,7 +321,7 @@ class DM_ImportSWMM(Module):
 
             n_pt.SetPoint_2D(0, nodes[o][1], nodes[o][2])
             outfall.SetGeometry(n_pt)
-            outfall.SetField("node_id", nodes[c][0])
+            outfall.SetField("node_id", nodes[o][0])
             outfall.SetField("invert_elevation", (float(attributes[0])))
             # sewer.addComponentToView(outfall, self.outfalls)
             # outfall.addAttribute("Z", float(vals[0]))
