@@ -3,9 +3,13 @@ project(swmm5)
 
 option(SWMM_LIB "compile as library" ON)
 
-find_package(OpenMP)
+FIND_PACKAGE(OpenMP)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+IF(OPENMP_FOUND)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+ENDIF()
 
 file(GLOB SRCS *.c *.h)
 
