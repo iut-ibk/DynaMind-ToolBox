@@ -3,6 +3,7 @@
 
 #include <CGAL/Polygon_with_holes_2.h>
 #include <iostream>
+#include <boost/shared_ptr.hpp>
 
 //-----------------------------------------------------------------------------
 // Pretty-print a CGAL polygon.
