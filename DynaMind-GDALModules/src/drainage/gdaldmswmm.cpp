@@ -88,8 +88,6 @@ GDALDMSWMM::GDALDMSWMM()
 }
 
 void GDALDMSWMM::init() {
-	hasWeir = false;
-	hasRaintanks = false;
 	conduit = DM::ViewContainer("conduit", DM::EDGE, DM::READ);
 	conduit.addAttribute("start_id", "node", DM::READ);
 	conduit.addAttribute("end_id", "node", DM::READ);
@@ -116,22 +114,33 @@ void GDALDMSWMM::init() {
 	catchment.addAttribute("area", DM::Attribute::DOUBLE, DM::READ);
 	catchment.addAttribute("impervious_fraction", DM::Attribute::DOUBLE, DM::READ);
 
-	outfalls= DM::ViewContainer("outfall", DM::NODE, DM::READ);
-	outfalls.addAttribute("node_id", "node", DM::READ);
-	outfalls.addAttribute("invert_elevation", DM::Attribute::DOUBLE, DM::READ);
+    outfalls= DM::ViewContainer("outfall", DM::NODE, DM::READ);
+    outfalls.addAttribute("node_id", "node", DM::READ);
+    outfalls.addAttribute("invert_elevation", DM::Attribute::DOUBLE, DM::READ);
 
-	nodes= DM::ViewContainer("node", DM::NODE, DM::READ);
+    nodes= DM::ViewContainer("node", DM::NODE, DM::READ);
 
-	city = DM::ViewContainer("city", DM::COMPONENT, DM::READ);
-	city.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
-	city.addAttribute("v_p", DM::Attribute::DOUBLE, DM::WRITE);
-	city.addAttribute("v_r", DM::Attribute::DOUBLE, DM::WRITE);
-	city.addAttribute("v_wwtp", DM::Attribute::DOUBLE, DM::WRITE);
-	city.addAttribute("v_outfall", DM::Attribute::DOUBLE, DM::WRITE);
-	city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
-	city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
+    city = DM::ViewContainer("city", DM::COMPONENT, DM::READ);
+    city.addAttribute("SWMM_ID", DM::Attribute::STRING, DM::WRITE);
+    city.addAttribute("v_p", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("v_r", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("v_wwtp", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("v_outfall", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("continuity_error", DM::Attribute::DOUBLE, DM::WRITE);
+    city.addAttribute("average_capacity", DM::Attribute::DOUBLE, DM::WRITE);
 
-	std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
+    std::map<std::string, DM::View> inViews = getViewsInStream()["city"];
+
+    this->hasInitalLoss = false;
+    if (inViews.find("sub_catchment") != inViews.end()) {
+        const DM::View sc = inViews["sub_catchment"];
+        if (sc.hasAttribute("imp_inital_loss")) {
+            catchment.addAttribute("imp_inital_loss", DM::Attribute::DOUBLE, DM::READ);
+            this->hasInitalLoss = true;
+        }
+    }
+
+    hasWeir = false;
 	if (inViews.find("weir") != inViews.end()) {
 		this->hasWeir = true;
 		weir = DM::ViewContainer("weir", DM::EDGE, DM::READ);
@@ -143,6 +152,7 @@ void GDALDMSWMM::init() {
 		weir.addAttribute("end_coefficient", DM::Attribute::DOUBLE, DM::READ);
 	}
 
+    hasRaintanks = false;
 	if (inViews.find("rwht") != inViews.end() && explictly_consider_WSUD) {
 		this->hasRaintanks = true;
 		rwhts = DM::ViewContainer("rwht", DM::COMPONENT, DM::READ);
@@ -241,6 +251,7 @@ void GDALDMSWMM::run() {
 
 	//swmm->setBuildYearConsidered(this->consider_built_time);
 	swmm->setExportSubcatchmentShape(exportSubCatchmentShape);
+    swmm->considerInitialLoss(hasInitalLoss);
 	swmm->setClimateChangeFactor(cf);
 	swmm->setupSWMM();
 	swmm->runSWMM();

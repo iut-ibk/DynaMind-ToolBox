@@ -84,11 +84,14 @@ public:
 	bool getExportSubcatchmentShape() const;
 	void setExportSubcatchmentShape(bool value);
 
+    void considerInitialLoss(bool consider);
+
 private:
 	bool built_year_considered;
 	bool deleteSWMMWhenDone;
 	bool export_subcatchment_shape;
 	int setting_timestep;
+    bool consider_inital_loss;
 
 	int GLOBAL_Counter;
 	std::map<std::string, DM::ViewContainer*> data_map;

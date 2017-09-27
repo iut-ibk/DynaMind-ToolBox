@@ -66,6 +66,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	bool deleteSWMM;
 	bool exportSubCatchmentShape;
 	bool explictly_consider_WSUD;
+    bool hasInitalLoss;
 
 	double climateChangeFactor;
 	bool climateChangeFactorFromCity;

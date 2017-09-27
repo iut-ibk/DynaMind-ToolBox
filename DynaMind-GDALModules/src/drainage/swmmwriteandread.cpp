@@ -50,7 +50,8 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
     setting_timestep(2),
     built_year_considered(false),
     deleteSWMMWhenDone(true),
-    export_subcatchment_shape(false)
+    export_subcatchment_shape(false),
+    consider_inital_loss(false)
 {
     GLOBAL_Counter = 1;
     this->createViewDefinition();
@@ -533,7 +534,16 @@ void SWMMWriteAndRead::writeSubcatchments(std::fstream &inp)
         //		if (!junction)
         //			continue;
 
-        inp << "  sub" << catchment->GetFID() << "\t\t0.015\t0.2\t1.8\t5\t0\tOUTLET\n";
+        //@todo add impervious area
+
+        double impervious_loss= 1.8;
+
+        if (consider_inital_loss)
+            impervious_loss = catchment->GetFieldAsDouble("imp_inital_loss");
+
+
+
+        inp << "  sub" << catchment->GetFID() << "\t\t0.015\t0.2\t" << impervious_loss << "\t5\t0\tOUTLET\n";
     }
     inp<<"\n";
     //-------------------------//
@@ -1402,6 +1412,11 @@ bool SWMMWriteAndRead::getExportSubcatchmentShape() const
 void SWMMWriteAndRead::setExportSubcatchmentShape(bool value)
 {
     export_subcatchment_shape = value;
+}
+
+void SWMMWriteAndRead::considerInitialLoss(bool consider)
+{
+    this->consider_inital_loss = consider;
 }
 
 
