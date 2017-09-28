@@ -280,6 +280,7 @@ void GDALPublishResults::run()
 		return;
 	}
 
+
 	OGRFeatureDefn * def =  (OGRFeatureDefn*)components.getFeatureDef();
 	int c_fields = def->GetFieldCount();
 	for (int i = 0; i < c_fields; i++)
@@ -295,8 +296,24 @@ void GDALPublishResults::run()
 			lyr->StartTransaction();
 		}
 		OGRFeature * f_new = OGRFeature::CreateFeature( lyr->GetLayerDefn() );
-		for (int i = 0; i < c_fields; i++)
-			f_new->SetField(i, feat->GetRawFieldRef(i));
+        if (f_new == NULL) {
+            DM::Logger(DM::Error) << "Couldn't create feature";
+            continue;
+        }
+        for (int i = 0; i < c_fields; i++) {
+            OGRField * f = feat->GetRawFieldRef(i);
+            if (f == NULL) {
+                DM::Logger(DM::Error) << "Field "  << i << " not created";;
+                continue;
+            }
+            if (QString::fromLatin1(f_new->GetFieldDefnRef(i)->GetNameRef()).compare(
+                        QString::fromLatin1(feat->GetFieldDefnRef(i)->GetNameRef())
+                        ) != 0) {
+                DM::Logger(DM::Error) << "Field in dynamind feature is different compared to DB feature. "  << QString::fromLatin1(feat->GetFieldDefnRef(i)->GetNameRef()).toStdString() << " not exported";;
+                continue;
+            }
+            f_new->SetField(i, f);
+        }
 		if (components.getType() != DM::COMPONENT) {
 			OGRGeometry * geo = feat->GetGeometryRef();
             if (trans && geo != 0)
