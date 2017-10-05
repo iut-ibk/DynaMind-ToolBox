@@ -160,6 +160,15 @@ void GDALDMSWMM::init() {
 		rwhts.addAttribute("volume", DM::Attribute::DOUBLE, DM::READ);
 		rwhts.addAttribute("connected_area", DM::Attribute::DOUBLE, DM::READ);
 	}
+    hasStorage = false;
+    if (inViews.find("storage") != inViews.end()) {
+        this->hasStorage = true;
+        storages = DM::ViewContainer("storage", DM::COMPONENT, DM::READ);
+        storages.addAttribute("node_id", DM::Attribute::LINK, DM::READ);
+        storages.addAttribute("invert_elevation", DM::Attribute::DOUBLE, DM::READ);
+        storages.addAttribute("d", DM::Attribute::DOUBLE, DM::READ);
+        storages.addAttribute("a_0", DM::Attribute::DOUBLE, DM::READ);
+    }
 
 
 
@@ -181,6 +190,8 @@ void GDALDMSWMM::init() {
 		data_stream.push_back(&weir);
 	if (this->hasRaintanks)
 		data_stream.push_back(&rwhts);
+    if (this->hasStorage)
+        data_stream.push_back(&storages);
 	data_stream.push_back(&city);
 
 
@@ -195,6 +206,8 @@ void GDALDMSWMM::init() {
 		data_map["weir"]  = &this->weir;
 	if (this->hasRaintanks)
 		data_map["rwht"]  = &this->rwhts;
+    if (this->hasStorage)
+        data_map["storage"]  = &this->storages;
 	data_map["city"]  = &this->city;
 
 	this->registerViewContainers(data_stream);

@@ -49,6 +49,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	DM::ViewContainer nodes;
 	DM::ViewContainer weir;
     DM::ViewContainer rwhts;
+    DM::ViewContainer storages;
 	//DM::View wwtp;
 	//DM::View storage;
 	//DM::View pumps;
@@ -62,6 +63,7 @@ class DM_HELPER_DLL_EXPORT GDALDMSWMM : public  DM::Module {
 	bool isCombined;
 	bool hasWeir;
     bool hasRaintanks;
+    bool hasStorage;
 	bool writeResultFile;
 	bool deleteSWMM;
 	bool exportSubCatchmentShape;

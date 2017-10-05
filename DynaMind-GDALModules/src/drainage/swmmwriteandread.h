@@ -105,6 +105,7 @@ private:
 	DM::ViewContainer * nodes;
 	DM::ViewContainer * city;
     DM::ViewContainer * rwhts;
+    DM::ViewContainer * storages;
 
 
 //	DM::View weir;

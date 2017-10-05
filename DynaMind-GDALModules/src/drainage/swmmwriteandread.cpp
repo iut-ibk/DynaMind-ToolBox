@@ -87,6 +87,11 @@ SWMMWriteAndRead::SWMMWriteAndRead(std::map<std::string, DM::ViewContainer*> dat
     else
         rwhts = 0;
 
+    if (data_map.find("storage") != data_map.end())
+        storages = data_map["storage"];
+    else
+        storages = 0;
+
     if (!tmpPath.mkdir(UUIDPath)) {
         Logger(Error) << "Couldn't create folder " << tmpPath.absolutePath().toStdString() << "/" << UUIDPath.toStdString();
     }
@@ -610,6 +615,8 @@ void SWMMWriteAndRead::writeDWF(std::fstream &inp)
     inp<<"no3\tMG/L\t0\t0\t0\t0\tNO\n";
 }
 void SWMMWriteAndRead::writeStorage(std::fstream &inp) {
+    if (this->storages == NULL)
+        return;
     //-------------------------//
 
     //STROGAE
@@ -620,6 +627,41 @@ void SWMMWriteAndRead::writeStorage(std::fstream &inp) {
     inp<<";;Name           Elev.    Depth    Depth    Curve      Params                     Area     Frac. \n"  ;
     inp<<";;-------------- -------- -------- -------- ---------- -------- -------- -------- -------- --------\n";
     //\nODE85           93.7286  6.35708  0        FUNCTIONAL 1000     0        22222    1000     0
+
+
+        this->storages->resetReading();
+        OGRFeature * storage;
+        while (storage = storages->getNextFeature())
+        {
+            int id = storage->GetFieldAsInteger("node_id");
+
+            inp << "NODE";
+            inp << id;
+            inp << "\t";
+            inp << "\t";
+            //Get Val
+
+
+            inp << storage->GetFieldAsDouble("invert_elevation");
+            inp << "\t";
+            inp <<  storage->GetFieldAsDouble("d");
+            inp << "\t";
+            inp << "\t";
+            inp << "0";
+            inp << "\t";
+            inp << "FUNCTIONAL";
+            inp << "\t";
+            inp << "0";
+            inp << "\t";
+            inp << "0";
+            inp << "\t";
+            inp << storage->GetFieldAsDouble("a_0");
+            inp << "\t";
+            inp << "1000";
+            inp << "0";
+            inp << "\n";
+
+        }
 
     //	foreach(DM::Component* c, city->getAllComponentsInView(storage))
     //	{
