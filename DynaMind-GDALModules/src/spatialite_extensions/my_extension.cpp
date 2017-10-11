@@ -2,6 +2,7 @@
 #include "sstream"
 #include <iostream>
 #include <numeric>
+#include <iostream>
 
 
 
@@ -34,6 +35,8 @@ double my_extension::vector_sum(const std::vector<double> & data) {
 }
 
 
+
+
 std::string my_extension::dm_vector_to_string(const std::vector<double> & vec) {
 	std::stringstream ss;
 	bool first = true;
@@ -45,7 +48,12 @@ std::string my_extension::dm_vector_to_string(const std::vector<double> & vec) {
 	}
 	std::string ress = ss.str();
 
-	return ress;
+    return ress;
+}
+
+void my_extension::print_vector(const std::vector<double> &data)
+{
+    std::cout << my_extension::dm_vector_to_string(data) << std::endl;
 }
 
 

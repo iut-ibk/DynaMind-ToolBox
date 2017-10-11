@@ -120,17 +120,29 @@ void DM_HELPER_DLL_EXPORT vector_to_string(sqlite3_context *context, int argc, s
 typedef struct SumCtx SumCtx;
 struct SumCtx {
 	std::vector<double> rSum;      /* Floating point sum */
+    bool initalised = false;
 };
 
 static void sumVecStep(sqlite3_context *context, int argc, sqlite3_value **argv){
 	SumCtx *p;
-
 	p = reinterpret_cast<SumCtx*>(sqlite3_aggregate_context(context, sizeof(*p)));
-	if (sqlite3_value_type(argv[0])==SQLITE_NULL)
+    if (sqlite3_value_type(argv[0])==SQLITE_NULL) {
 		return;
+    }
+    if (!p) {
+        return;
+    }
+
 	std::vector<double> vec;
 	BinaryToDoubleVector(argv[0], vec);
+    if (!p->initalised) {
+        for (int i = 0; i < vec.size(); i++) {
+            p->rSum.push_back(0.0);
+        }
+        p->initalised = true;
+    }
 	my_extension::vector_addition(p->rSum, vec);
+
 }
 
 static void sumVecFinalize(sqlite3_context *context){
@@ -155,6 +167,13 @@ int DM_HELPER_DLL_EXPORT sqlite3_dmsqliteplugin_init(
 	sqlite3_create_function(db, "dm_vector_addition", 2, SQLITE_UTF8, 0, &addition_vector, 0, 0);
 	sqlite3_create_function(db, "dm_vector_sum", 1, SQLITE_UTF8, 0, &vector_sum, 0, 0);
 	sqlite3_create_function(db, "dm_vector_to_string", 1, SQLITE_UTF8, 0, &vector_to_string, 0, 0);
+    //sqlite3_create_function(db, "dm_vector_to_string", 1, SQLITE_UTF8, 0, &vector_to_string, 0, 0);
+
+
+    sqlite3_create_function( db, "dm_sum_vectors", 1, SQLITE_UTF8,
+                NULL, NULL, &sumVecStep, &sumVecFinalize );
+
+
 
 	return rc;
 }
