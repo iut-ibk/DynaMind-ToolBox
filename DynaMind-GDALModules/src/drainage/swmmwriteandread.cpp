@@ -152,9 +152,13 @@ void SWMMWriteAndRead::readInReportFile() {
     bool FlowRouting = false;
     bool NodeDepthSummery = false;
     bool LinkFlowSummary = false;
+    bool StorageVolume = false;
+
     double SurfaceRunOff = 0;
 
+
     double Vp = 0;
+    double Vs = 0;
     ContinuityError = 0;
     VSurfaceStorage = 0;
     double Vwwtp = 0;
@@ -177,6 +181,10 @@ void SWMMWriteAndRead::readInReportFile() {
         }
         if (line.contains("Node Flooding Summary") ) {
             FloodSection = true;
+            continue;
+        }
+        if (line.contains("Storage Volume Summary") ) {
+            StorageVolume = true;
             continue;
         }
         if (line.contains("Node Depth Summary") ) {
@@ -265,6 +273,29 @@ void SWMMWriteAndRead::readInReportFile() {
             }
         }
 
+        if (StorageVolume) {
+            if (line.contains("NODE")) {
+                //Start extract
+                QStringList data =line.split(QRegExp("\\s+"));
+                for (int j = 0; j < data.size(); j++) {
+                    if (data[j].size() == 0) {
+                        data.removeAt(j);
+                    }
+                }
+                //Extract Node id
+                if (data.size() != 9) {
+                    Logger(Error) << "Error in Extraction Storage Nodes";
+
+                } else {
+                    QString id_asstring = data[0];
+                    id_asstring.remove("NODE");
+                    int id = id_asstring.toInt();
+                    //nodeDepthSummery[id] = QString(data[4]).toDouble();
+                    Vs +=  QString(data[4]).toDouble();
+                }
+            }
+        }
+
         if (NodeDepthSummery) {
             if (line.contains("NODE")) {
                 //Start extract
@@ -331,6 +362,7 @@ void SWMMWriteAndRead::readInReportFile() {
         Logger (Standard)  << "Vr " << SurfaceRunOff;
         Logger (Standard)  << "Vwwtp " << Vwwtp;
         Logger (Standard)  << "Voutfall " << Voutfall;
+        Logger (Standard) << "Vs" << Vs;
         Logger (Standard)  << "Continuty Error " << this->ContinuityError;
         Logger (Standard)  << "Average Capacity " << this->getAverageCapacity();
 
