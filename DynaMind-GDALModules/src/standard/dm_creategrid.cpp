@@ -12,10 +12,6 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 
 	DM_CreateGrid* db_worker = reinterpret_cast<DM_CreateGrid*>(db_w);
 
-
-	//std::vector<std::string> values(argv , argv + argc);
-	//std::vector<std::string> names(azColName, azColName + argc);
-
 	OGRGeometry * geo_ref = OGRGeometryFactory::createGeometry(wkbMultiPolygon);
 	OGRGeometryFactory::createFromWkt(argv,db_worker->getGridView()->getSpatialReference(), &geo_ref);
 
@@ -24,10 +20,8 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 		return 0;
 	if (geo->getNumGeometries() == 0)
 		return 0;
-	//geo_single = geo->getGeometryRef(0);//OGRGeometryFactory::forceToPolygon(geo);
 	int polygons = geo->getNumGeometries();
 	for (int i = 0; i < geo->getNumGeometries(); i++) {
-		//geo_collection.push_back(geo->getGeometryRef(i));
 		OGRFeature * f = db_worker->getGridView()->createFeature();
 		f->SetGeometry(geo->getGeometryRef(i));
 	}
@@ -55,6 +49,8 @@ DM_CreateGrid::DM_CreateGrid()
 	this->addParameter("grid_size", DM::DOUBLE, &this->grid_size);
 	this->grid_size = 100;
 
+    this->addParameter("in_bounding_box", DM::BOOL, &this->in_bounding_box);
+    this->in_bounding_box = false;
 
 
 
@@ -70,12 +66,11 @@ void DM_CreateGrid::run()
 
 	std::stringstream sql_stream;
 
-	sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, " << grid_size << ")) FROM " << this->lead_view_name;
-
-	std::cout << sql_stream.str().c_str() << std::endl;
+    if (!this->in_bounding_box)
+        sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, " << grid_size << ")) FROM " << this->lead_view_name;
+    else
+        sql_stream << "SELECT ASWKT(ST_SquareGrid(ST_Envelope(geometry), " << grid_size << ")) FROM " << this->lead_view_name;
 	this->execute_query(sql_stream.str().c_str(), true);
-
-
 
 	sqlite3_close(db);
 }
@@ -111,10 +106,6 @@ void DM_CreateGrid::initDatabase(){
 		execute_query("SELECT load_extension('/usr/local/lib/mod_spatialite')", false);
 	#endif
 
-	/*std::stringstream query_stream;
-	query_stream << "SELECT load_extension('" << this->getSimulation()->getSimulationConfig().getDefaultModulePath() << '/SqliteExtension/libdm_sqlite_plugin' << "')";
-
-	execute_query(query_stream.str().c_str(), false);*/
 }
 
 void DM_CreateGrid::init()

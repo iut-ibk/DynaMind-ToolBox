@@ -21,6 +21,8 @@ private:
 	std::string lead_view_name;
 	std::string grid_view_name;
 
+    bool in_bounding_box;
+
 	DM::ViewContainer lead_view;
 	DM::ViewContainer grid_view;
 	double grid_size;
