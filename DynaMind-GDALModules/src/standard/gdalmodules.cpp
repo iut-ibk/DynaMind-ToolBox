@@ -58,6 +58,7 @@
 #include "dm_sqlitecalculator.h"
 #include "dm_creategrid.h"
 #include "dm_createcomponent.h"
+#include "gdalcreategeometry.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -94,4 +95,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<DM_SQliteCalculator>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_CreateGrid>());
 	registry->addNodeFactory(new DM::NodeFactory<DM_CreateComponent>());
+	registry->addNodeFactory(new DM::NodeFactory<GDALCreateGeometry>());
 }
