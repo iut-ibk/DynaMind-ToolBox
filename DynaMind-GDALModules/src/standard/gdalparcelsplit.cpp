@@ -78,7 +78,7 @@ void GDALParcelSplit::run()
 		char* geo;
 
 		poFeature->GetGeometryRef()->exportToWkt(&geo); //Geo destroyed by worker
-		ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->target_length, this->splitFirst, geo);
+        ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->target_length, this->splitFirst, geo, 2);
 		pool.start(ps);
 	}
 	pool.waitForDone();

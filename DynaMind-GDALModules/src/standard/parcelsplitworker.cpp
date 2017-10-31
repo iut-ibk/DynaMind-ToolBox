@@ -16,13 +16,14 @@ ParcelSplitWorker::ParcelSplitWorker()
 {
 }
 
-ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width,  double target_length, bool splitFirst, char *poly_wkt) :
+ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width,  double target_length, bool splitFirst, char *poly_wkt, int split_max = 2) :
 	id(id),
 	module(module),
 	width(width),
 	splitFirst(splitFirst),
 	target_length(target_length),
-	poly_wkt(poly_wkt)
+    poly_wkt(poly_wkt),
+    split_max(split_max)
 {
 
 }
@@ -97,7 +98,7 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 	int numberOfElements_x  = -1;
 	int numberOfElements_y =  -1;
 
-	//Splitt Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
+    //Split Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
 	if (this->target_length > 0 ){
 		numberOfElements_x  = (!v1_bigger) ? sqrt(CGAL::to_double(v1.squared_length())) / this->target_length : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
 		numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length())) / this->width : sqrt(CGAL::to_double(v2.squared_length())) / this->target_length;
@@ -109,8 +110,15 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 		numberOfElements_x  = (!v1_bigger) ? splite_width : sqrt(CGAL::to_double(v1.squared_length())) / this->width;
 		numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length())) / this->width : splite_width;
 	}
-	numberOfElements_x = (numberOfElements_x < 0) ? 1 : numberOfElements_x;
-	numberOfElements_y = (numberOfElements_y < 0) ? 1 : numberOfElements_y;
+
+    // Check that at least one element survives
+    numberOfElements_x = (numberOfElements_x < 1) ? 1 : numberOfElements_x;
+    numberOfElements_y = (numberOfElements_y < 1) ? 1 : numberOfElements_y;
+
+    // Check for the max number of elements
+    numberOfElements_x  = (!v1_bigger && numberOfElements_x > this->split_max) ? split_max : numberOfElements_x;
+    numberOfElements_y  = (v1_bigger && numberOfElements_y > this->split_max) ? split_max : numberOfElements_y;
+
 
 	Vector_2 dv1 = v1/numberOfElements_x;
 	Vector_2 dv2 = v2/numberOfElements_y;
