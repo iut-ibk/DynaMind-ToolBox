@@ -19,10 +19,12 @@ The DyanMind-Toolbox comes with:
 - an easy to use Python interface to create new simulation or build new modules.
 
 ## [Documentation](http://iut-ibk.github.io/DynaMind-ToolBox)
+  - [Overview](http://iut-ibk.github.io/DynaMind-ToolBox/introduction.html)
+  - [Modules](http://iut-ibk.github.io/DynaMind-ToolBox/DynaMind-GDALModules/index.html)
+  - [Development](http://iut-ibk.github.io/DynaMind-ToolBox/DynaMind/index.html)
 
 ## Windows Installer
-- [DynaMind-Toolbox-0.8.0-win32 (includes DynaVIBe)](https://www.dropbox.com/s/1ccsb6sjr31ij2y/DynaMind-Toolbox_legacy-0.8.0-win32.exe?dl=0)
-- [DynaMind-Toolbox-0.8.0-win32 (GDAL only)] (https://www.dropbox.com/s/daq4tskt59ucvdm/DynaMind-Toolbox-0.8.0-win32.exe?dl=0)
+- [DynaMind-Toolbox-0.12.11-win32 (GDAL only)] (https://www.dropbox.com/s/hvugj26ogxd1hey/DynaMind-Toolbox-0.12.11-win32.exe?dl=0)
 
 ## Install on Mac using the Dynamind [tap](https://github.com/christianurich/homebrew-dynamind)
 
