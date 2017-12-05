@@ -120,7 +120,10 @@ void DM_HELPER_DLL_EXPORT vector_to_string(sqlite3_context *context, int argc, s
 typedef struct SumCtx SumCtx;
 struct SumCtx {
 	std::vector<double> rSum;      /* Floating point sum */
-    bool initalised = false;
+    bool initalised;
+    SumCtx() : initalised(false)
+    {
+    }
 };
 
 static void sumVecStep(sqlite3_context *context, int argc, sqlite3_value **argv){
