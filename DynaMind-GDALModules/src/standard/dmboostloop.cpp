@@ -126,7 +126,7 @@ bool DMBoostLoop::removeStream(std::string name)
 bool DMBoostLoop::condition()
 {
     //check if view,attribute and statement are correctly set...
-    if (viewnames.empty() or attributenames.empty() or filternames.empty()){
+	if (viewnames.empty() || attributenames.empty() || filternames.empty()){
         DM::Logger(DM::Error) << "Missing variables";
         return false;
     }
