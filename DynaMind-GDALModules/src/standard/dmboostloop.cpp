@@ -157,7 +157,7 @@ bool DMBoostLoop::condition()
         // we can't use a string as an if statement, so we have the following;
 		if((unequal!=-1)&&(zero!=-1))
         {if(value!=0){DM::Logger(DM::Error) << "Quit Loop"<<c<<"<>0";return false;}}
-        if((equal!=-1)and(zero!=-1))
+		if((equal!=-1)&&(zero!=-1))
         {if(value==0){DM::Logger(DM::Error) << "Quit Loop"<<c<<"=0";return false;}}
       }
 
