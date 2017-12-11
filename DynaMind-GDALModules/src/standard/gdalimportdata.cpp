@@ -285,8 +285,27 @@ void GDALImportData::run()
 					}
 				}
 			} else {
-				geo_single = poFeature->GetGeometryRef();
-				geo_collection.push_back(geo_single);
+
+                if (this->geoemtry_type == -1){
+                    geo_single = poFeature->GetGeometryRef();
+                    geo_collection.push_back(geo_single);
+                } else { // Force Geometry
+                    if (this->geoemtry_type == DM::EDGE) {
+                        geo_single = OGRGeometryFactory::forceToLineString(geo_ref);
+                    }
+                    if (this->geoemtry_type == DM::FACE) {
+                        geo_single = OGRGeometryFactory::forceToPolygon(geo_ref);
+                    }
+                    if (!geo_single) {
+                        DM::Logger(DM::Error) << "Failed to import " << (int)poFeature->GetFID();
+                        continue;
+                    }
+
+                    geo_collection.push_back(geo_single);
+
+                }
+
+
 			}
 			//Check Type is fine
 			if (wkbFlatten(geo_single->getGeometryType()) != DM::GDALUtilities::DMToOGRGeometry(vc->getType())) {
