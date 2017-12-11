@@ -48,7 +48,7 @@ class DM_ValueFromRaster(Module):
             srs.ImportFromWkt(dataset.GetProjection())
 
             srsLatLong = osr.SpatialReference()
-            srsLatLong.ImportFromEPSG(32755)
+            srsLatLong.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
 
             #(353136,5776456)
             ct = osr.CoordinateTransformation(srsLatLong, srs)
