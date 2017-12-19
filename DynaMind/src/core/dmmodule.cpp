@@ -62,7 +62,7 @@ void Module::preRun()
 		//Special rule to prevent createLayer to be called which is really slow. However this required a hack in
 		//after run to build the file structure correctly
 		if (std::string(this->getClassName()).compare("DM_Hoststart_SFTP") == 0 ||
-			std::string(this->getClassName()).compare("GDALHotStarter")) {
+            std::string(this->getClassName()).compare("GDALHotStarter")  == 0) {
 			continue;
 		}
 		v->setCurrentGDALSystem(sys);
