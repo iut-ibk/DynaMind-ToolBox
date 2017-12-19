@@ -32,4 +32,10 @@ The DyanMind-Toolbox comes with:
 brew tap christianurich/dynamind
 brew install dynamind --HEAD
 ```
+To run dynamind start it form the comandline and export the path to python-gdal2
+
+```
+export PYTHONPATH=/usr/local/opt/gdal2-python/lib/python2.7/site-packages/:${PYTHONPATH}
+dynamind-gui
+```
 
