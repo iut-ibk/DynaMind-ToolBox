@@ -53,7 +53,7 @@ class LoadDAnCEStations(Module):
             source_osr = osr.SpatialReference()
             source_osr.ImportFromEPSG(4326)
             target_osr = osr.SpatialReference()
-            target_osr.ImportFromEPSG(32755)
+            target_osr.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
             transformation = osr.CreateCoordinateTransformation(source_osr, target_osr)
 
             cur = conn.cursor()
