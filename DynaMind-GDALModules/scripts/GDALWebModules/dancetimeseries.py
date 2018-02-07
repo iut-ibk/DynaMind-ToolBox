@@ -19,6 +19,9 @@ class LoadDAnCETimeseries(Module):
             self.createParameter("database", STRING)
             self.database = "danceplatform"
 
+            self.createParameter("table", STRING)
+            self.table = "measurment"
+
             self.createParameter("username", STRING)
             self.username = ""
 
@@ -45,7 +48,7 @@ class LoadDAnCETimeseries(Module):
 
         def init(self):
             datastream = []
-            self.node_station = ViewContainer(self.view_name, NODE, READ)
+            self.node_station = ViewContainer(self.view_name, COMPONENT, READ)
             self.node_station.addAttribute("dance_station_id", Attribute.INT, READ)
 
             self.timeseries = ViewContainer("timeseries", COMPONENT, WRITE)
@@ -120,18 +123,18 @@ class LoadDAnCETimeseries(Module):
                 station_id = station.GetFieldAsInteger("dance_station_id")
 
                 # Find start and end date
-                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date DESC LIMIT 1 ")
+                cur.execute("SELECT date from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date DESC LIMIT 1 ")
                 rows = cur.fetchall()
                 for r in rows:
                     end = r[0].strftime('%d.%m.%Y %H:%M:%S')
 
-                cur.execute("SELECT date  from measurment WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 1 ")
+                cur.execute("SELECT date  from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 1 ")
 
                 rows = cur.fetchall()
                 for r in rows:
                    start = r[0].strftime('%d.%m.%Y %H:%M:%S')
 
-                cur.execute("SELECT date from measurment WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 2 ")
+                cur.execute("SELECT date from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 2 ")
                 rows = cur.fetchall()
                 times = []
                 for r in rows:
@@ -157,7 +160,7 @@ class LoadDAnCETimeseries(Module):
 
                 timeseries.SetField("timestep", int(db_timestep * skipper))
 
-                cur.execute("SELECT date, value from measurment WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC")
+                cur.execute("SELECT date, value from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC")
                 rows = cur.fetchall()
                 counter = 0
                 r = 0
