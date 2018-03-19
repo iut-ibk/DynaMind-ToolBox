@@ -35,6 +35,7 @@
 #include <calculatelength.h>
 #include <simulatewithepanet.h>
 #include <createepanetmodel.h>
+#include <reservoiroffset.h>
 #include <minimumsteinertree.h>
 #include <wsdimensioning.h>
 #include <initws.h>
@@ -100,6 +101,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<InitWaterSupplySystem>());
 	registry->addNodeFactory(new DM::NodeFactory<IdentifyMainPipes>());
 	registry->addNodeFactory(new DM::NodeFactory<EvaluatePerformanceIndicators>());
+    registry->addNodeFactory(new DM::NodeFactory<ReservoirOffset>());
 
 	//Sewer
 	/*

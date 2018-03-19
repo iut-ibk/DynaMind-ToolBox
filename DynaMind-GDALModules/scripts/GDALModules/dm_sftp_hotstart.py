@@ -3,7 +3,7 @@ from pydynamind import *
 
 import paramiko
 import time
-from osgeo import gdal
+from osgeo import ogr
 import uuid
 import os
 
@@ -73,8 +73,7 @@ class DM_Hoststart_SFTP(Module):
                 return
 
             self.close()
-
-            ds = gdal.OpenEx(self.real_file_name, gdal.OF_VECTOR)
+            ds = ogr.Open(self.real_file_name)
 
             if ds is None:
                 print "Open failed.\n"
@@ -190,10 +189,6 @@ class DM_Hoststart_SFTP(Module):
 
         def run(self):
             db = self.getGDALData("city")
-            if self.real_file_name == "":
-                log("File not downloaded", Error)
-                self.setStatus(MOD_EXECUTION_ERROR)
-                return
             db.setGDALDatabase(self.real_file_name)
             os.remove(self.real_file_name)
 

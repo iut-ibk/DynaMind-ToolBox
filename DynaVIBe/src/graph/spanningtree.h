@@ -50,7 +50,7 @@ private:
 	DM::System *sys;
 	viewmap viewdef;
 	DM::GRAPH::ViewDefinitionHelper defhelper;
-	bool algprim, algrand, algtest, algkruskal;
+    bool algprim, algrand, algtest, algkruskal, skipall;
 
 public:
 	SpanningTree();

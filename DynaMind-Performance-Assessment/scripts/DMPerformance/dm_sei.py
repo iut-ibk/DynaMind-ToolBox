@@ -100,15 +100,11 @@ class DMSEI(Module):
         if self.rain_vector_from_city != "":
             self.city.reset_reading()
             for c in self.city:
-                # print "wite",self.rain_vector_from_city
-                import ogr
-                # print c.GetGeomFieldCount()
-                # print c.GetFieldDefnRef().GetType("data")
 
-                #ogr.FieldDefn.GetType("data")
-                # print c.GetFieldAsBinary("data")
-                # print dm_get_double_list(c, self.rain_vector_from_city)
-                self.write_rain_file(filename, dm_get_double_list(c, self.rain_vector_from_city), 60 * 6)
+                # s = str(c.GetFieldAsString(self.rain_vector_from_city))
+
+                self.write_rain_file(filename, dm_get_double_list(c, self.rain_vector_from_city), 60 * 5)
+
                 swmm_rain_filename = "/tmp/" + filename + ".dat"
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2009', intervall=intervall,
                              sub_satchment=catchment)
@@ -342,7 +338,8 @@ class DMSEI(Module):
             # for i in SEIs.keys():
             #     print SEIs[i], SEIs[i] / SEIs_0[i]
             #
-            SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp, "rwht" :  {"number": rwht_total_volume, "connected_imp_fraction" : rwht_connected_imp_fraction}, "bc" :  {"number": math.ceil(bc_total_m/5.), "connected_imp_fraction" : bc_connected_imp_fraction}}}, peak_flows)
+            SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp}}, peak_flows)
+
             stream_index = 0
             for i in SEIs.keys():
                 try:
@@ -351,7 +348,6 @@ class DMSEI(Module):
                     log("SEIs_0 is 0", Error)
                     stream_index = 0
             c.SetField("stream_erosion_index", stream_index)
-            c.SetField("peak_flow", peak_flows_c['1'])
             log(str(stream_index), Standard)
             # SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": 50}}, peak_flows)
             # for i in SEIs.keys():

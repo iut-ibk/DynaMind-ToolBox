@@ -101,7 +101,7 @@ void WaterDemandModel::run()
 		}
 		return;
 	}
-		int counter = 0;
+	int counter = 0;
 	OGRFeature * p;
 	this->parcels.resetReading();
 	while(p = this->parcels.getNextFeature()) {
@@ -216,12 +216,24 @@ bool WaterDemandModel::initmodel()
 
 	try{
 		// Register default simulation
+#if defined(_WIN32)
+		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/cd3core");
+#else
 		this->simreg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/libcd3core");
+#endif
 
 		// Register default modules
+#if defined(_WIN32)
+		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/cd3core");
+#else
 		nodereg->addNativePlugin(this->getSimulation()->getSimulationConfig().getDefaultLibraryPath() + "/libcd3core");
+#endif
 
+#if defined(_WIN32)
+		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/dance4water-nodes");
+#else
 		QString dance_nodes = QString::fromStdString(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/libdance4water-nodes");
+#endif
 		nodereg->addNativePlugin(dance_nodes.toStdString());
 
 		nodereg->addToPythonPath(this->getSimulation()->getSimulationConfig().getDefaultModulePath() + "/CD3Modules/CD3Waterbalance/Module");

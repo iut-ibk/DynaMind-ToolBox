@@ -51,11 +51,13 @@ SpanningTree::SpanningTree()
 	this->algrand=false;
 	this->algtest=false;
 	this->algkruskal=false;
+    this->skipall=false;
 
 	this->addParameter("Prim minimum spanning tree", DM::BOOL, &this->algprim);
 	this->addParameter("Kruskal minimum spanning tree", DM::BOOL, &this->algkruskal);
 	this->addParameter("Random spanning tree", DM::BOOL, &this->algrand);
 	this->addParameter("Test algorithm not for productive use", DM::BOOL, &this->algtest);
+    this->addParameter("Skip all spanning tree algorithms", DM::BOOL, &this->skipall);
 
 	std::vector<DM::View> views;
 	DM::View view;
@@ -74,6 +76,12 @@ SpanningTree::SpanningTree()
 
 void SpanningTree::run()
 {
+    if(this->skipall)
+    {
+        DM::Logger(DM::Standard) << "Skipped all spanning tree algorithms";
+        return;
+    }
+
 	DM::Logger(DM::Standard) << "Setup Graph";
 
 	this->sys = this->getData("Layout");
