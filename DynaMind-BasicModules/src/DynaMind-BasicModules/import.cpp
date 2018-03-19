@@ -126,7 +126,7 @@ void Import::reloadFile()
 
 	if (!this->WFSServer.empty())
 	{
-		OGRDataSource *poDS = OGRSFDriverRegistrar::Open(getServerPath().c_str(), FALSE);
+		OGRDataSource* poDS = (OGRDataSource*) GDALOpenEx(getServerPath().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 
 		if (!poDS)
 		{
@@ -157,7 +157,7 @@ void Import::reloadFile()
 			return;
 		}
 
-		if (OGRDataSource* poDS = OGRSFDriverRegistrar::Open(FileName.c_str(), FALSE))
+		if (OGRDataSource* poDS = (OGRDataSource*) GDALOpenEx(FileName.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL ))
 		{
 			driverType = ShapeFile;
 
@@ -451,7 +451,8 @@ void Import::loadVectorData(const std::string& path)
 
 	OGRRegisterAll();
 
-	OGRDataSource *poDS = OGRSFDriverRegistrar::Open(path.c_str(), FALSE);
+	OGRDataSource *poDS = (OGRDataSource*) GDALOpenEx( path.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
+
 	if (!poDS)
 	{
 		DM::Logger(DM::Error) << "Open failed.";
@@ -468,7 +469,7 @@ void Import::loadVectorData(const std::string& path)
 			if(poLayer->GetFeatureCount()<0)
 			{
 				OGRDataSource::DestroyDataSource(poDS);
-				poDS = OGRSFDriverRegistrar::Open(path.c_str(), FALSE);
+				poDS = (OGRDataSource*) GDALOpenEx( path.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 				poLayer = poDS->GetLayerByName(it->first.c_str());
 				loadLayerInterleaved(poDS,poLayer,sys);
 			}

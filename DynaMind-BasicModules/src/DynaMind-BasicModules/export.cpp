@@ -371,10 +371,12 @@ void Export::run()
 	// init gdal
 	OGRRegisterAll();
 	GDALAllRegister();	// neccessary for windows!
-	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+	GDALDriverManager::AutoLoadDrivers();
+	GDALDriverManager manager;
 	
 	// create file
-	OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(type.c_str());
+
+	OGRSFDriver* driver = (OGRSFDriver*) manager.GetDriverByName(type.c_str());
 	OGRDataSource* data = driver->CreateDataSource(path.c_str());
 
 	if (!driver)

@@ -312,8 +312,7 @@ void ImportwithGDAL::init() {
 		servername << this->WFSServer;
 		this->server_full_name = servername.str();
 		OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-		OGRDataSource *poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
-
+		OGRDataSource *poDS = (OGRDataSource*) GDALOpenEx( server_full_name.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 		if(!poDS)
 			return;
 
@@ -350,8 +349,7 @@ void ImportwithGDAL::init() {
 
 	OGRDataSource       *poDS;
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-	poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
-
+	poDS = (OGRDataSource*) GDALOpenEx( FileName.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 	if( poDS == NULL )
 	{
 		GDALDataset  *poDataset = (GDALDataset*) GDALOpenShared(FileName.c_str(), GA_ReadOnly );
@@ -539,7 +537,7 @@ bool ImportwithGDAL::importVectorData()
 
 	OGRRegisterAll();
 
-	OGRDataSource *poDS = OGRSFDriverRegistrar::Open( FileName.c_str(), FALSE );
+	OGRDataSource *poDS = (OGRDataSource*) GDALOpenEx( FileName.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 	if( !poDS )
 	{
 		DM::Logger(DM::Error) << "Open failed.";
@@ -745,7 +743,7 @@ OGRLayer *ImportwithGDAL::LoadWFSLayer(OGRDataSource *poDS)
 {
 	OGRLayer            *poLayer;
 	//OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
-	poDS = OGRSFDriverRegistrar::Open( server_full_name.c_str(), FALSE );
+	poDS = (OGRDataSource*) GDALOpenEx( server_full_name.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 
 	int LayerCount = poDS->GetLayerCount();
 	for (int i = 0; i < LayerCount; i++)

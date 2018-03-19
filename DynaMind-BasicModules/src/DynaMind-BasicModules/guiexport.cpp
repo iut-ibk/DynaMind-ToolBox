@@ -36,11 +36,13 @@ GUIExport::GUIExport(DM::Module *m, QWidget *parent) :
 	updateTree();
 
 	OGRRegisterAll();
+	GDALDriverManager::AutoLoadDrivers();
+	GDALDriverManager manager;
 
-	int nDrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+	int nDrivers = manager.GetDriverCount();
 	for (int i = 0; i < nDrivers; i++)
 	{
-		std::string driverName = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i)->GetName();
+		std::string driverName = manager.GetDriver(i)->GetDescription();
 		this->ui->typeComboBox->addItem(QString::fromStdString(driverName));
 		if (driverName == this->m->type)
 			ui->typeComboBox->setCurrentIndex(i);

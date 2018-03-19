@@ -73,8 +73,7 @@ void GUIPickWFSDataset::on_pushButton_connect_clicked()
 	OGRDataSource       *poDS;
 	OGRLayer  *poLayer;
 
-
-	poDS = OGRSFDriverRegistrar::Open(  server.toStdString().c_str(), FALSE );
+	poDS = (OGRDataSource*) GDALOpenEx( server.toStdString().c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 
 	int LayerCount = poDS->GetLayerCount();
 
