@@ -121,7 +121,10 @@ void Import::reloadFile()
 	driverType = DataError;
 
 	OGRRegisterAll();
-	GDALAllRegister();	// neccessary for windows!
+	GDALDriverManager::AutoLoadDrivers ();
+	GDALAllRegister();
+
+
 	OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
 
 	if (!this->WFSServer.empty())
@@ -371,6 +374,9 @@ void Import::adoptViewConfig(StringMap& newViewConfig, std::map<std::string, int
 
 void Import::initViews()
 {
+	OGRRegisterAll();
+	GDALDriverManager::AutoLoadDrivers ();
+	GDALAllRegister();
 	std::map<std::string, DM::View> views;
 
 	// add views
@@ -450,6 +456,8 @@ void Import::loadVectorData(const std::string& path)
 	OGRSpatialReference *oSourceSRS, *oTargetSRS;
 
 	OGRRegisterAll();
+	GDALDriverManager::AutoLoadDrivers ();
+	GDALAllRegister();
 
 	OGRDataSource *poDS = (OGRDataSource*) GDALOpenEx( path.c_str(), GDAL_OF_VECTOR | GDAL_OF_UPDATE, NULL, NULL, NULL );
 

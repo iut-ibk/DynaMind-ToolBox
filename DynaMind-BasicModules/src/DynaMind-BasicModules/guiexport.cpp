@@ -34,15 +34,15 @@ GUIExport::GUIExport(DM::Module *m, QWidget *parent) :
 	this->ui->epsgCode->setValue(this->m->epsgCode);
 
 	updateTree();
+	GDALDriverManager::AutoLoadDrivers ();
+	GDALAllRegister();
+	GDALDriverManager *manager = GetGDALDriverManager();
 
-	OGRRegisterAll();
-	GDALDriverManager::AutoLoadDrivers();
-	GDALDriverManager manager;
-
-	int nDrivers = manager.GetDriverCount();
+	int nDrivers = manager->GetDriverCount();
+	Logger(Debug) << "Driver count: " << nDrivers;
 	for (int i = 0; i < nDrivers; i++)
 	{
-		std::string driverName = manager.GetDriver(i)->GetDescription();
+		std::string driverName = manager->GetDriver(i)->GetMetadataItem( GDAL_DMD_LONGNAME );
 		this->ui->typeComboBox->addItem(QString::fromStdString(driverName));
 		if (driverName == this->m->type)
 			ui->typeComboBox->setCurrentIndex(i);
