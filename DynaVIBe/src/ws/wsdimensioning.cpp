@@ -66,6 +66,8 @@ Dimensioning::Dimensioning()
 	this->nearestdiscretediameter=true;
 	this->savesubsurface=false;
 	this->apprdt = 0.005;
+	this->skipall = false;
+
 	this->addParameter("Use predefined diameters", DM::BOOL, &this->fixeddiameters);
 	this->addParameter("Maximum diameter [mm]", DM::DOUBLE, &this->maxdiameter);
 	this->addParameter("Automatic set pipe status", DM::BOOL, &this->pipestatus);
@@ -76,6 +78,7 @@ Dimensioning::Dimensioning()
 	this->addParameter("Force nearest discrete diameters", DM::BOOL, &this->nearestdiscretediameter);
 	this->addParameter("Assumed pressure head loss [m/m]", DM::DOUBLE, &this->apprdt);
 	this->addParameter("Save approximated total head", DM::BOOL, &this->savesubsurface);
+	this->addParameter("Skip whole design", DM::BOOL, &this->skipall);
 }
 
 void Dimensioning::init()
@@ -99,6 +102,12 @@ void Dimensioning::init()
 
 void Dimensioning::run()
 {
+	if(skipall)
+	{
+		DM::Logger(DM::Standard) << "Skip WDS design";
+		return;
+	}
+
 	QString dir = QDir::tempPath();
 
 	std::string name = QUuid::createUuid().toString().mid(1,36).toStdString();

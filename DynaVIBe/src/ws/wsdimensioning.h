@@ -40,7 +40,7 @@ class Dimensioning : public DM::Module
 	DM::WS::ViewDefinitionHelper wsd;
 	DM::System * sys;
 	boost::shared_ptr<EpanetDynamindConverter> converter;
-	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter,savesubsurface;
+	bool fixeddiameters, pipestatus, usemainpipe, usereservoirdata, discrete, nearestdiscretediameter,savesubsurface, skipall;
 	double maxdiameter, iterations, apprdt;
 	std::vector<DM::Component*> fixedpipes;
 	std::vector<DM::Node*> initknownpressure;

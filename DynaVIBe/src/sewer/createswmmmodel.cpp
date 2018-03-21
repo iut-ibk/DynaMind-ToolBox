@@ -54,9 +54,11 @@ CreateSWMMModel::CreateSWMMModel()
 
 	this->inpfilepath="";
     this->rainfilepath="";
+	this->skipall=false;
 
 	this->addParameter("Path of inp file", DM::FILENAME, &this->inpfilepath);
 	this->addParameter("Path of rain file", DM::FILENAME, &this->rainfilepath);
+	this->addParameter("Skip module", DM::BOOL, &this->skipall);
 
 	std::vector<DM::View> views;
     views.push_back(sd.getCompleteView(S::JUNCTION,DM::READ));
@@ -64,11 +66,19 @@ CreateSWMMModel::CreateSWMMModel()
     views.push_back(sd.getCompleteView(S::INLET,DM::READ));
     views.push_back(sd.getCompleteView(S::CATCHMENT,DM::READ));
 
+
+
     this->addData("Sewer", views);
 }
 
 void CreateSWMMModel::run()
 {
+	if(skipall)
+	{
+		DM::Logger(DM::Standard) << "Skip SWMM export";
+		return;
+	}
+
     this->sys = this->getData("Sewer");
 
     SWMMDynamindConverter converter;

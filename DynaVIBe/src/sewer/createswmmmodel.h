@@ -32,11 +32,12 @@
 
 class CreateSWMMModel : public DM::Module
 {
-    DM_DECLARE_NODE(CreateSWMMModel)
+	DM_DECLARE_NODE(CreateSWMMModel)
 
 	DM::System * sys;
 	std::string inpfilepath;
-    std::string rainfilepath;
+	std::string rainfilepath;
+	bool skipall;
 
 public:
     CreateSWMMModel();

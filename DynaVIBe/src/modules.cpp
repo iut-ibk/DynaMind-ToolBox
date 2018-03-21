@@ -104,13 +104,11 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
     registry->addNodeFactory(new DM::NodeFactory<ReservoirOffset>());
 
 	//Sewer
-	/*
 	registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
 	registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
-	registry->addNodeFactory(new DM::NodeFactory<ImportSWMM>());
-	registry->addNodeFactory(new DM::NodeFactory<SimulateWithSWMM>());
-	registry->addNodeFactory(new DM::NodeFactory<ModifySWMMModel>());
-	*/
+	//registry->addNodeFactory(new DM::NodeFactory<ImportSWMM>());
+	//registry->addNodeFactory(new DM::NodeFactory<SimulateWithSWMM>());
+	//registry->addNodeFactory(new DM::NodeFactory<ModifySWMMModel>());
 
 	//TESTMODULES
 	//registry->addNodeFactory(new DM::NodeFactory<WSProto>());
