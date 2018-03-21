@@ -76,9 +76,13 @@ void copyfiles(string &cpfile, int iteration)
             QFile::remove(targetfile);
 			if(QFile::exists(sourcefile))
 			{
-				QFile::copy(sourcefile,targetfile);
+				if(QFile(sourcefile).size()>0)
+				{
+					QFile::copy(sourcefile,targetfile);
+					DM::Logger(DM::Standard) << "Copy: " << sourcefile.toStdString() << " -> " << targetfile.toStdString();
+				}
 				QFile::remove(sourcefile);
-				DM::Logger(DM::Standard) << "Copy: " << sourcefile.toStdString() << " -> " << targetfile.toStdString();
+
 			}
         }
     }
