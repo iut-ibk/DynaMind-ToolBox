@@ -58,10 +58,21 @@ class DM_ValueFromRaster(Module):
                 point = ct.TransformPoint(geom.GetX(), geom.GetY())
                 x = (point[0]-gt[0])/gt[1]
                 y = (point[1]-gt[3])/gt[5]
+                datatype = band.DataType
 
-                scanline = band.ReadRaster( int(x), int(y), 1, 1, 1, 1, GDT_Float32)
-                tuple_of_floats = struct.unpack('f' * 1, scanline)
+                scanline = band.ReadRaster( int(x), int(y), 1, 1, 1, 1, datatype)
+                if not scanline:
+                    log("No value found for " + str(x) + "," + str(y), Warning)
+                    continue
 
+                if datatype == GDT_Int32:
+                    tuple_of_floats = struct.unpack('i' * 1, scanline)
+                elif datatype == GDT_Float32:
+                    tuple_of_floats = struct.unpack('f' * 1, scanline)
+                else:
+                    log("Datatype " + str(datatype) + " not supported", Error)
+                    self.node_view.finalise()
+                    return
                 node.SetField(self.attribute_name, tuple_of_floats[0])
 
             self.node_view.finalise()
