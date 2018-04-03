@@ -15,8 +15,6 @@ class DM_ImportLanduse(Module):
             self.setIsGDALModule(True)
             self.createParameter("view_name", STRING)
             self.view_name = "node"
-            self.createParameter("attribute_name", STRING)
-            self.attribute_name = "value"
             self.createParameter("raster_file", FILENAME)
             self.raster_file = ""
 
@@ -24,11 +22,11 @@ class DM_ImportLanduse(Module):
             self.node_view = ViewContainer(self.view_name, FACE, READ)
 
             self.landuse_classes = {
-                    "tree_fraction": 1,
+                    "tree_cover_fraction": 1,
                     "water_fraction": 2,
                     "pond_and_basin_fraction": 3,
                     "wetland_tree_fraction": 4,
-                    "grass_tree_fraction": 5,
+                    "grass_fraction": 5,
                     "swale_tree_fraction": 6,
                     "irrigated_grass_fraction": 7,
                     "bio_retention_fraction": 8,
