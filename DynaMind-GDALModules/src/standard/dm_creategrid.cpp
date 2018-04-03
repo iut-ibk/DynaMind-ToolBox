@@ -25,7 +25,7 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 		OGRFeature * f = db_worker->getGridView()->createFeature();
 		f->SetGeometry(geo->getGeometryRef(i));
 	}
-	DM::Logger(DM::Standard) << polygons;
+	DM::Logger(DM::Standard) << "Number of polygons " << polygons;
 
 	return 0;
 }

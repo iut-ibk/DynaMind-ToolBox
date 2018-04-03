@@ -42,9 +42,11 @@ Data Handling
    gdalgeometricattributes
    gdalcalculatelength
    dm_calculatedistance
-   dm_createcomponent.rst
-   dm_sqlcalculator.rst
-
+   dm_createcomponent
+   dm_sqlcalculator
+   dm_value_from_raster
+   dm_value_from_poly 
+   
 
 Geometry Processing
 -------------------
@@ -88,7 +90,7 @@ Network Generation
    gdalextractnodes
    gdalclusternetwork
    dm_direct_graph
-   dm_value_from_raster
+
 
 Network Analysis
 ----------------

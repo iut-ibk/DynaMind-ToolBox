@@ -37,3 +37,5 @@ from segmentation import *
 from segmentation_bi import *
 from dm_sftp_hotstart import *
 from import_travel_matrix import *
+from dm_value_from_raster_poly import *
+
