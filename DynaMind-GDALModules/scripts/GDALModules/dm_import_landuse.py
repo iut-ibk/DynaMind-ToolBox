@@ -4,6 +4,8 @@ from gdalconst import *
 import struct 
 import numpy as np 
 import compiler
+import paramiko
+import os
 
 class DM_ImportLanduse(Module):
         display_name = "Import Landuse"
@@ -15,8 +17,69 @@ class DM_ImportLanduse(Module):
             self.setIsGDALModule(True)
             self.createParameter("view_name", STRING)
             self.view_name = "node"
-            self.createParameter("raster_file", FILENAME)
+
+            self.createParameter("raster_file", STRING)
             self.raster_file = ""
+ 
+            self.createParameter("username", STRING)
+            self.username = ""
+
+            self.createParameter("password", STRING)
+            self.password = ""
+
+            self.createParameter("port", INT)
+            self.port = 22
+
+            self.createParameter("host", STRING)
+            self.host = ""
+
+            self.transport = None
+            self.sftp = None
+
+            self.downloaded_file = ""
+
+            self.real_file_name = ""
+
+        def generate_downloaded_file_name(self):
+              return self.raster_file + self.username + self.password+self.host
+
+        def connect(self):
+            established = False
+            try:
+                log(str(self.host) + " " + str(self.port) + " " + str(self.username) + " " + str(self.password), Standard)
+                self.transport = paramiko.Transport((self.host, self.port))
+
+                self.transport.connect(username=self.username, password=self.password)
+                established = True
+            except:
+                return False
+
+            log("connected", Standard)
+            self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+            return True
+
+
+        def close(self):
+            log("close connection", Standard)
+            self.sftp.close()
+            self.transport.close()
+
+            self.sftp = None
+            self.transport = None
+
+        def get_file(self, file_name):
+            if self.real_file_name:
+                os.remove(self.real_file_name)
+            self.real_file_name = "/tmp/" + str(uuid.uuid4())
+            try:
+                self.sftp.get(file_name,  self.real_file_name)
+            except Exception as e:
+                print e
+                self.real_file_name = ""
+                return False
+            self.downloaded_file = self.generate_downloaded_file_name()
+            return True
+
 
         def init(self):
             self.node_view = ViewContainer(self.view_name, FACE, READ)
@@ -43,8 +106,19 @@ class DM_ImportLanduse(Module):
             self.registerViewContainers([self.node_view])
          
         def run(self):
+
+            if self.host:
+                if not self.connect():
+                    log("Connection to host failed", Error)
+                    return
+                if not self.get_file(self.raster_file):
+                    log("Failed to download file", Error)
+                    return
+            else:
+                self.real_file_name = self.raster_file
+            
             #log("Hello its me", Standard)
-            dataset = gdal.Open( self.raster_file, GA_ReadOnly)
+            dataset = gdal.Open( self.real_file_name, GA_ReadOnly)
             if not dataset:
                 log("Failed to open file", Error)
                 self.setStatus(MOD_EXECUTION_ERROR)
