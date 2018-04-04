@@ -65,6 +65,7 @@ CreateSWMMModel::CreateSWMMModel()
     views.push_back(sd.getCompleteView(S::CONDUIT,DM::READ));
     views.push_back(sd.getCompleteView(S::INLET,DM::READ));
     views.push_back(sd.getCompleteView(S::CATCHMENT,DM::READ));
+    views.push_back(sd.getCompleteView(S::OUTFALL,DM::READ));
 
 
 

@@ -62,6 +62,7 @@
 //Testing Modules
 //#include <wsproto.h>
 #include <importswmm.h>
+#include <setoutfallatdeepestpoint.h>
 #include <simulatewithswmm.h>
 #include <modswmm.h>
 #include <createnewview.h>
@@ -106,6 +107,7 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	//Sewer
 	registry->addNodeFactory(new DM::NodeFactory<InitSewerSystem>());
 	registry->addNodeFactory(new DM::NodeFactory<CreateSWMMModel>());
+	registry->addNodeFactory(new DM::NodeFactory<SetOutfallAtDeepestPoint>());
 	//registry->addNodeFactory(new DM::NodeFactory<ImportSWMM>());
 	//registry->addNodeFactory(new DM::NodeFactory<SimulateWithSWMM>());
 	//registry->addNodeFactory(new DM::NodeFactory<ModifySWMMModel>());
