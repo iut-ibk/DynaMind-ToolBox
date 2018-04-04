@@ -349,7 +349,7 @@ void SWMMModelCreator::initModel()
     addEntry(REPORT,"CONTINUITY","YES");
     addEntry(REPORT,"FLOWSTATS","YES");
     addEntry(REPORT,"CONTROLS","NO");
-    addEntry(REPORT,"SUBCATCHMENTS","NONE");
-    addEntry(REPORT,"NODES","NONE");
-    addEntry(REPORT,"LINKS","NONE");
+	addEntry(REPORT,"SUBCATCHMENTS","NONE");
+	addEntry(REPORT,"NODES","ALL");
+	addEntry(REPORT,"LINKS","ALL");
 }
