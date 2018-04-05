@@ -88,7 +88,7 @@ class DM_ImportLanduse(Module):
                     "tree_cover_fraction": 1,
                     "water_fraction": 2,
                     "pond_and_basin_fraction": 3,
-                    "wetland_tree_fraction": 4,
+                    "wetland_fraction": 4,
                     "grass_fraction": 5,
                     "swale_tree_fraction": 6,
                     "irrigated_grass_fraction": 7,
