@@ -90,7 +90,7 @@ class DM_ImportLanduse(Module):
                     "pond_and_basin_fraction": 3,
                     "wetland_fraction": 4,
                     "grass_fraction": 5,
-                    "swale_tree_fraction": 6,
+                    "swale_fraction": 6,
                     "irrigated_grass_fraction": 7,
                     "bio_retention_fraction": 8,
                     "infiltration_fraction":9,
