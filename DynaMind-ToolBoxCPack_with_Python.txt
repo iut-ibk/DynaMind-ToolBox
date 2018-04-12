@@ -77,6 +77,10 @@ IF(WIN32 AND NOT UNIX)
      if(WITH_GUI)
         set(CPACK_PACKAGE_EXECUTABLES "dynamind-gui;DynaMind-Modellbuilder")
      endif()
+     
+     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS 
+     	"${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
+    	ExecWait 'icacls \\\"$INSTDIR\\\" /grant *S-1-1-0:\\\(OI\\\)\\\(CI\\\)\\\(F\\\)'")
 
      SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
         WriteRegStr HKCU \\\"Software\\\\IUT\\\\DYNAMIND\\\" Editra \\\"$INSTDIR\\\\lib\\\\DynaMind\\\\3dparty\\\\Editra\\\\\\\"
