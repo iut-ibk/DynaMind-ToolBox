@@ -146,10 +146,10 @@ DMMainWindow::DMMainWindow(QWidget * parent) : QMainWindow(parent), ui(new Ui::D
 		this->clearSimulation();
 		this->getSimulation()->currentDocument = args[1];
 		simulation->loadSimulation(args[1].toStdString());
-	} else {
+	} /*else {
 			GUIWelcome * welcome = new GUIWelcome(this->simulation);
 			welcome->show();
-	}
+	}*/
 
 	ui->actionCancel->setEnabled(false);
 
@@ -355,8 +355,8 @@ void DMMainWindow::saveSimulation()
 
 void DMMainWindow::newSimulation()
 {	
-	GUICreateProject * createProject = new GUICreateProject(this->simulation, this);
-	createProject->show();
+	//GUICreateProject * createProject = new GUICreateProject(this->simulation, this);
+	//createProject->show();
 	this->clearSimulation();
 	//this->simulation->clearSimulation();
 	//this->getSimulation()->currentDocument.clear();
