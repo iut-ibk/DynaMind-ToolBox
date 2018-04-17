@@ -30,8 +30,7 @@
 #include <dmmodule.h>
 
 class OGRLayer;
-class OGRDataSource;
-
+class GDALDataset;
 using namespace DM;
 
 typedef std::map<std::string, std::string> StringMap;
@@ -66,7 +65,7 @@ public:
 	std::string type;
 private:
 
-	OGRLayer* prepareNewLayer(const DM::View& view, OGRDataSource* data);
+	OGRLayer* prepareNewLayer(const DM::View& view, GDALDataset* data);
 	void exportLayer(const DM::View& view, OGRLayer* layer, System* system);
 };
 

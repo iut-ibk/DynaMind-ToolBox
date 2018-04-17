@@ -176,7 +176,7 @@ static std::string attributeTypeStrings[] =
 	"STRINGVECTOR"
 };
 
-OGRLayer* Export::prepareNewLayer(const DM::View& view, OGRDataSource* data)
+OGRLayer* Export::prepareNewLayer(const DM::View& view, GDALDataset* data)
 {
 	// get layer name
 	const char* newLayerName = viewConfig[view.getName()].c_str();
@@ -376,8 +376,8 @@ void Export::run()
 	
 	// create file
 
-	OGRSFDriver* driver = (OGRSFDriver*) manager.GetDriverByName(type.c_str());
-	OGRDataSource* data = driver->CreateDataSource(path.c_str());
+	GDALDriver* driver = (GDALDriver*) GDALGetDriverByName(type.c_str());
+	GDALDataset* data = driver->Create( path.c_str(), 0, 0, 0, GDT_Unknown, NULL );
 
 	if (!driver)
 	{
