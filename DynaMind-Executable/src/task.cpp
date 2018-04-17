@@ -130,8 +130,8 @@ string replacestrings(string &replace, string projectfilepath)
 
 void setSettings(std::string s)
 {
-    QStringList avalible_settings;
-    avalible_settings << "SWMM";
+	QStringList available_settings;
+	available_settings << "SWMM";
     QString setting = QString::fromStdString(s);
     QStringList sl = setting.split("=");
     if (sl.size() != 2)
@@ -140,10 +140,10 @@ void setSettings(std::string s)
         return;
     }
 
-    if (avalible_settings.indexOf(sl[0]) == -1)
+	if (available_settings.indexOf(sl[0]) == -1)
     {
-        std::cout << "Unknown setting avalible settings are:" << std::endl;
-        foreach (QString as, avalible_settings)
+		std::cout << "Unknown setting available settings are:" << std::endl;
+		foreach (QString as, available_settings)
             std::cout << as.toStdString() << std::endl;
         return;
     }
@@ -155,10 +155,10 @@ void showSettings()
 {
     QSettings settings;
 
-    QStringList avalible_settings;
-    avalible_settings << "SWMM";
+	QStringList available_settings;
+	available_settings << "SWMM";
 
-    foreach (QString as, avalible_settings)
+	foreach (QString as, available_settings)
     {
         QString val = settings.value(as).toString();
         std::cout << val.toStdString() << std::endl;
@@ -300,6 +300,8 @@ void Task::run()
             ("version", "shows the current version of the dynamind core")
             ("license", "shows used license of the dynamind core")
             ("author", "shows the names of the core programmers")
+			("savemodel", po::value<string>(), "save current model to new file")
+			("nosimulation", "exit dynamind without running any simulation")
             ;
 
 
@@ -308,10 +310,12 @@ void Task::run()
 	std::string workspace_uuid = QUuid::createUuid().toString().replace("{", "").replace("}", "").toStdString();
     int repeat = 1;
     bool verbose = false;
+	bool nosim = false;
     bool withStatusUpdates = false;
     string cpfile = "";
     string replace = "";
     string parameteroverloads = "";
+	string nmp = "";
     int numThreads = 1;
     string lf = "";
 
@@ -366,8 +370,10 @@ void Task::run()
             return;
         }
 
-
-
+		if (vm.count("nosimulation"))
+		{
+			nosim = true;
+		}
 
         if (vm.count("input-file"))
 			simulationfile =  vm["input-file"].as<string>();
@@ -392,6 +398,8 @@ void Task::run()
         if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
         if (vm.count("logpath"))		lf = vm["logpath"].as<string>();
+
+		if (vm.count("savemodel"))		nmp = vm["savemodel"].as<string>();
 
         QDateTime time = QDateTime::currentDateTime();
         QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
@@ -495,7 +503,24 @@ void Task::run()
         return;
     }
 
-    DM::Logger(DM::Standard) << ">>>> starting simulation";
+	if(nmp != "")
+	{
+		cout << ">>>> Save model to new file: " << nmp << "\n";
+		s.writeSimulation(nmp);
+	}
+
+	if(nosim)
+	{
+		cout << ">>>> Skip simulation due to \"nosimulation\" parameter.\n";
+
+		if (simulationfile != realsimulationfile)
+			QFile::remove(QString::fromStdString(realsimulationfile));
+
+		QCoreApplication::exit(1);
+		return;
+	}
+
+	DM::Logger(DM::Standard) << ">>>> starting simulation";
 
     std::list<qint64> times;
 
