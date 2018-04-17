@@ -119,7 +119,6 @@ bool PythonEnv::addOverWriteStdCout() {
 	addPythonPath("/usr/lib");
 
 	ostringstream script;
-	script << "from osgeo import ogr\n";
 #if defined(_WIN32)
 	script << "import os\n";
 	script << "if \"DYNAMIND_DIR\" in os.environ.keys():\n";
@@ -160,10 +159,8 @@ bool PythonEnv::addOverWriteStdCout() {
 	script << "        sys.stderr=Logger(sys.stderr,True)\n";
 	script << "print \"Redirect python stdout and stderr\"\n";
 	//script << "print sys.path\n";
-	/*script << "import PyQt4\n";
-	script << "import reimport\n";
+	/*script << "import reimport\n";
 	script << "import netCDF4\n";
-	script << "import osgeo\n";
 	script << "import numpy\n";
 	script << "import scipy\n";*/
 	script << "print \"Python environment is ready for use\"\n";
