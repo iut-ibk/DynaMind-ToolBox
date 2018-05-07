@@ -243,6 +243,7 @@ class DM_ImportSWMM(Module):
             y1 = float(coords[1])
 
             n_pt.SetPoint_2D(0, x1, y1)
+            n_pt.Transform(ct)
              
             # Set geometry in feature
             
