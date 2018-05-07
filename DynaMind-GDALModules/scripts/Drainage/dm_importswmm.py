@@ -28,6 +28,7 @@ import sys
 
 from pydynamind import *
 import gdal, osr
+import paramiko
 
 class DM_ImportSWMM(Module):
 
@@ -42,7 +43,7 @@ class DM_ImportSWMM(Module):
         Module.__init__(self)
         self.setIsGDALModule(True)
 
-        self.createParameter("filename", FILENAME, "Name of SWMM File")
+        self.createParameter("filename", STRING, "Name of SWMM File")
         self.filename = ""
 
         self.createParameter("name_outlet", STRING, "Identifier Outlet")
@@ -50,6 +51,65 @@ class DM_ImportSWMM(Module):
 
         self.createParameter("epsg_from", INT, "EPSG Coce")
         self.epsg_from = -1
+
+        self.createParameter("username", STRING)
+        self.username = ""
+
+        self.createParameter("password", STRING)
+        self.password = ""
+
+        self.createParameter("port", INT)
+        self.port = 22
+
+        self.createParameter("host", STRING)
+        self.host = ""
+
+        self.transport = None
+        self.sftp = None
+
+        self.downloaded_file = ""
+
+        self.real_file_name = ""
+
+    def generate_downloaded_file_name(self):
+              return self.filename + self.username + self.password+self.host
+
+    def connect(self):
+            established = False
+            try:
+                log(str(self.host) + " " + str(self.port) + " " + str(self.username) + " " + str(self.password), Standard)
+                self.transport = paramiko.Transport((self.host, self.port))
+
+                self.transport.connect(username=self.username, password=self.password)
+                established = True
+            except:
+                return False
+
+            log("connected", Standard)
+            self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+            return True
+
+
+    def close(self):
+            log("close connection", Standard)
+            self.sftp.close()
+            self.transport.close()
+
+            self.sftp = None
+            self.transport = None
+
+    def get_file(self, file_name):
+            if self.real_file_name:
+                os.remove(self.real_file_name)
+            self.real_file_name = "/tmp/" + str(uuid.uuid4())
+            try:
+                self.sftp.get(file_name,  self.real_file_name)
+            except Exception as e:
+                print e
+                self.real_file_name = ""
+                return False
+            self.downloaded_file = self.generate_downloaded_file_name()
+            return True
 
 
     def init(self):
@@ -108,8 +168,18 @@ class DM_ImportSWMM(Module):
         self.registerViewContainers(views)
 
     def run(self):
+        if self.host:
+            if not self.connect():
+                log("Connection to host failed", Error)
+                return
+            if not self.get_file(self.filename):
+                log("Failed to download file " + str(self.filename), Error)
+                return
+        else:
+            self.real_file_name = self.filename
+
         results = {}
-        f = open(self.filename)
+        f = open(self.real_file_name)
         currentContainer = ""
         for line in f:
             # print line
