@@ -51,96 +51,6 @@ class DM_ImportSWMM(Module):
         self.createParameter("epsg_from", INT, "EPSG Coce")
         self.epsg_from = -1
 
-        # self.conduits.addLinkAttribute("XSECTION", "XSECTION", WRITE)
-
-
-        #
-        # self.outfalls = View("OUTFALL", NODE, WRITE)
-        # self.outfalls.addAttribute("Z", DOUBLE, WRITE)
-        # Not imported
-        # self.inlets = View("INLET", NODE, WRITE)
-
-
-        # self.wwtps = View("WWTP", NODE, WRITE)
-        #
-        # self.storages = View("STORAGE", NODE, WRITE)
-        # self.storages.addAttribute("Z", DOUBLE, WRITE)
-        # self.storages.addAttribute("max_depth", DOUBLE, WRITE)
-        # self.storages.addAttribute("type", STRING, WRITE)
-        # self.storages.addAttribute("storage_x", DOUBLE, WRITE)
-        # self.storages.addAttribute("storage_y", DOUBLE, WRITE)
-        #
-        # self.weirs = View("WEIR", EDGE, WRITE)
-        # self.weirs.addAttribute("type", STRING, WRITE)
-        # self.weirs.addAttribute("crest_height", DOUBLE, WRITE)
-        # self.weirs.addAttribute("discharge_coefficient", DOUBLE, WRITE)
-        # self.weirs.addAttribute("end_coefficient", DOUBLE, WRITE)
-        #
-        # self.pumps = View("PUMPS", EDGE, WRITE)
-        # self.pumps.addAttribute("type", STRING, WRITE)
-        # self.pumps.addAttribute("pump_x", DOUBLE, WRITE)
-        # self.pumps.addAttribute("pump_y", DOUBLE, WRITE)
-
-        # views.append(self.conduits)
-        # views.append(self.nodes)
-        # views.append(self.outfalls)
-        # views.append(self.junctions)
-        # views.append(self.inlets)
-        # views.append(self.wwtps)
-        # views.append(self.storages)
-        # views.append(self.weirs)
-        # views.append(self.xsections)
-        # views.append(self.pumps)
-
-        # self.registerViewContainers(views)
-
-
-        # self.createParameter("NameWWTP", STRING, "Identifier WWTP")
-        # self.NameWWTP = "MD020"
-
-        # self.createParameter("defaultBuiltYear", INT, "Default_Built_Year")
-        # self.defaultBuiltYear = 1900
-        #
-        # self.curves = {}
-        # self.curves_types = {}
-
-    # def readCurves(self):
-    #     try:
-    #         f = open(self.filename)
-    #         startReading = False
-    #
-    #         for line in f:
-    #             line = line.strip()
-    #             if line is '':
-    #                 continue
-    #             if line[0] is ';':
-    #                 continue
-    #             if startReading == True and line[0] is '[':
-    #                 startReading = False
-    #                 break
-    #             if startReading == True:
-    #                 # print line
-    #                 content = line.split()
-    #                 if content[0] not in self.curves:
-    #                     self.curves[content[0]] = []
-    #                 values = self.curves[content[0]]
-    #                 if (len(content) == 4):
-    #                     values.append((float(content[2]), float(content[3])))
-    #                 if (len(content) == 3):
-    #                     values.append((float(content[1]), float(content[2])))
-    #                 self.curves[content[0]] = values
-    #
-    #                 if (len(content) == 4):
-    #                     if content[1] != "":
-    #                         self.curves_types[content[0]] = str(content[1])
-    #
-    #             if line == "[CURVES]":
-    #                 startReading = True
-    #         f.close()
-    #
-    #     except Exception, e:
-    #         print e
-    #         print sys.exc_info()
 
     def init(self):
 
@@ -246,7 +156,6 @@ class DM_ImportSWMM(Module):
             source_srs.ImportFromEPSG(self.epsg_from)
         else:
             source_srs.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
-
         # (353136,5776456)
         ct = osr.CoordinateTransformation(source_srs, target_srs)
 
@@ -258,18 +167,20 @@ class DM_ImportSWMM(Module):
             # Create geometry
 
             n_pt = ogr.Geometry(ogr.wkbPoint)
-
-            n_pt.Transform(ct)
+            #n_pt.Transform(ct)
 
             x1 = float(coords[0])
             y1 = float(coords[1])
 
             n_pt.SetPoint_2D(0, x1, y1)
-
+             
             # Set geometry in feature
-            node.SetGeometry(n_pt)
+            
+            n_tc = ogr.Geometry(ogr.wkbPoint)
+            n_tc.SetPoint_2D(0, n_pt.GetX(), n_pt.GetY())
+            node.SetGeometry(n_tc)
 
-            nodes[c] = (node_id, x1, y1)
+            nodes[c] = (node_id, n_pt.GetX(), n_pt.GetY())
             node_ids.add(c)
 
             if self.name_outlet == c:
@@ -293,7 +204,7 @@ class DM_ImportSWMM(Module):
             n_pt = ogr.Geometry(ogr.wkbPoint)
 
             n_pt.SetPoint_2D(0, nodes[c][1], nodes[c][2])
-
+            #n_pt.Transform(ct) 
             juntion.SetGeometry(n_pt)
             juntion.SetField("node_id", nodes[c][0])
 
