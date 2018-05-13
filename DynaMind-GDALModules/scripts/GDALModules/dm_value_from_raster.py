@@ -92,7 +92,7 @@ class DM_ValueFromRaster(Module):
 
                 #print val.item()
                     node.SetField(self.attribute_name, val.item())
-                else
+                else:
                     datatype = band.DataType
 
                     scanline = band.ReadRaster( int(x), int(y), 1, 1, 1, 1, datatype)
