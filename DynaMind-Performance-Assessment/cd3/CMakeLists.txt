@@ -8,6 +8,7 @@ endif()
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 	message(STATUS "Using GNU compilers")
 	set(CMAKE_CXX_FLAGS "-g -Wall")
+	SET (CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 endif()
 
 
