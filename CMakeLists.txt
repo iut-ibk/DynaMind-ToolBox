@@ -30,6 +30,10 @@ if(USEQT5)
     set(QT_MAJOR_VERSION 5)
 endif()
 
+ IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+        	SET (CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+  ENDIF()
+
 find_package(Git REQUIRED)
 
 set(TOOLBOX DynaMind)
