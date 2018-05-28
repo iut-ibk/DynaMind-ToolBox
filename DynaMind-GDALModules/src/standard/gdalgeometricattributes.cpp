@@ -148,6 +148,7 @@ void GDALGeometricAttributes::run()
 
 	vc.resetReading();
 	QThreadPool pool;
+	pool.setMaxThreadCount(1);
 	std::vector<OGRFeature*> container;
 	int counter = 0;
 	while( f = vc.getNextFeature() ) {
