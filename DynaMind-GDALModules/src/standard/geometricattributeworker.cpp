@@ -40,78 +40,89 @@ double GeometricAttributeWorker::calculateArea(OGRPolygon * poly) {
 }
 
 double GeometricAttributeWorker::percentageFilled(OGRPolygon * ogr_poly) {
-	char* geo;
+        char* geo;
 
-	ogr_poly->exportToWkt(&geo);
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-	OGRFree(geo);
-	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
+        ogr_poly->exportToWkt(&geo);
+        std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+        OGRFree(geo);
+        SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
-	if (!poly.toPolygon_2(false).is_simple()) {
-		DM::Logger(DM::Warning) << "Polygon is not simple";
-		return -1;
-	}
+        if (!poly.toPolygon_2(false).is_simple()) {
+                DM::Logger(DM::Warning) << "Polygon is not simple";
+                return -1;
+        }
 
-	//Transfer to GDAL polygon
-	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
+        //Transfer to GDAL polygon
+        Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
 
 
-	Polygon_2 p_c;
-	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
+        Polygon_2 p_c;
+        CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
 
-	//Cacluate Minimal Rect
-	Polygon_2 p_m;
-	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
+        //Cacluate Minimal Rect
+        Polygon_2 p_m;
+        CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
 
-	return ogr_poly->get_Area() / CGAL::to_double(p_m.area());
+        Point_2 p1 ( p_m.vertex(0).x(), p_m.vertex(0).y());
+        Point_2 p2  (p_m.vertex(1).x(), p_m.vertex(1).y());
+
+        Point_2 p3  (p_m.vertex(2));
+
+        double dx1 = CGAL::to_double(p2.y()) -  CGAL::to_double(p1.y());
+        double dy1 = CGAL::to_double(p2.x()) -  CGAL::to_double(p1.x());
+        double l1 = sqrt(dx1*dx1+dy1*dy1); //sqrt(CGAL::to_double(v1.squared_length()));
+
+
+        double dx2 = CGAL::to_double(p3.y()) -  CGAL::to_double(p2.y());
+        double dy2 = CGAL::to_double(p3.x()) -  CGAL::to_double(p2.x());
+        double l2 = sqrt(dy2*dy2+dx2*dx2); //sqrt(CGAL::to_double(v1.squared_length()));
+
+
+        return ogr_poly->get_Area() / (l1 * l2);
 }
+
 
 
 double GeometricAttributeWorker::aspectRationBB(OGRPolygon * ogr_poly) {
-	char* geo;
+        char* geo;
 
-	ogr_poly->exportToWkt(&geo);
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
-	OGRFree(geo);
-	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
+        ogr_poly->exportToWkt(&geo);
+        std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+        OGRFree(geo);
+        SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
+        if (!poly.toPolygon_2(false).is_simple()) {
+                DM::Logger(DM::Warning) << "Polygon is not simple";
+                return -1;
+        }
+        //Transfer to GDAL polygon
+        Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
 
-	if (!poly.toPolygon_2(false).is_simple()) {
-		DM::Logger(DM::Warning) << "Polygon is not simple";
-		return -1;
-	}
+        Polygon_2 p_c;
+        CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
+        //Cacluate Minimal Rect
+        Polygon_2 p_m;
+        CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
+        Point_2 p1 ( p_m.vertex(0).x(), p_m.vertex(0).y());
+        Point_2 p2  (p_m.vertex(1).x(), p_m.vertex(1).y());
 
-	//Transfer to GDAL polygon
-	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
+        Point_2 p3  (p_m.vertex(2));
+        //Point_2 p4 = p_m.vertex(3);
+
+        double dx1 = CGAL::to_double(p2.y()) -  CGAL::to_double(p1.y());
+        double dy1 = CGAL::to_double(p2.x()) -  CGAL::to_double(p1.x());
+        double l1 = sqrt(dx1*dx1+dy1*dy1); //sqrt(CGAL::to_double(v1.squared_length()));
 
 
-	Polygon_2 p_c;
-	CGAL::convex_hull_2(p.outer_boundary().vertices_begin(), p.outer_boundary().vertices_end(), std::back_inserter(p_c));
-
-	//Cacluate Minimal Rect
-	Polygon_2 p_m;
-	CGAL::min_rectangle_2(p_c.vertices_begin(), p_c.vertices_end(), std::back_inserter(p_m));
-
-
-	Point_2 p1 = p_m.vertex(0);
-	Point_2 p2 = p_m.vertex(1);
-
-	Point_2 p3 = p_m.vertex(2);
-	//Point_2 p4 = p_m.vertex(3);
-
-	Vector_2 v1 = (p2-p1);
-	Vector_2 v2 = (p3-p2);
-
-	double l1 = sqrt(CGAL::to_double(v1.squared_length()));
-	double l2 = sqrt(CGAL::to_double(v2.squared_length()));
-
-	double aspect_ration = l1/l2;
-
-	if (aspect_ration < 1.0) {
-		aspect_ration = 1.0/aspect_ration;
-	}
-
-	return aspect_ration;
+        double dx2 = CGAL::to_double(p3.y()) -  CGAL::to_double(p2.y());
+        double dy2 = CGAL::to_double(p3.x()) -  CGAL::to_double(p2.x());
+        double l2 = sqrt(dy2*dy2+dx2*dx2); //sqrt(CGAL::to_double(v1.squared_length()));
+        double aspect_ration = l1/l2;
+        if (aspect_ration < 1.0) {
+                aspect_ration = 1.0/aspect_ration;
+        }
+        return aspect_ration;
 }
+
 
 
 void GeometricAttributeWorker::run()
