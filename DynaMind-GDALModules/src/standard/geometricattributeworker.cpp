@@ -129,6 +129,8 @@ void GeometricAttributeWorker::run()
 {
 	foreach (OGRFeature *f, this->features) {
 		OGRPolygon* geo = (OGRPolygon*)f->GetGeometryRef();
+		if (!geo)
+			continue;
 		if (isCalculateArea)
 			f->SetField("area", this->calculateArea( geo ));
 		if (isAspectRationBB) {
