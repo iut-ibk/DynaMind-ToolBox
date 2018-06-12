@@ -160,9 +160,13 @@ class DM_ImportLanduse(Module):
                          if x < 0 or y < 0 or x > band.XSize -1 or y > band.YSize - 1:
                              continue
                          idx =  int(values[int(y)][int(x)])
+                         if idx < 0 or idx > 15:
+                             continue
                          val_array[idx] += 1 
     
                 for key in self.landuse_classes:
+                    if val_array.sum() < 1:
+                         continue                   
                     node.SetField(key, float(val_array[self.landuse_classes[key]]/val_array.sum()))
             print "syncronise"
             self.node_view.finalise()
