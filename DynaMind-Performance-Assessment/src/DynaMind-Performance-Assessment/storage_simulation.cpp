@@ -135,6 +135,11 @@ void StorageSimulation::run()
 		DM::DMFeature::GetDoubleList(p, this->demand_attribute_name , demand_daily);
 		DM::DMFeature::GetDoubleList(p, this->inflow_attribute_name, inflow_daily);
 
+        if (demand_daily.size() == 0 || inflow_daily.size() == 0){
+            DM::Logger(DM::Warning) << "No demand or inflow found for " << this->demand_view_name << " " << this->demand_attribute_name << " " << (int) p->GetFID();
+            continue;
+        }
+
 		for (int i = 0; i < this->storage_volume_tank.size(); i++){
 			OGRFeature * storage = storages.createFeature();
 			std::stringstream link_id;
