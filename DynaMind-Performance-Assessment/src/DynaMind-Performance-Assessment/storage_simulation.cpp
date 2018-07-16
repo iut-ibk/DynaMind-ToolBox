@@ -30,6 +30,9 @@ StorageSimulation::StorageSimulation()
 	this->storage_volume_tank;
 	this->addParameter("storage_volume", DM::STRING_LIST, &this->storage_volume_tank);
 
+    this->storage_volume_tank_single = -1;;
+    this->addParameter("storage_volume_tank_single", DM::INT, &this->storage_volume_tank_single);
+
 	this->demand_view_name = "demand";
 	this->addParameter("demand_view_name", DM::STRING, &this->demand_view_name);
 
@@ -140,14 +143,24 @@ void StorageSimulation::run()
             continue;
         }
 
-		for (int i = 0; i < this->storage_volume_tank.size(); i++){
-			OGRFeature * storage = storages.createFeature();
-			std::stringstream link_id;
-			link_id << this->demand_view_name;
-			link_id << "_id";
-			storage->SetField(link_id.str().c_str(), (int)p->GetFID());
-			this->createTankOption(storage, QString::fromStdString(storage_volume_tank[i]).toDouble(), inflow_daily, demand_daily);
-		}
+        if (this->storage_volume_tank_single < 0) {
+            for (int i = 0; i < this->storage_volume_tank.size(); i++){
+                OGRFeature * storage = storages.createFeature();
+                std::stringstream link_id;
+                link_id << this->demand_view_name;
+                link_id << "_id";
+                storage->SetField(link_id.str().c_str(), (int)p->GetFID());
+                this->createTankOption(storage, QString::fromStdString(storage_volume_tank[i]).toDouble(), inflow_daily, demand_daily);
+            }
+        } else {
+            OGRFeature * storage = storages.createFeature();
+            std::stringstream link_id;
+            link_id << this->demand_view_name;
+            link_id << "_id";
+            storage->SetField(link_id.str().c_str(), (int)p->GetFID());
+            this->createTankOption(storage, this->storage_volume_tank_single, inflow_daily, demand_daily);
+
+        }
 
 		if (counter % 1000 == 0){
 			this->demands.syncAlteredFeatures();

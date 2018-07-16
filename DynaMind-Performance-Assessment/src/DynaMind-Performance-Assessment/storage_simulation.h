@@ -58,6 +58,7 @@ class StorageSimulation: public DM::Module
 		ISimulation * s;
 
 		std::vector<string> storage_volume_tank;
+        int storage_volume_tank_single;
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
