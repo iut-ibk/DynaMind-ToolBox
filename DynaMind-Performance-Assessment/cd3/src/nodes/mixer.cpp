@@ -50,6 +50,10 @@ bool Mixer::init(ptime start, ptime end, int dt) {
 	(void) start;
 	(void) end;
 	(void) dt;
+
+    if (inputs.size() == num_inputs)
+        return true;
+
 	for (int i = 0; i < num_inputs; i++) {
 		Flow *tmp = new Flow();
 		std::ostringstream name;
@@ -57,12 +61,14 @@ bool Mixer::init(ptime start, ptime end, int dt) {
 		addInPort(name.str(), tmp);
 		inputs.push_back(tmp);
 		input_names.push_back(name.str());
+//        std::cout<< name.str() << std::endl;
 	}
 	return true;
 }
 
 int Mixer::f(ptime time, int dt) {
 	(void) time;
+
 	out = FlowFuns::mix(inputs);
 	return dt;
 }
