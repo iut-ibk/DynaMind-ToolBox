@@ -20,6 +20,8 @@ private:
     std::vector<double> Qp;
     std::vector<double> Vmin;
 
+	std::vector<double> loadings;
+
     std::vector<Flow *> outputs;
     std::vector<std::string> output_names;
 

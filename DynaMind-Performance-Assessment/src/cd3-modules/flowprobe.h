@@ -16,5 +16,6 @@ private:
 	Flow in, out;
 	double totalflow;
 	std::vector<double> flow;
+	int element;
 };
 #endif // FLOWPROBE_H

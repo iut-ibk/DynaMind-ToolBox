@@ -5,8 +5,11 @@ CD3_DECLARE_NODE_NAME(FlowProbe)
 
 FlowProbe::FlowProbe() {
 
+	element = 0;
+	addParameter(ADD_PARAMETERS(element));
 	addInPort(ADD_PARAMETERS(in));
 	addOutPort(ADD_PARAMETERS(out));
+
 	addState("TotalFlow", &totalflow);
 	addState("Flow", &flow);
 }
@@ -16,9 +19,10 @@ FlowProbe::~FlowProbe() {
 
 int FlowProbe::f(ptime time, int dt) {
 	(void) time;
-	totalflow += in[0];
-	flow.push_back(in[0]);
-	out[0] = in[0];
+	totalflow += in[element];
+	flow.push_back(in[element]);
+	for (size_t i = 0; i < out.size(); i++)
+		out[i] = in[i];
 	return dt;
 }
 
