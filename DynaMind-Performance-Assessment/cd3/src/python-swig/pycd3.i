@@ -428,6 +428,7 @@ protected:
 	%template(setDoubleVectorParameter)	setParameter<std::vector<double> >;
 	%template(setStringVectorParameter)	setParameter<std::vector<std::string> >;
 	%template(setParameter)	setParameter<Flow>;
+    %template(setNodeParameter)	setParameter<Node*>;
 
 	%template(getIntParameter)			getParameter<int>;
 	%template(getDoubleParameter)		getParameter<double>;
