@@ -808,6 +808,16 @@ class CityDrain3:
 			if type(val) is int:
 				val = n.setIntParameter(k, val)
 
+	def init_nodes(self):
+		  """
+		  Init all nodes
+
+		  :return: None
+		  """
+
+		  # init nodes with start and date time
+		  self.model.initNodes(self.sim_parameter)
+
 
 	def start(self, start_time):
 		"""
