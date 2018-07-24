@@ -17,6 +17,8 @@ private:
     Flow out_sw;
     double area;
 	std::vector<double> run_off;
+	std::vector<double> loadings;
+
 };
 
 
