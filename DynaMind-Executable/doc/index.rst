@@ -30,6 +30,13 @@ The DynaMind commandline supports following options:
 
 ..
 
+As input file .dyn files as well as .zip files are supported. To execute a simulation including external data the .zip
+file is recommended. Following data structure is used.
+
+    -
+
+
+
 
 
 
