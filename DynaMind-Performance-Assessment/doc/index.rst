@@ -34,6 +34,7 @@ Nodes
    node_flowprobe
    node_rwht
    node_consumption
+   node_sourcevector
 
 
 CityDrain3 API
