@@ -25,6 +25,9 @@ private:
     std::vector<Flow *> outputs;
     std::vector<std::string> output_names;
 
+	std::vector<double> storage_level;
+	std::vector<double> total_pollution;
+
 };
 
 #endif // POLDER_H

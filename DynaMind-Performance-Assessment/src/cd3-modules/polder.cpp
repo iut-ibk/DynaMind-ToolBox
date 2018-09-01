@@ -11,21 +11,27 @@ Polder::Polder()
 	addParameter(ADD_PARAMETERS(Vmin))
 		.setUnit("m^3");
 
+	addState(ADD_PARAMETERS(storage_level));
+
+	addState(ADD_PARAMETERS(total_pollution));
+
     addInPort(ADD_PARAMETERS(in));
-
 }
-
 
 int Polder::f(ptime time, int dt) {
         (void) time;
 		storage_volume += in[0];
-		for (size_t i = 1; i < Qp.size(); i++) {
-			loadings[i]+=in[0]*	in[i];
+
+		// Add inflow loading to total load
+		for (size_t i = 1; i < in.size(); i++) {
+			loadings[i-1]+=in[0]*in[i];
+			//std::cout << in[0] << " " <<  loadings[i-1] << std::endl;
 		}
 
 
 		for (size_t i = 0; i < Qp.size(); i++) {
 			double ds = storage_volume - Qp[i]*dt;
+
 			if (Vmin[i] > ds)
 				ds = Vmin[i];
 			if (storage_volume - ds < 0)
@@ -33,13 +39,19 @@ int Polder::f(ptime time, int dt) {
 
 			(*outputs[i])[0] = storage_volume - ds;
 
-			for (size_t j = 1; j < in.size(); j++) {
-				(*outputs[i])[j] = loadings[j] / storage_volume;
-				loadings[j] -= (storage_volume - ds) * loadings[j] / storage_volume;
-			}
-			storage_volume= ds;
-		}
 
+			for (size_t j = 1; j < in.size(); j++) {
+				(*outputs[i])[j] = loadings[j-1] / storage_volume; // current concentraion
+
+				//std::cout << (storage_volume - ds) << std::endl;
+
+				loadings[j-1] -= (storage_volume - ds) * loadings[j-1]/ storage_volume; //reduce total load by extracted water
+				total_pollution.push_back(loadings[j-1]);
+			}
+
+			storage_volume= ds;
+			storage_level.push_back(ds);
+		}
         return dt;
 }
 
@@ -65,9 +77,10 @@ bool Polder::init(ptime start, ptime end, int dt) {
 		for (size_t i = 0; i < Qp.size(); i++) {
 			(*outputs[i]) = in;
 			(*outputs[i]).clear();
-			loadings.push_back(0);
-
 		}
+
+		for (size_t i = 1; i < in.size(); i++)
+			loadings.push_back(0);
 
 //		out_p ;
 //		out_p.clear();
