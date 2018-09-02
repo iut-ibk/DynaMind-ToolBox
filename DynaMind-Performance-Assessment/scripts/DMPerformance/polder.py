@@ -3,7 +3,7 @@
 
 import sys
 
-sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
+# sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
 
 import pycd3 as cd3
 from pydynamind import *
