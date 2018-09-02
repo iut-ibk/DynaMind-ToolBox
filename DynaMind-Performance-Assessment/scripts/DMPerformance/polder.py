@@ -41,9 +41,7 @@ class Polder(Module):
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
-        self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
-
-        self.reticulation.addAttribute("overflow", DM.Attribute.DOUBLE, DM.READ)
+        self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)    
 
         # view_register = [self.view_polder, self.timeseries]
         view_register = [
