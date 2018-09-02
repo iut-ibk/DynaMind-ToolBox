@@ -29,20 +29,33 @@ class Polder(Module):
         self.flow_probes = dict()
 
     def init(self):
-        # self.view_polder = ViewContainer("polder", DM.COMPONENT, DM.READ)
-        # self.view_polder.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
-
         self.timeseries = ViewContainer("timeseries", DM.COMPONENT, DM.READ)
         self.timeseries.addAttribute("data", DM.Attribute.DOUBLEVECTOR, DM.READ)
 
+        self.polder = ViewContainer("polder", DM.COMPONENT, DM.READ)
+        self.polder.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
+        self.polder.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
+        self.polder.addAttribute("storage_level", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+
+        self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
+        self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
+        self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
+
+        self.reticulation.addAttribute("overflow", DM.Attribute.DOUBLE, DM.READ)
+
         # view_register = [self.view_polder, self.timeseries]
-        view_register = [self.timeseries]
+        view_register = [
+            self.timeseries,
+            self.polder,
+            self.reticulation]
 
         self.registerViewContainers(view_register)
 
     def init_citydrain(self):
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
-        print flow
+        # print flow
         self.cd3 = cd3.CityDrain3(
             "2005-Jan-01 00:00:00",
             "2006-Jan-01 00:00:00",
@@ -56,29 +69,35 @@ class Polder(Module):
         self.cd3.register_native_plugin(
             self.getSimulationConfig().getDefaultLibraryPath() + "/CD3Modules/libdance4water-nodes")
 
-    def setup_catchment(self, rain_data):
+    def setup_catchment(self):
         # rain = self.cd3.add_node("IxxRainRead_v2")
         # rain.setStringParameter("rain_file", "/tmp/rainfall_clean.ixx")
 
-        rain = self.cd3.add_node("SourceVector")
-        rain.setDoubleVectorParameter("source", rain_data)
+        for p in self.polder:
 
-        catchment = self.cd3.add_node("ImperviousRunoff")
-        catchment.setDoubleParameter("area", 1000.)
-        catchment.setDoubleVectorParameter("loadings", [2.4])
+            self.timeseries.reset_reading()
+            self.timeseries.set_attribute_filter("type = 'rainfall intensity'")
+            for t in self.timeseries:
+                rain_data = dm_get_double_list(t, "data")
 
-        flow_probe = self.cd3.add_node("FlowProbe")
+            rain = self.cd3.add_node("SourceVector")
+            rain.setDoubleVectorParameter("source", rain_data)
 
-        self.cd3.add_connection(rain, "out", catchment, "rain_in")
-        self.cd3.add_connection(catchment, "out_sw", flow_probe, "in")
+            catchment = self.cd3.add_node("ImperviousRunoff")
+            print "imp", p.GetFieldAsDouble("area") * p.GetFieldAsDouble("impervious_fraction")
+            catchment.setDoubleParameter("area", p.GetFieldAsDouble("area") * p.GetFieldAsDouble("impervious_fraction"))
+            catchment.setDoubleVectorParameter("loadings", [2.4])
 
-        self.flow_probes["catchment"] = flow_probe
+            flow_probe = self.cd3.add_node("FlowProbe")
+
+            self.cd3.add_connection(rain, "out", catchment, "rain_in")
+            self.cd3.add_connection(catchment, "out_sw", flow_probe, "in")
+
+            self.flow_probes["catchment"] = flow_probe
 
         return [flow_probe, "out"]
 
-    def setup_polder(self, mixer):
-        pump_volumes = [2000., 100. / 86400., 100. / 86400.]
-        volumes = [1000., 100., 100.]
+    def setup_polder(self, mixer, pump_volumes, volumes):
         polder = self.cd3.add_node("Polder")
         polder.setDoubleVectorParameter("Qp", pump_volumes)
         polder.setDoubleVectorParameter("Vmin", volumes)
@@ -108,7 +127,7 @@ class Polder(Module):
 
         self.cd3.add_connection(n_start, "out", mixer[0], "in_" + str(id+1))
 
-        self.flow_probes["treatment_" + str(id+1)] = flow_probe_pump_1
+        self.flow_probes[id] = flow_probe_pump_1
 
         return n_start, n_end
 
@@ -124,94 +143,31 @@ class Polder(Module):
         self.cd3.add_connection(catchment[0], catchment[1], mixer[0], "in_0")
 
     def run(self):
-
-
-
-        self.timeseries.reset_reading()
-        # self.timeseries.set_attribute_filter("type = 'rainfall intensity' or type = 'evapotranspiration'")
-        self.timeseries.set_attribute_filter("type = 'rainfall intensity'")
-        for t in self.timeseries:
-            rain = dm_get_double_list(t, "data")
-            print rain
-
-
-
-
         self.init_citydrain()
-        c = self.setup_catchment(rain)
-        m = self.setup_mixer(3)
-        p = self.setup_polder(m)
+        c = self.setup_catchment()
+
+        pump_volumes = [2000.]
+        volumes = [1000.]
+
+        for r in self.reticulation:
+            pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
+            volumes.append(100)
+
+        m = self.setup_mixer(len(pump_volumes))
+        p = self.setup_polder(m, pump_volumes, volumes)
 
         self.cd3.init_nodes()
         self.connect_catchment(c, m)
 
         self.cd3.start("2005-Jan-01 00:00:00")
 
-        # print p.get_state_value_as_double("StorageVolume")
-        print p.get_state_value_as_double_vector("storage_level")
-        for probe in self.flow_probes.keys():
-            print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+        dm_set_double_list(p, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
+        dm_set_double_list(p, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
+        dm_set_double_list(p, "overflow", self.flow_probes[0].get_state_value_as_double_vector("Flow"))
 
+        # for probe in self.flow_probes.keys():
+        #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+
+        self.reticulation.finalise()
         self.timeseries.finalise()
-
-        # flow_probe = self.cd3.add_node("FlowProbe")
-        # flow_probe_pump = self.cd3.add_node("FlowProbe")
-        #
-        # flow_probe_pump_1 = self.cd3.add_node("FlowProbe")
-        # flow_probe_pump_1.setIntParameter("element", 1)
-        #
-        # flow_probe_pump_c = self.cd3.add_node("FlowProbe")
-        # # flow_probe_pump_c.setIntParameter("element", 1)
-
-
-if __name__ == "__main__":
-    polder = Polder()
-    polder.run()
-
-#
-# c.add_connection(rain, "out", catchment, "rain_in")
-# c.add_connection(catchment, "out_sw", flow_probe_pump_c, "in")
-#
-# c.add_connection(flow_probe_pump_c, "out", mixer, "in_0")
-# c.add_connection(n_start, "out", mixer, "in_1")
-#
-# c.add_connection(flow_probe_pump, "out", treatment, "in")
-#
-# c.add_connection(mixer, "out", flow_probe, "in")
-# c.add_connection(flow_probe, "out", polder, "in")
-#
-# c.add_connection(treatment, "out", n_end, "in")
-#
-# c.add_connection(polder, "out_0", flow_probe_pump, "in")
-# c.add_connection(polder, "out_1", flow_probe_pump_1, "in")
-#
-# # Execute Simulation
-#
-# c.start("2005-Jan-01 00:00:00")
-#
-# print flow_probe.get_state_value_as_double_vector("Flow")
-# print polder.get_state_value_as_double("StorageVolume")
-#
-# print "flow_0", flow_probe_pump.get_state_value_as_double_vector("Flow")
-# print "flow_1", flow_probe_pump_1.get_state_value_as_double_vector("Flow")
-# print "flow_c", flow_probe_pump_c.get_state_value_as_double_vector("Flow")
-#
-# print "total_load", polder.get_state_value_as_double_vector("total_pollution")
-#
-# # %%
-# x = []
-# for idx in enumerate(polder.get_state_value_as_double_vector("total_pollution")):
-#     x.append(idx[0])
-# x1 = []
-# for idx in enumerate(flow_probe_pump_1.get_state_value_as_double_vector("Flow")):
-#     x1.append(idx[0])
-#
-# # plt.plot(x, flow_probe_pump_1.get_state_value_as_double_vector("Flow"))
-# plt.subplot(311)
-# plt.plot(x, polder.get_state_value_as_double_vector("storage_level"))
-# plt.subplot(312)
-# plt.plot(x, polder.get_state_value_as_double_vector("total_pollution"))
-# plt.subplot(313)
-# plt.plot(x1, flow_probe_pump_1.get_state_value_as_double_vector("Flow"))
-# plt.show()
-#
+        self.polder.finalise()
