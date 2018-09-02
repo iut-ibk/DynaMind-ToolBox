@@ -41,7 +41,7 @@ class Polder(Module):
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
-        self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)    
+        self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
 
         # view_register = [self.view_polder, self.timeseries]
         view_register = [
@@ -67,31 +67,29 @@ class Polder(Module):
         self.cd3.register_native_plugin(
             self.getSimulationConfig().getDefaultLibraryPath() + "/CD3Modules/libdance4water-nodes")
 
-    def setup_catchment(self):
+    def setup_catchment(self, polder):
         # rain = self.cd3.add_node("IxxRainRead_v2")
         # rain.setStringParameter("rain_file", "/tmp/rainfall_clean.ixx")
 
-        for p in self.polder:
+        self.timeseries.reset_reading()
+        self.timeseries.set_attribute_filter("type = 'rainfall intensity'")
+        for t in self.timeseries:
+            rain_data = dm_get_double_list(t, "data")
 
-            self.timeseries.reset_reading()
-            self.timeseries.set_attribute_filter("type = 'rainfall intensity'")
-            for t in self.timeseries:
-                rain_data = dm_get_double_list(t, "data")
+        rain = self.cd3.add_node("SourceVector")
+        rain.setDoubleVectorParameter("source", rain_data)
 
-            rain = self.cd3.add_node("SourceVector")
-            rain.setDoubleVectorParameter("source", rain_data)
+        catchment = self.cd3.add_node("ImperviousRunoff")
+        # print "imp", p.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction")
+        catchment.setDoubleParameter("area", polder.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction"))
+        catchment.setDoubleVectorParameter("loadings", [2.4])
 
-            catchment = self.cd3.add_node("ImperviousRunoff")
-            print "imp", p.GetFieldAsDouble("area") * p.GetFieldAsDouble("impervious_fraction")
-            catchment.setDoubleParameter("area", p.GetFieldAsDouble("area") * p.GetFieldAsDouble("impervious_fraction"))
-            catchment.setDoubleVectorParameter("loadings", [2.4])
+        flow_probe = self.cd3.add_node("FlowProbe")
 
-            flow_probe = self.cd3.add_node("FlowProbe")
+        self.cd3.add_connection(rain, "out", catchment, "rain_in")
+        self.cd3.add_connection(catchment, "out_sw", flow_probe, "in")
 
-            self.cd3.add_connection(rain, "out", catchment, "rain_in")
-            self.cd3.add_connection(catchment, "out_sw", flow_probe, "in")
-
-            self.flow_probes["catchment"] = flow_probe
+        self.flow_probes["catchment"] = flow_probe
 
         return [flow_probe, "out"]
 
@@ -102,6 +100,10 @@ class Polder(Module):
         self.cd3.init_nodes()
 
         self.cd3.add_connection(mixer[0], "out", polder, "in")
+
+        flow_probe_pump_1 = self.cd3.add_node("FlowProbe")
+        self.cd3.add_connection(polder, "out_" + str(0), flow_probe_pump_1, "in")
+        self.flow_probes["0"] = flow_probe_pump_1
 
         for i in range(len(pump_volumes)-1):
             self.add_loop(i, polder, mixer)
@@ -125,7 +127,7 @@ class Polder(Module):
 
         self.cd3.add_connection(n_start, "out", mixer[0], "in_" + str(id+1))
 
-        self.flow_probes[id] = flow_probe_pump_1
+        self.flow_probes[str(id)] = flow_probe_pump_1
 
         return n_start, n_end
 
@@ -141,8 +143,7 @@ class Polder(Module):
         self.cd3.add_connection(catchment[0], catchment[1], mixer[0], "in_0")
 
     def run(self):
-        self.init_citydrain()
-        c = self.setup_catchment()
+
 
         pump_volumes = [2000.]
         volumes = [1000.]
@@ -151,17 +152,21 @@ class Polder(Module):
             pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
             volumes.append(100)
 
-        m = self.setup_mixer(len(pump_volumes))
-        p = self.setup_polder(m, pump_volumes, volumes)
+        for polder in self.polder:
+            self.init_citydrain()
+            c = self.setup_catchment(polder)
 
-        self.cd3.init_nodes()
-        self.connect_catchment(c, m)
+            m = self.setup_mixer(len(pump_volumes))
+            p = self.setup_polder(m, pump_volumes, volumes)
 
-        self.cd3.start("2005-Jan-01 00:00:00")
+            self.cd3.init_nodes()
+            self.connect_catchment(c, m)
 
-        dm_set_double_list(p, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
-        dm_set_double_list(p, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
-        dm_set_double_list(p, "overflow", self.flow_probes[0].get_state_value_as_double_vector("Flow"))
+            self.cd3.start("2005-Jan-01 00:00:00")
+
+            dm_set_double_list(polder, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
+            dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
+            dm_set_double_list(polder, "overflow", self.flow_probes["0"].get_state_value_as_double_vector("Flow"))
 
         # for probe in self.flow_probes.keys():
         #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
