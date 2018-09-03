@@ -199,7 +199,7 @@ class Polder(Module):
 
             dm_set_double_list(polder, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
             dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
-            dm_set_double_list(polder, "overflow", self.flow_probes["0"].get_state_value_as_double_vector("Flow"))
+            dm_set_double_list(polder, "overflow", self.flow_probes["overflow"].get_state_value_as_double_vector("Flow"))
             dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
