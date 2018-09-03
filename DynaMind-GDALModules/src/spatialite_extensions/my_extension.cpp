@@ -21,6 +21,13 @@ void my_extension::addition_vector(const std::vector<double> & vec1, const std::
 	}
 }
 
+void my_extension::vector_multiply(const std::vector<double> & vec1, const std::vector<double> & vec2, std::vector<double> & ress) {
+
+	for (int i = 0; i < vec1.size(); i++) {
+		ress[i] = vec1[i] * vec2[i];
+	}
+}
+
 void my_extension::vector_addition(std::vector<double> & dvec, const std::vector<double> vec) {
 	for (int i = 0; i < dvec.size(); i++) {
 		dvec[i] = dvec[i]+vec[i];
