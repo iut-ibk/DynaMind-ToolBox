@@ -11,6 +11,7 @@ public:
 
     bool init(ptime start, ptime end, int dt);
     int f(ptime time, int dt);
+	std::vector<double> treated;
 
 private:
     double removal_fraction;

@@ -44,6 +44,7 @@ class Polder(Module):
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
         self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
+        self.reticulation.addAttribute("removed_pollution", DM.Attribute.DOUBLE, DM.WRITE)
 
 
         self.pump = ViewContainer("polder_pump", DM.COMPONENT, DM.READ)
@@ -58,6 +59,7 @@ class Polder(Module):
             self.pump]
 
         self.registerViewContainers(view_register)
+        self.treatments = []
 
     def init_citydrain(self):
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
@@ -118,7 +120,7 @@ class Polder(Module):
 
         flow_probe_pump_1 = self.cd3.add_node("FlowProbe")
         self.cd3.add_connection(polder, "out_" + str(0), flow_probe_pump_1, "in")
-        self.flow_probes["0"] = flow_probe_pump_1
+        self.flow_probes["overflow"] = flow_probe_pump_1
 
         for i in range(len(pump_volumes)-1):
             self.add_loop(i, polder, mixer)
@@ -129,6 +131,7 @@ class Polder(Module):
         # print id, mixer
         treatment = self.cd3.add_node("SimpleTreatment")
         treatment.setDoubleParameter("removal_fraction", 0.25)
+        self.treatments.append(treatment)
 
         n_start = self.cd3.add_node("CycleNodeStart")
 
@@ -170,12 +173,17 @@ class Polder(Module):
         pump_volumes = [sum_pumping_rate]
         volumes = [trigger_volume]
 
+        reticulations = []
         for r in self.reticulation:
             pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
-            volumes.append(100)
+            # pump_volumes.append(10)
+            # volumes.append(100)
+            reticulations.append(r)
 
-        print pump_volumes
-        print volumes
+        #
+        # print pump_volumes
+        # print volumes
+        # print reticulations
 
         for polder in self.polder:
             self.init_citydrain()
@@ -195,11 +203,17 @@ class Polder(Module):
             dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
+
+            for idx, r in enumerate(reticulations):
+                # print "treated", self.treatments[idx].get_state_value_as_double_vector("treated")
+                r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])
+
             #
             # print "storage", p.get_state_value_as_double_vector("storage_level")
             # print "total_pollution", p.get_state_value_as_double_vector("storage_level")
-            for probe in self.flow_probes.keys():
-                print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+            # print "overflow", self.flow_probes["overflow"].get_state_value_as_double_vector("Flow")
+            # for probe in self.flow_probes.keys():
+            #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
 
         self.reticulation.finalise()
         self.timeseries.finalise()
