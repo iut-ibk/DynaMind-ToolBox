@@ -3,7 +3,7 @@
 
 import sys
 
-# sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
+sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
 
 import pycd3 as cd3
 from pydynamind import *
@@ -43,11 +43,17 @@ class Polder(Module):
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
         self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
 
+
+        self.pump = ViewContainer("polder_pump", DM.COMPONENT, DM.READ)
+        self.pump.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
+        self.pump.addAttribute("trigger_volume", DM.Attribute.DOUBLE, DM.READ)
+
         # view_register = [self.view_polder, self.timeseries]
         view_register = [
             self.timeseries,
             self.polder,
-            self.reticulation]
+            self.reticulation,
+            self.pump]
 
         self.registerViewContainers(view_register)
 
@@ -143,10 +149,17 @@ class Polder(Module):
         self.cd3.add_connection(catchment[0], catchment[1], mixer[0], "in_0")
 
     def run(self):
+        # Calculate pump volumes
+        sum_pumping_rate = 0
+        trigger_volume = 0
+        for p in self.pump:
+            # This is the sum
+            sum_pumping_rate+=p.GetFieldAsDouble("pumping_rate")
+            # This should only be the lowest volume
+            trigger_volume = p.GetFieldAsDouble("trigger_volume")
 
-
-        pump_volumes = [2000.]
-        volumes = [1000.]
+        pump_volumes = [sum_pumping_rate]
+        volumes = [trigger_volume]
 
         for r in self.reticulation:
             pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
@@ -174,3 +187,4 @@ class Polder(Module):
         self.reticulation.finalise()
         self.timeseries.finalise()
         self.polder.finalise()
+        self.pump.finalise()
