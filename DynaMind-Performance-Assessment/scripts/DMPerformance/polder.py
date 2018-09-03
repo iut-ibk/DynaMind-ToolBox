@@ -3,7 +3,7 @@
 
 import sys
 
-sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
+# sys.path.insert(0, "/Users/christianurich/Documents/Dynamind-ToolBox/build/release/output/")
 
 import pycd3 as cd3
 from pydynamind import *
@@ -38,6 +38,7 @@ class Polder(Module):
         self.polder.addAttribute("storage_level", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
@@ -180,9 +181,12 @@ class Polder(Module):
             dm_set_double_list(polder, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
             dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
             dm_set_double_list(polder, "overflow", self.flow_probes["0"].get_state_value_as_double_vector("Flow"))
+            dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
 
-        # for probe in self.flow_probes.keys():
-        #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+            # print "storage", p.get_state_value_as_double_vector("storage_level")
+            # print "total_pollution", p.get_state_value_as_double_vector("storage_level")
+            # for probe in self.flow_probes.keys():
+            #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
 
         self.reticulation.finalise()
         self.timeseries.finalise()

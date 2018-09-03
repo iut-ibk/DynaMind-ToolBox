@@ -20,7 +20,9 @@ Polder::Polder()
 
 int Polder::f(ptime time, int dt) {
         (void) time;
+		std::cout << storage_volume << " "  << in[0] << std::endl;
 		storage_volume += in[0];
+
 
 		// Add inflow loading to total load
 		for (size_t i = 1; i < in.size(); i++) {
@@ -46,12 +48,14 @@ int Polder::f(ptime time, int dt) {
 				//std::cout << (storage_volume - ds) << std::endl;
 
 				loadings[j-1] -= (storage_volume - ds) * loadings[j-1]/ storage_volume; //reduce total load by extracted water
-				total_pollution.push_back(loadings[j-1]);
+
 			}
 
 			storage_volume= ds;
-			storage_level.push_back(ds);
+
 		}
+		storage_level.push_back(storage_volume);
+		total_pollution.push_back(loadings[0]);
         return dt;
 }
 
