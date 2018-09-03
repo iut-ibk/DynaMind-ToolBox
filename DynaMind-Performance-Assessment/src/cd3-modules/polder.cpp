@@ -20,7 +20,7 @@ Polder::Polder()
 
 int Polder::f(ptime time, int dt) {
         (void) time;
-		std::cout << storage_volume << " "  << in[0] << std::endl;
+		//std::cout << storage_volume << " "  << in[0] << std::endl;
 		storage_volume += in[0];
 
 
