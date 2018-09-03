@@ -22,7 +22,7 @@ int SimpleTreatment::f(ptime time, int dt) {
 
 	for (size_t i = 1; i < out.size(); i++){
 		out[i] = in[i] * (1.-removal_fraction);
-		treated[i-1] += out[i] * in[0];
+		treated[i-1] += removal_fraction * in[i] * in[0];
 	}
 	return dt;
 }
