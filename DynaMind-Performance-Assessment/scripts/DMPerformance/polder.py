@@ -39,6 +39,7 @@ class Polder(Module):
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("run_off_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
@@ -91,14 +92,21 @@ class Polder(Module):
         catchment.setDoubleParameter("area", polder.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction"))
         catchment.setDoubleVectorParameter("loadings", [2.4])
 
+        # Measure Catchment Runoff
         flow_probe = self.cd3.add_node("FlowProbe")
+
+        flow_probe_n = self.cd3.add_node("FlowProbe")
+        flow_probe_n.setIntParameter("element", 1)
 
         self.cd3.add_connection(rain, "out", catchment, "rain_in")
         self.cd3.add_connection(catchment, "out_sw", flow_probe, "in")
 
-        self.flow_probes["catchment"] = flow_probe
+        self.cd3.add_connection(flow_probe, "out", flow_probe_n, "in")
 
-        return [flow_probe, "out"]
+        self.flow_probes["catchment"] = flow_probe
+        self.flow_probes["catchment_n"] = flow_probe_n
+
+        return [flow_probe_n, "out"]
 
     def setup_polder(self, mixer, pump_volumes, volumes):
         polder = self.cd3.add_node("Polder")
@@ -166,6 +174,9 @@ class Polder(Module):
             pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
             volumes.append(100)
 
+        print pump_volumes
+        print volumes
+
         for polder in self.polder:
             self.init_citydrain()
             c = self.setup_catchment(polder)
@@ -182,11 +193,13 @@ class Polder(Module):
             dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
             dm_set_double_list(polder, "overflow", self.flow_probes["0"].get_state_value_as_double_vector("Flow"))
             dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
-
+            dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
+                               .get_state_value_as_double_vector("Flow"))
+            #
             # print "storage", p.get_state_value_as_double_vector("storage_level")
             # print "total_pollution", p.get_state_value_as_double_vector("storage_level")
-            # for probe in self.flow_probes.keys():
-            #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+            for probe in self.flow_probes.keys():
+                print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
 
         self.reticulation.finalise()
         self.timeseries.finalise()
