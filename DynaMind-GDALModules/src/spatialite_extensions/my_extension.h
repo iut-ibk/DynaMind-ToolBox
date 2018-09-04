@@ -14,6 +14,7 @@ public:
 
 	static void vector_addition(std::vector<double> &dvec, const std::vector<double> vec);
 	static void addition_vector(const std::vector<double> & vec1, const std::vector<double> & vec2, std::vector<double> & ress);
+	static void vector_multiply(const std::vector<double> & vec1, const std::vector<double> & vec2, std::vector<double> & ress);
     static std::string dm_vector_to_string(const std::vector<double> &data);
     static void print_vector(const std::vector<double> &data);
 };

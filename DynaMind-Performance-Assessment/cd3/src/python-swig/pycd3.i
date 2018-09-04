@@ -428,7 +428,7 @@ protected:
 	%template(setDoubleVectorParameter)	setParameter<std::vector<double> >;
 	%template(setStringVectorParameter)	setParameter<std::vector<std::string> >;
 	%template(setParameter)	setParameter<Flow>;
-    %template(setNodeParameter)	setParameter<Node*>;
+	%template(setNodeParameter)	setParameter<Node*>;
 
 	%template(getIntParameter)			getParameter<int>;
 	%template(getDoubleParameter)		getParameter<double>;
@@ -734,7 +734,7 @@ class CityDrain3:
 	CityDrain3 simulation interface
 	"""
 
-	def __init__(self, start_time="", end_time="", delta_t=""):
+	def __init__(self, start_time="", end_time="", delta_t="", flows = {'Q': pycd3.Flow.flow}):
 		"""
 		Init simulation setting start, end time as well as delta T is optional, however,
 		required to run simulation
@@ -762,7 +762,8 @@ class CityDrain3:
 
 		self.sim_parameter = None
 		self.flow = pycd3.FlowMap()
-		self.flow["Q"] = pycd3.Flow.flow
+		for k in flows.keys():
+			self.flow[k] = flows[k]
 		pycd3.Flow.define(self.flow)
 
 		if start_time and end_time and delta_t:
@@ -806,6 +807,16 @@ class CityDrain3:
 				val = n.setParameter(k, val)
 			if type(val) is int:
 				val = n.setIntParameter(k, val)
+
+	def init_nodes(self):
+		  """
+		  Init all nodes
+
+		  :return: None
+		  """
+
+		  # init nodes with start and date time
+		  self.model.initNodes(self.sim_parameter)
 
 
 	def start(self, start_time):

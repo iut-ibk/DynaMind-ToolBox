@@ -12,6 +12,17 @@ Overview
    citydrain3
 
 
+
+CD3 default Modules
+-------------------
+
+.. toctree::
+   :titlesonly:
+
+   node_ixxrainread_v2
+   node_imperviousrunoff
+
+
 Nodes
 -----
 
@@ -23,6 +34,8 @@ Nodes
    node_flowprobe
    node_rwht
    node_consumption
+   node_sourcevector
+   node_polder
 
 
 CityDrain3 API

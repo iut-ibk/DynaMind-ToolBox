@@ -7,6 +7,7 @@ from osgeo import ogr, gdal
 import tempfile
 %}
 
+
 //%feature("autodoc", "3");
 %feature("director");
 %{
@@ -222,6 +223,14 @@ public:
 	void setStatus(DM::ModuleStatus status);
 	int getGroupCounter();
 
+	%feature("autodoc", "getSimulationConfig()
+
+	Returns simulation config
+
+	:return: Simulation config
+	:rtype: SimulationConfig
+
+	") getSimulationConfig;
 	DM::SimulationConfig getSimulationConfig();
 
 

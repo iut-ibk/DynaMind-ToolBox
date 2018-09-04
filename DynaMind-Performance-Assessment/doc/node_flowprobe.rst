@@ -5,6 +5,17 @@ Flow Probe
 :index:`Sewer <CD3Node; FlowProbe | Measure Flow>` measurers the flow as state variable.
 The node can be insert between two nodes to measure the flow without effecting the simulation.
 
+
+Parameter
+---------
+
++-----------------------+------------------------+------------------------------------------------------------------------+
+|        Name           |          Type          |       Description                                                      |
++=======================+========================+========================================================================+
+| element               | int                    | index of position in flow vector to record  default = 0                |
++-----------------------+------------------------+------------------------------------------------------------------------+
+
+
 State Variable
 --------------
 
