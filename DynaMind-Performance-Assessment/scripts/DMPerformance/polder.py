@@ -7,14 +7,6 @@ import sys
 
 import pycd3 as cd3
 from pydynamind import *
-# import matplotlib.pyplot as plt
-#
-# plt.style.use('ggplot')
-
-
-#
-
-# %%
 
 class Polder(Module):
 
@@ -39,7 +31,9 @@ class Polder(Module):
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("provided_water", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
@@ -48,6 +42,7 @@ class Polder(Module):
 
 
         self.pump = ViewContainer("polder_pump", DM.COMPONENT, DM.READ)
+        self.pump.addAttribute("type", DM.Attribute.STRING, DM.READ)
         self.pump.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
         self.pump.addAttribute("trigger_volume", DM.Attribute.DOUBLE, DM.READ)
 
@@ -110,24 +105,41 @@ class Polder(Module):
 
         return [flow_probe_n, "out"]
 
-    def setup_polder(self, mixer, pump_volumes, volumes):
+    def setup_polder(self, mixer, pump_volumes):
         polder = self.cd3.add_node("Polder")
-        polder.setDoubleVectorParameter("Qp", pump_volumes)
-        polder.setDoubleVectorParameter("Vmin", volumes)
+
+        pv = []
+        for p in pump_volumes:
+            pv.append(p[0])
+
+        vv = []
+        for p in pump_volumes:
+            vv.append(p[1])
+
+        print pv
+        print vv
+
+        polder.setDoubleVectorParameter("Qp", pv)
+        polder.setDoubleVectorParameter("Vmin", vv)
         self.cd3.init_nodes()
 
         self.cd3.add_connection(mixer[0], "out", polder, "in")
 
-        flow_probe_pump_1 = self.cd3.add_node("FlowProbe")
-        self.cd3.add_connection(polder, "out_" + str(0), flow_probe_pump_1, "in")
-        self.flow_probes["overflow"] = flow_probe_pump_1
+        mixer_port_id = 0
+        for i in range(len(pump_volumes)):
+            if not pump_volumes[i][2]:
+                # Add pump to overflow
+                flow_probe_pump = self.cd3.add_node("FlowProbe")
+                self.cd3.add_connection(polder, "out_" + str(i), flow_probe_pump, "in")
+                self.flow_probes[str(i)] = flow_probe_pump
 
-        for i in range(len(pump_volumes)-1):
-            self.add_loop(i, polder, mixer)
+                continue
+            mixer_port_id += 1
+            self.add_loop(i, polder, mixer, mixer_port_id)
 
         return polder
 
-    def add_loop(self, id, polder, mixer):
+    def add_loop(self, id, polder, mixer, mixer_port_id):
         # print id, mixer
         treatment = self.cd3.add_node("SimpleTreatment")
         treatment.setDoubleParameter("removal_fraction", 0.25)
@@ -139,18 +151,23 @@ class Polder(Module):
         n_end.setNodeParameter("start", n_start)
 
         flow_probe_pump_1 = self.cd3.add_node("FlowProbe")
-        self.cd3.add_connection(polder, "out_" + str(id+1), treatment, "in")
+        self.cd3.add_connection(polder, "out_" + str(id), treatment, "in")
         self.cd3.add_connection(treatment, "out", flow_probe_pump_1, "in")
         self.cd3.add_connection(flow_probe_pump_1, "out", n_end, "in")
 
-        self.cd3.add_connection(n_start, "out", mixer[0], "in_" + str(id+1))
+        self.cd3.add_connection(n_start, "out", mixer[0], "in_" + str(mixer_port_id))
 
         self.flow_probes[str(id)] = flow_probe_pump_1
 
         return n_start, n_end
 
-    def setup_mixer(self, ports):
+    def setup_mixer(self, pump_volumes):
         mixer = self.cd3.add_node("Mixer")
+        ports = 1
+        for p in pump_volumes:
+            if p[2]:
+                ports += 1
+        print "number of ports ", ports
 
         # Number of inputs depends on number of connected pumps
         mixer.setIntParameter("num_inputs", ports)
@@ -162,35 +179,21 @@ class Polder(Module):
 
     def run(self):
         # Calculate pump volumes
-        sum_pumping_rate = 0
-        trigger_volume = 0
+        pump_volumes = []
         for p in self.pump:
-            # This is the sum
-            sum_pumping_rate+=p.GetFieldAsDouble("pumping_rate")
-            # This should only be the lowest volume
-            trigger_volume = p.GetFieldAsDouble("trigger_volume")
+            pump_volumes.append([p.GetFieldAsDouble("pumping_rate"),  p.GetFieldAsDouble("trigger_volume"), False, p])
 
-        pump_volumes = [sum_pumping_rate]
-        volumes = [trigger_volume]
-
+        # Init pumps
         reticulations = []
         for r in self.reticulation:
-            pump_volumes.append(r.GetFieldAsDouble("pumping_rate"))
-            # pump_volumes.append(10)
-            # volumes.append(100)
-            reticulations.append(r)
-
-        #
-        # print pump_volumes
-        # print volumes
-        # print reticulations
+            pump_volumes.append([r.GetFieldAsDouble("pumping_rate"), 100, True, r])
 
         for polder in self.polder:
             self.init_citydrain()
             c = self.setup_catchment(polder)
 
-            m = self.setup_mixer(len(pump_volumes))
-            p = self.setup_polder(m, pump_volumes, volumes)
+            m = self.setup_mixer(pump_volumes)
+            p = self.setup_polder(m, pump_volumes)
 
             self.cd3.init_nodes()
             self.connect_catchment(c, m)
@@ -199,8 +202,30 @@ class Polder(Module):
 
             dm_set_double_list(polder, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
             dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
-            dm_set_double_list(polder, "overflow", self.flow_probes["overflow"].get_state_value_as_double_vector("Flow"))
             dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
+
+            #Calculate Overflow
+            overflow = []
+            water_supply = []
+
+            for idx, p in enumerate(pump_volumes):
+                if p[2]:
+                    continue
+                type = p[3].GetFieldAsString("type")
+                if type == "overflow":
+                    data_array = overflow
+                else:
+                    data_array = water_supply
+                o = self.flow_probes[str(idx)].get_state_value_as_double_vector("Flow")
+                if len(data_array) == 0:
+                    for i in o:
+                        data_array.append(i)
+                else:
+                    for i in o:
+                        data_array[i] = data_array[i] + o
+
+            dm_set_double_list(polder, "overflow", overflow)
+            dm_set_double_list(polder, "provided_water", water_supply)
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
 
@@ -211,7 +236,7 @@ class Polder(Module):
             #
             # print "storage", p.get_state_value_as_double_vector("storage_level")
             # print "total_pollution", p.get_state_value_as_double_vector("storage_level")
-            # print "overflow", self.flow_probes["overflow"].get_state_value_as_double_vector("Flow")
+            # print "overflow", overflow
             # for probe in self.flow_probes.keys():
             #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
 
