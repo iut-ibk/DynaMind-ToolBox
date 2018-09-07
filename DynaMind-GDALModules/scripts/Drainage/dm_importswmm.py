@@ -123,10 +123,13 @@ class DM_ImportSWMM(Module):
         self.conduits.addAttribute("diameter", Attribute.DOUBLE, WRITE)
         self.conduits.addAttribute("width", Attribute.DOUBLE, WRITE)
         self.conduits.addAttribute("type", Attribute.STRING, WRITE)
+        self.conduits.addAttribute("cscol1", Attribute.DOUBLEVECTOR, WRITE)
+        self.conduits.addAttribute("cscol2", Attribute.DOUBLEVECTOR, WRITE)
+        self.conduits.addAttribute("cscol3", Attribute.DOUBLEVECTOR, WRITE)
 
         self.junctions = ViewContainer("junction", NODE, WRITE)
         self.junctions.addAttribute("node_id", Attribute.INT, WRITE)
-        self.junctions.addAttribute("swmm_id", Attribute.INT, WRITE)
+        self.junctions.addAttribute("swmm_id", Attribute.STRING, WRITE)
 
         self.junctions.addAttribute("d", Attribute.DOUBLE, WRITE)
         self.junctions.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
@@ -181,6 +184,9 @@ class DM_ImportSWMM(Module):
         results = {}
         f = open(self.real_file_name)
         currentContainer = ""
+        # this is needed to load transects properly
+        gr = []
+        transect_id = None
         for line in f:
             # print line
             line = line.strip()
@@ -196,6 +202,32 @@ class DM_ImportSWMM(Module):
             # First Section is always the Name
             content = line.split()
             container = []
+
+            if currentContainer == "[TRANSECTS]":
+                # print content
+                if content[0] == "X1":
+
+                    if transect_id:
+                        ress = results[currentContainer]
+                        ress[transect_id] = [gr[0:][::2], gr[1:][::2]]
+                        results[currentContainer] = ress
+                    gr = []
+                    transect_id = content[1]
+                    continue
+
+                if content[0] == "GR":
+                    for c in content[1:]:
+                        gr.append(float(c))
+                continue
+            else:
+                if transect_id:
+                    print "write me", transect_id
+                    ress = results["[TRANSECTS]"]
+                    ress[transect_id] = [gr[0:][::2], gr[1:][::2]]
+                    results["[TRANSECTS]"] = ress
+                    gr = []
+                    transect_id = None
+
             counter = 0
             if len(content) < 2:
                 continue
@@ -365,9 +397,19 @@ class DM_ImportSWMM(Module):
             # log(str(vals), DM.Standard)
             # e.addAttribute("built_year", self.defaultBuiltYear)
             if c in xsections:
-                conduit.SetField("diameter", float(xsections[c][1]))
-                conduit.SetField("width", float(xsections[c][2]))
-                conduit.SetField("type", str(xsections[c][0]))
+                section_type = str(xsections[c][0])
+                conduit.SetField("type", section_type)
+                if section_type == "IRREGULAR":
+                    # print results["[TRANSECTS]"][xsections[c][1]]
+                    # print results["[TRANSECTS]"][xsections[c][1]][0]
+                    # print results["[TRANSECTS]"][xsections[c][1]][1]
+                    dm_set_double_list(conduit, "cscol1", results["[TRANSECTS]"][xsections[c][1]][0])
+                    dm_set_double_list(conduit, "cscol2", results["[TRANSECTS]"][xsections[c][1]][1])
+                    # self.conduits.addAttribute("cscol1", Attribute.DOUBLEVECTOR, WRITE)
+                    # self.conduits.addAttribute("cscol2", Attribute.DOUBLEVECTOR, WRITE)
+                else:
+                    conduit.SetField("diameter", float(xsections[c][1]))
+                    conduit.SetField("width", float(xsections[c][2]))
 
                 # xsection = self.createXSection(sewer, xsections[c])
                 # e.getAttribute("XSECTION").addLink(xsection, "XSECTION")
