@@ -145,6 +145,10 @@ class DM_ImportSWMM(Module):
         self.weirs.addAttribute("crest_height", Attribute.DOUBLE, WRITE)
         self.weirs.addAttribute("discharge_coefficient", Attribute.DOUBLE, WRITE)
         self.weirs.addAttribute("end_coefficient", Attribute.DOUBLE, WRITE)
+        self.weirs.addAttribute("diameter", Attribute.DOUBLE, WRITE)
+        self.weirs.addAttribute("width", Attribute.DOUBLE, WRITE)
+        self.weirs.addAttribute("type", Attribute.STRING, WRITE)
+
         self.outfall = ViewContainer("outfall", NODE, WRITE)
         self.outfall.addAttribute("node_id", Attribute.INT, WRITE)
         self.outfall.addAttribute("invert_elevation", Attribute.DOUBLE, WRITE)
@@ -221,7 +225,6 @@ class DM_ImportSWMM(Module):
                 continue
             else:
                 if transect_id:
-                    print "write me", transect_id
                     ress = results["[TRANSECTS]"]
                     ress[transect_id] = [gr[0:][::2], gr[1:][::2]]
                     results["[TRANSECTS]"] = ress
@@ -237,6 +240,8 @@ class DM_ImportSWMM(Module):
                     continue
                 container.append(c)
             ress = results[currentContainer]
+            if "WEIR" in content[0]:
+                print content[0], currentContainer
             ress[content[0]] = container
             results[currentContainer] = ress
         f.close()
@@ -371,6 +376,8 @@ class DM_ImportSWMM(Module):
 
         ress = results["[CONDUITS]"]
         counter = 0
+        c_weirs = results["[WEIRS]"]
+        print c_weirs
         for c in ress:
             counter += 1
             vals = ress[c]
@@ -393,7 +400,7 @@ class DM_ImportSWMM(Module):
             conduit.SetField("end_id", nodes[vals[1]][0])
             conduit.SetField("inlet_offset", float(vals[4]))
             conduit.SetField("outlet_offset", float(vals[5]))
-
+            # print c
             # log(str(vals), DM.Standard)
             # e.addAttribute("built_year", self.defaultBuiltYear)
             if c in xsections:
@@ -403,13 +410,15 @@ class DM_ImportSWMM(Module):
                     # print results["[TRANSECTS]"][xsections[c][1]]
                     # print results["[TRANSECTS]"][xsections[c][1]][0]
                     # print results["[TRANSECTS]"][xsections[c][1]][1]
-                    dm_set_double_list(conduit, "cscol1", results["[TRANSECTS]"][xsections[c][1]][0])
-                    dm_set_double_list(conduit, "cscol2", results["[TRANSECTS]"][xsections[c][1]][1])
+                    dm_set_double_list(conduit, "cscol2", results["[TRANSECTS]"][xsections[c][1]][0])
+                    dm_set_double_list(conduit, "cscol1", results["[TRANSECTS]"][xsections[c][1]][1])
                     # self.conduits.addAttribute("cscol1", Attribute.DOUBLEVECTOR, WRITE)
                     # self.conduits.addAttribute("cscol2", Attribute.DOUBLEVECTOR, WRITE)
                 else:
                     conduit.SetField("diameter", float(xsections[c][1]))
                     conduit.SetField("width", float(xsections[c][2]))
+
+
 
                 # xsection = self.createXSection(sewer, xsections[c])
                 # e.getAttribute("XSECTION").addLink(xsection, "XSECTION")
@@ -436,6 +445,10 @@ class DM_ImportSWMM(Module):
                 weir.SetGeometry(line)
 
                 # Create XSection
+
+                weir.SetField("diameter", float(xsections[c][1]))
+                weir.SetField("width", float(xsections[c][2]))
+                weir.SetField("type", str(xsections[c][0]))
                 weir.SetField("start_id", nodes[vals[0]][0])
                 weir.SetField("end_id", nodes[vals[1]][0])
         self.weirs.finalise()
@@ -499,6 +512,9 @@ class DM_ImportSWMM(Module):
         # except Exception, e:
         #     print e
         #     print sys.exc_info()
+
+            # dm_set_double_list(conduit, )
+
 
 
         # def createXSection(self, sewer, attributes):
