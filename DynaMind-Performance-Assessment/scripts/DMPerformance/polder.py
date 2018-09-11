@@ -187,6 +187,7 @@ class Polder(Module):
         reticulations = []
         for r in self.reticulation:
             pump_volumes.append([r.GetFieldAsDouble("pumping_rate"), 100, True, r])
+            reticulations.append(r)
 
         for polder in self.polder:
             self.init_citydrain()
