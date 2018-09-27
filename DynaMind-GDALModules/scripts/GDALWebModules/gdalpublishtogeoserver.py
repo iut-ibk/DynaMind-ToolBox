@@ -150,7 +150,12 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             else:
                 name_on_server += self.postGisTable
 
-            self.geoHelper.publishPostGISLayer(name_on_server, self.geoserverDataStoreName, self.EPSG)
+            feature_type = self.geoHelper.publishPostGISLayer(name_on_server, self.geoserverDataStoreName, self.EPSG)
+
+            if not feature_type:
+                log("Error uploading data", Error)
+            else:
+                log("Successfully published data " + str(feature_type), Standard)
 
         except FailedRequestError as e:
             log(str(e),Error)

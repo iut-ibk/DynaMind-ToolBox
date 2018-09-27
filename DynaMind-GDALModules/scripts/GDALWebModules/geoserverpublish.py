@@ -82,7 +82,8 @@ class GeoserverHelper:
 
         store = self.catalog.get_store(storeName)
         if store != None:
-            self.catalog.publish_featuretype(postGISLayerName, store, crs)
+            return self.catalog.publish_featuretype(postGISLayerName, store, crs)
+        return None
 
     def setDefaultStyleForLayer(self, layerName, styleName):
         l = self.catalog.get_layer(layerName)
