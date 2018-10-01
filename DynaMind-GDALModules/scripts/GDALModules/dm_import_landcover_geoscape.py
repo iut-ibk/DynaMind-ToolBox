@@ -18,7 +18,7 @@ class DM_ImportLandCoverGeoscape(Module):
     def __init__(self):
         Module.__init__(self)
         self.setIsGDALModule(True)
-        self.createParameter("Import Landcover Geoscape", STRING)
+        self.createParameter("view_name", STRING)
         self.view_name = "node"
 
         self.createParameter("raster_file", STRING)
