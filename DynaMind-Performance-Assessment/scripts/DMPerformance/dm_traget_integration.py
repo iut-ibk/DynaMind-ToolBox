@@ -88,32 +88,33 @@ class TargetInegration(Module):
         QH[:] = np.NAN
         # DTE=np.zeros((n))
         TAF[:] = np.NAN
-        for count in range(1, n):
+
+        for count in range(n):
             # if (count == n-1):
             #  count = n-2
             # print (i,j,count)
             Z[count] = img_array[time, count, 0][UCAN_ITEM]
-        UCAN[count] = img_array[time, count, 0][UCAN_ITEM]
-        TS[count] = img_array[time, count, 0][TS_ITEM]
-        TAF[count] = img_array[time, count, 0][TAF_ITEM]
-        RN[count] = img_array[time, count, 0][RN_ITEM]
-        QG[count] = img_array[time, count, 0][QG_ITEM]
-        QE[count] = img_array[time, count, 0][QE_ITEM]
-        QH[count] = img_array[time, count, 0][QH_ITEM]
-        # print (img_array[time,count,0][DTE_ITEM], time)
-        # DTE[count]=img_array[time,count,0][DTE_ITEM]
-        # print (count,img_array[time,count,0][TAF_ITEM])
-        if (TAF[count] > 50):
-            # print (i,j,TAF[count])
-            TAF[count] = np.nan
-        # else:
-        #    taf[j,i]=TAF[count]
+            UCAN[count] = img_array[time, count, 0][UCAN_ITEM]
+            TS[count] = img_array[time, count, 0][TS_ITEM]
+            TAF[count] = img_array[time, count, 0][TAF_ITEM]
+            RN[count] = img_array[time, count, 0][RN_ITEM]
+            QG[count] = img_array[time, count, 0][QG_ITEM]
+            QE[count] = img_array[time, count, 0][QE_ITEM]
+            QH[count] = img_array[time, count, 0][QH_ITEM]
+            # print (img_array[time,count,0][DTE_ITEM], time)
+            # DTE[count]=img_array[time,count,0][DTE_ITEM]
+            # print (count,img_array[time,count,0][TAF_ITEM])
+            if (TAF[count] > 50):
+                # print (i,j,TAF[count])
+                TAF[count] = np.nan
+            # else:
+            #    taf[j,i]=TAF[count]
         self.micro_climate_grid.reset_reading()
-        count = 0
+
         for (idx, m) in enumerate(self.micro_climate_grid):
             m.SetField("taf", TAF[idx])
-        m.SetField("ts", TS[idx])
-        m.SetField("ucan", UCAN[idx])
+            m.SetField("ts", TS[idx])
+            m.SetField("ucan", UCAN[idx])
         self.micro_climate_grid.finalise()
 
     def write_input_file(self, landuse_file):
