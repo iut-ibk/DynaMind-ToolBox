@@ -75,7 +75,7 @@ class DM_ValueFromRaster(Module):
                     maxx += 5
                     maxy += 5
                     print str(minx) + "/" + str(miny)+ "/" + str(maxx)+ "/" + str(maxy), maxx-minx, maxy-miny
-                    log(str(minx) + "/" + str(miny)+ "/" + str(miny)+ "/" + str(maxy), Standard)
+                    log(str(minx) + "/" + str(miny)+ "/" + str(maxx)+ "/" + str(maxy), Standard)
 
                     values = band.ReadAsArray(minx, miny, maxx-minx, maxy-miny)
 
@@ -86,6 +86,8 @@ class DM_ValueFromRaster(Module):
                 point = ct.TransformPoint(geom.GetX(), geom.GetY())
                 x = (point[0]-gt[0])/gt[1]
                 y = (point[1]-gt[3])/gt[5]
+
+
 
                 if inMemory:
                     val = values[int(y)-miny][int(x)-minx]
