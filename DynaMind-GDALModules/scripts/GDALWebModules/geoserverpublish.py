@@ -36,15 +36,14 @@ class GeoserverHelper:
         self.postgrePW = postgrePW if postgrePW != "" else POSTGREPW
 
         if self.geoserverUrl[-1] != '/':
-            raise Exception("GeoserverUrl must end with a slash ('/')")
-
+            self.geoserverUrl += '/'
         self.catalog = Catalog(self.geoserverUrl+"rest/")
         self.catalog.http.add_credentials(self.geoserverUserName,self.geoserverPW)
         try:
             workspaces = self.catalog.get_workspaces()
         except:
             e = sys.exc_info()[0]
-            log(self.geoserverUrl + " " + self.geoserverWorkSpace, Standard)
+            log(self.geoserverUrl + " " + self.geoserverWorkSpace, Error)
             log(str(e), Error)
             raise Exception("Init Error")
 
