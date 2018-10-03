@@ -105,14 +105,12 @@ class GDALPublishPostgisLayerInGeoserver(Module):
 
 
     def run(self):
-
         try:
             self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
                                          self.geoserverWorkSpace)
             log("Connection to geoserver established", Standard)
         except:
             e = sys.exc_info()[0]
-            log(self.geoserverUrl + " " + self.geoserverWorkSpace, Error)
             log(str(e), Error)
             log("Connection to geoserver failed", Error)
             return

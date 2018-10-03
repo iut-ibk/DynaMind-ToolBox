@@ -48,7 +48,7 @@ class GeoserverHelper:
             raise Exception("Init Error")
 
         self.cWorkSpace = self.catalog.get_workspace(self.geoserverWorkSpace)
-        log(self.cWorkSpace, Standard)
+
 
     def getLayers(self):
         return self.cWorkSpace.catalog.get_layers()
