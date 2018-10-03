@@ -40,4 +40,5 @@ from import_travel_matrix import *
 from dm_value_from_raster_poly import *
 from dm_import_landuse import *
 from dm_import_landcover_geoscape import *
+from dm_fill import *
 
