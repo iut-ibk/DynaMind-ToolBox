@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from osgeo import ogr
 from pydynamind import *
 from geoserverpublish import *
+import time
 
 
 class GDALPublishPostgisLayerInGeoserver(Module):
@@ -105,14 +106,25 @@ class GDALPublishPostgisLayerInGeoserver(Module):
 
 
     def run(self):
-        try:
-            self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
-                                         self.geoserverWorkSpace)
-            log("Connection to geoserver established", Standard)
-        except:
-            e = sys.exc_info()[0]
-            log(str(e), Error)
-            log("Connection to geoserver failed", Error)
+        connected = False
+        attempts = 0
+        while not connected and attempts < 10:
+            attempts+=1
+            try:
+                self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
+                                             self.geoserverWorkSpace)
+                log("Connection to geoserver established", Standard)
+                connected = True
+            except:
+                e = sys.exc_info()[0]
+                log(str(e), Error)
+                log("Connection to geoserver failed", Error)
+                log("Retry to connect", Standard)
+                time.sleep((attempts-1) * 10)
+
+
+        if not connected:
+            log("Ultimately failed", Error)
             return
 
         if self.scenario_id_as_prefix:
