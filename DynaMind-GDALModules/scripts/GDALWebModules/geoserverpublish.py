@@ -10,6 +10,7 @@ import ast
 import re #regular expression
 import os.path
 import psycopg2
+from pydynamind import *
 
 if os.path.isfile('../config.py'):
     from config import *
@@ -43,8 +44,10 @@ class GeoserverHelper:
             workspaces = self.catalog.get_workspaces()
         except:
             e = sys.exc_info()[0]
-            print e
+            log(str(e), Error)
+
         self.cWorkSpace = self.catalog.get_workspace(self.geoserverWorkSpace)
+        log(self.cWorkSpace, Standard)
 
     def getLayers(self):
         return self.cWorkSpace.catalog.get_layers()

@@ -53,7 +53,7 @@ class GDALPublishPostgisLayerInGeoserver(Module):
 
 
         ### Geoserver configuration
-        self.createParameter("geoserverUrl", STRING, "Url of the geoserver")
+        self.createParameter("geoserverUrl", STRING, "Url  f the geoserver")
         self.geoserverUrl = "http://web01-c815.uibk.ac.at:8080/geoserver/"
 
         self.createParameter("geoserverUserName", STRING, "User for the geoserver")
@@ -88,15 +88,8 @@ class GDALPublishPostgisLayerInGeoserver(Module):
         
     
     def init(self):
-        # self.__postgis = ViewContainer("__postgisSettings", COMPONENT, READ)
-        # self.__postgis.addAttribute("url", Attribute.STRING, READ)
-        # self.__postgis.addAttribute("db", Attribute.STRING, READ)
-        # self.__postgis.addAttribute("table", Attribute.STRING, READ)
+        log("Run Geoserver Init", Standard)
 
-        # views = []
-        # views.append(self.__postgis)
-
-        # self.registerViewContainers(views)
 
 
         views = []
@@ -113,13 +106,15 @@ class GDALPublishPostgisLayerInGeoserver(Module):
                                          self.geoserverWorkSpace)
 
     def run(self):
+        log("Run Geoserver", Standard)
         if self.scenario_id_as_prefix:
             self.city.reset_reading()
             for c in self.city:
                 scenario_id = c.GetFieldAsInteger("scenario_id")
 
-        #only exort on x step
+        # only exort on x step
         if self.get_group_counter() != -1 and (self.get_group_counter()  % self.step != 0):
+            log("only export on x step", Standard)
             return
 
         #indication of the postgis-connection is valid
