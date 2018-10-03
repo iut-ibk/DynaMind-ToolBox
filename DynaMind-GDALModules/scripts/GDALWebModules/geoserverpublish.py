@@ -44,7 +44,9 @@ class GeoserverHelper:
             workspaces = self.catalog.get_workspaces()
         except:
             e = sys.exc_info()[0]
+            log(self.geoserverUrl + " " + self.geoserverWorkSpace, Standard)
             log(str(e), Error)
+            raise Exception("Init Error")
 
         self.cWorkSpace = self.catalog.get_workspace(self.geoserverWorkSpace)
         log(self.cWorkSpace, Standard)

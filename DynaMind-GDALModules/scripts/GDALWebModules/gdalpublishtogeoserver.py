@@ -102,11 +102,23 @@ class GDALPublishPostgisLayerInGeoserver(Module):
             views.append(self.city)
         self.registerViewContainers(views)
 
-        self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
+        if self.geoHelper:
+            return
+
+        try:
+            self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
                                          self.geoserverWorkSpace)
+            log("Something went wrong in init", Error)
+        except:
+            self.geoHelper = None
+            log("Init is all good", Standard)
 
     def run(self):
+
         log("Run Geoserver", Standard)
+        if not self.geoHelper:
+            log("geoserver not found", Error)
+            return
         if self.scenario_id_as_prefix:
             self.city.reset_reading()
             for c in self.city:
