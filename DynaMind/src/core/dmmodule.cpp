@@ -573,9 +573,21 @@ std::vector<View> Module::getViewsInStream(const std::string& streamName) const
 	std::map<std::string, View> r;
 	if(map_contains(&streamViews, streamName, r))
 		mforeach(const View& v, r)
-		views.push_back(v);
+			views.push_back(v);
 
 	return views;
+}
+
+bool Module::isViewInStream(const std::string& streamName, const std::string& viewName) const
+{
+	std::map<std::string, View> r;
+	if(map_contains(&streamViews, streamName, r)) {
+		mforeach(const View& v, r) {
+			if (v.getName().compare(viewName) == 0)
+				return true;
+		}
+	}
+	return false;
 }
 
 

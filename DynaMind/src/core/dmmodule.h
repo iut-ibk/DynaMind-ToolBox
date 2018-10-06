@@ -206,6 +206,9 @@ public:
 	/** @brief shortcut to getViewsInStream to return all views from a specific stream */
 	std::vector<View> getViewsInStream(const std::string& streamName) const;
 
+	/** @brief returns if stream has view **/
+	bool isViewInStream(const std::string& streamName, const string &viewName) const;
+
 	/** @brief shortcut to getViewsInStream to return a specific view from a specific stream */
 	View getViewInStream(const std::string& streamName, const std::string& viewName) const;
 
