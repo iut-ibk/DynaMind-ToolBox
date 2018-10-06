@@ -61,6 +61,10 @@ class DMCatchment(Module):
         self.view_catchments.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
 
+        self.view_catchments.addAttribute("runoff", DM.Attribute.DOUBLE, DM.WRITE)
+        self.view_catchments.addAttribute("runoff_treated", DM.Attribute.DOUBLE, DM.WRITE)
+        self.view_catchments.addAttribute("peak_flows", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+
         self.rwht = None
         self.tree_pit = None
 
