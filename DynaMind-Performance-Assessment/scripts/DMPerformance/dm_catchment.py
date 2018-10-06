@@ -347,8 +347,8 @@ class DMCatchment(Module):
                 connected_area += r.GetFieldAsDouble("connected_area")
                 number_rwht += 1
 
-        if self.rwht:
-            for r in self.rwht:
+        if self.tree_pit:
+            for r in self.tree_pit:
                 connected_area_tree += r.GetFieldAsDouble("connected_area")
                 number_tree += 1
 
