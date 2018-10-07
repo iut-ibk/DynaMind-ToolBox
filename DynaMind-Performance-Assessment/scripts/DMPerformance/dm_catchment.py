@@ -87,7 +87,7 @@ class DMCatchment(Module):
 
         self.registerViewContainers(view_register)
 
-    def SEI(self, catchment):
+    def SEI(self, catchment, tree_pit_storage_depth):
         filename = str(uuid.uuid4())
 
         fo = open("/tmp/" + filename + ".inp", 'w')
@@ -103,7 +103,8 @@ class DMCatchment(Module):
                 swmm_rain_filename = "/tmp/" + filename + ".dat"
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2000',
                              intervall=intervall,
-                             sub_satchment=catchment)
+                             sub_satchment=catchment,
+                             tree_pit_storage_depth = tree_pit_storage_depth)
         fo.close()
 
         results = {}
@@ -149,10 +150,10 @@ class DMCatchment(Module):
             peak_flows.append(max_runoff)
             # sim.report()
         results["peak_flows"] = peak_flows
-        # os.remove("/tmp/" + filename + ".inp")
+        os.remove("/tmp/" + filename + ".inp")
 
 
-        # os.remove("/tmp/" + filename + ".rpt")
+        os.remove("/tmp/" + filename + ".rpt")
         os.remove("/tmp/" + filename + ".out")
         if self.rain_vector_from_city != "":
             os.remove("/tmp/" + filename + ".dat")
@@ -183,8 +184,16 @@ class DMCatchment(Module):
                     '%H %M') + ' ' + str(val) + '\n')
                 start += dt
         f.close()
+    def write_barrel(self, out_file):
+        if not self.rwht:
+            return
+        self.rwht.reset_reading()
+        for r in self.rwht:
+            out_file.write('barrel' + r.GetFID() + '           RB\n')
+            out_file.write('barrel' + r.GetFID() + '          STORAGE    2000       0.75       0.5        0  \n')
+            out_file.write('barrel' + r.GetFID() + '         DRAIN      20.        0          0          24  \n')
 
-    def init_swmm_model(self, out_file, rainfile, start, stop, intervall, sub_satchment):
+    def init_swmm_model(self, out_file, rainfile, start, stop, intervall, sub_satchment, tree_pit_storage_depth):
         out_file.write('[TITLE]\n')
         out_file.write('\n')
         out_file.write('[OPTIONS]\n')
@@ -269,17 +278,16 @@ class DMCatchment(Module):
         out_file.write(';;-------------- ---------- ----------\n')
         out_file.write('barrel           RB\n')
         out_file.write('barrel           STORAGE    2000       0.75       0.5        0  \n')
-        out_file.write('barrel           DRAIN      6.25        0          0          24  \n')
+        out_file.write('barrel           DRAIN      20.        0          0          24  \n')
         out_file.write('bc              BC\n')
         out_file.write('bc              SURFACE    300        0.15       0.24       0.5        5   \n')
-        out_file.write(
-            'bc              SOIL       500        0.5        0.2        0.1        0.5        10.0       3.5\n')
+        out_file.write('bc              SOIL       500        0.5        0.2        0.1        0.5        10.0       3.5\n')
         out_file.write('bc              STORAGE    200        0.75       0.5        0      \n')
         out_file.write('bc              DRAIN      200        0         0          0     \n')
+
         out_file.write('tree_pit              BC\n')
-        out_file.write('tree_pit              SURFACE    100        0.15       0.24       0.5        5   \n')
-        out_file.write(
-            'tree_pit              SOIL       500        0.5        0.2        0.1        5.0       10.0       3.5\n')
+        out_file.write('tree_pit              SURFACE    ' + tree_pit_storage_depth + '       0.15       0.24       0.5        5   \n')
+        out_file.write('tree_pit              SOIL       500        0.5        0.2        0.1        5.0       10.0       3.5\n')
         out_file.write('tree_pit              STORAGE    200        0.75       0.5        0      \n')
         out_file.write('tree_pit              DRAIN      200        0         0          0     \n')
 
@@ -294,7 +302,7 @@ class DMCatchment(Module):
                 out_file.write(c + '                barrel           ' + str(
                     sub_satchment[c]["rwht"]["number"]) + '   1          0.5        0          ' + str(
                     sub_satchment[c]["rwht"][
-                        "connected_imp_fraction"]) + '        0          *                        r' + c + '     \n')
+                        "connected_imp_fraction"]) + '        0          *                         r' + c + '     \n')
             if 'bc' in sub_satchment[c]:
                 out_file.write(c + '                bc           ' + str(
                     sub_satchment[c]["bc"]["number"]) + '   25          1        0          ' + str(
@@ -302,9 +310,10 @@ class DMCatchment(Module):
                         "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
             if 'tree_pits' in sub_satchment[c]:
                 out_file.write(c + '                tree_pit           ' + str(
-                    sub_satchment[c]["tree_pits"]["number"]) + '   2.25          1        0          ' + str(
+                    sub_satchment[c]["tree_pits"]["number"]) + '   ' + str(sub_satchment[c]["tree_pits"]["tree_pit_area"])  +'           1        0          ' + str(
                     sub_satchment[c]["tree_pits"][
                         "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
+
 
         out_file.write('\n')
         out_file.write('[REPORT]\n')
@@ -366,10 +375,13 @@ class DMCatchment(Module):
                 connected_area_tree += r.GetFieldAsDouble("connected_area")
                 number_tree += 1
 
+
         for c in self.view_catchments:
 
             area = c.GetFieldAsDouble("area") / 10000.  # Convert area to ha for SWMM
             imp = c.GetFieldAsDouble("impervious_fraction") * 100.  # Convert to %
+
+
             #
             # natural = self.SEI({"1": {"id": 1, "area": area, "imp": 0,
             #                           "rwht": {"number": 0, "connected_imp_fraction": 0},
@@ -378,13 +390,20 @@ class DMCatchment(Module):
             # urbanised = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
             #                             "rwht": {"number": 0, "connected_imp_fraction": 0},
             #                             "bc": {"number": 0, "connected_imp_fraction": 0}}})
+            tree_pit_area = 2.5
+            tree_pit_storage_depth = 150
+            if self.tree_pit:
+                tree_pit_area = c.GetFieldAsDouble("tree_pits_area")
+                tree_pit_storage_depth = c.getFieldAsDouble("tree_pit_storage_depth")
+
 
             wsud = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
                                    "rwht": {"number": number_rwht,
                                             "connected_imp_fraction": connected_area / (imp/100 * area  *10000.) * 100},
                                    "tree_pits": {"number": number_tree,
                                             "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100},
-                                   }})
+                                   "tree_pit_area": tree_pit_area
+                                   }}, tree_pit_storage_depth)
             print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
