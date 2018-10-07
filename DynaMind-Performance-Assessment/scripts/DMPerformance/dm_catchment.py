@@ -73,7 +73,7 @@ class DMCatchment(Module):
         if self.rain_vector_from_city != "":
             self.city = ViewContainer(self.view_name, DM.COMPONENT, DM.READ)
             self.city.addAttribute(self.rain_vector_from_city, DM.Attribute.DOUBLEVECTOR, DM.READ)
-            view_register.append(self.city)
+
 
         if self.isViewInStream("city", "rwht"):
             self.rwht = ViewContainer("rwht", DM.COMPONENT, DM.READ)
@@ -83,8 +83,11 @@ class DMCatchment(Module):
 
         if self.isViewInStream("city", "tree_pit"):
             self.tree_pit = ViewContainer("tree_pit", DM.COMPONENT, DM.READ)
+            self.view_catchments.addAttribute("tree_pit_area", DM.Attribute.DOUBLE, DM.READ)
+            self.view_catchments.addAttribute("tree_pit_storage_depth", DM.Attribute.DOUBLE, DM.READ)
             view_register.append(self.tree_pit)
 
+        view_register.append(self.city)
         self.registerViewContainers(view_register)
 
     def SEI(self, catchment, tree_pit_storage_depth):
@@ -286,7 +289,7 @@ class DMCatchment(Module):
         out_file.write('bc              DRAIN      200        0         0          0     \n')
 
         out_file.write('tree_pit              BC\n')
-        out_file.write('tree_pit              SURFACE    ' + tree_pit_storage_depth + '       0.15       0.24       0.5        5   \n')
+        out_file.write('tree_pit              SURFACE    ' + str(tree_pit_storage_depth) + '       0.15       0.24       0.5        5   \n')
         out_file.write('tree_pit              SOIL       500        0.5        0.2        0.1        5.0       10.0       3.5\n')
         out_file.write('tree_pit              STORAGE    200        0.75       0.5        0      \n')
         out_file.write('tree_pit              DRAIN      200        0         0          0     \n')
@@ -393,16 +396,16 @@ class DMCatchment(Module):
             tree_pit_area = 2.5
             tree_pit_storage_depth = 150
             if self.tree_pit:
-                tree_pit_area = c.GetFieldAsDouble("tree_pits_area")
-                tree_pit_storage_depth = c.getFieldAsDouble("tree_pit_storage_depth")
+                tree_pit_area = c.GetFieldAsDouble("tree_pit_area")
+                tree_pit_storage_depth = c.GetFieldAsDouble("tree_pit_storage_depth")
 
 
             wsud = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
                                    "rwht": {"number": number_rwht,
                                             "connected_imp_fraction": connected_area / (imp/100 * area  *10000.) * 100},
                                    "tree_pits": {"number": number_tree,
-                                            "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100},
-                                   "tree_pit_area": tree_pit_area
+                                            "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100,  "tree_pit_area": tree_pit_area}
+
                                    }}, tree_pit_storage_depth)
             print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
