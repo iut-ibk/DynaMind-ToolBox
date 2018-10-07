@@ -153,6 +153,10 @@ class DMCatchment(Module):
             peak_flows.append(max_runoff)
             # sim.report()
         results["peak_flows"] = peak_flows
+
+
+        tree_pit_inflow = self.getTreePitInflow("/tmp/" + filename + ".rpt")
+        results["tree_pit_inflow"] = tree_pit_inflow
         os.remove("/tmp/" + filename + ".inp")
 
 
@@ -249,7 +253,7 @@ class DMCatchment(Module):
         for c in sub_satchment.keys():
             out_file.write(c + '               RG1              ' + 'o' + c + '                ' + str(
                 sub_satchment[c]["area"]) + '        ' + str(sub_satchment[c]["imp"]) + '       ' + str(
-                math.sqrt(sub_satchment[c]["area"]) * 100) + '      0.5      0\n')
+                math.sqrt(sub_satchment[c]["area"]) * 10000) + '      0.1      0\n')
 
         out_file.write('\n')
         out_file.write('[SUBAREAS]\n')
@@ -313,9 +317,9 @@ class DMCatchment(Module):
                         "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
             if 'tree_pits' in sub_satchment[c]:
                 out_file.write(c + '                tree_pit           ' + str(
-                    sub_satchment[c]["tree_pits"]["number"]) + '   ' + str(sub_satchment[c]["tree_pits"]["tree_pit_area"])  +'           1        0          ' + str(
+                    sub_satchment[c]["tree_pits"]["number"]) + '   ' + str(sub_satchment[c]["tree_pits"]["tree_pit_area"])  +'           2        0          ' + str(
                     sub_satchment[c]["tree_pits"][
-                        "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
+                        "connected_imp_fraction"]) + '        0          *                       n' + c + '     \n')
 
 
         out_file.write('\n')
@@ -355,6 +359,15 @@ class DMCatchment(Module):
         out_file.write('[SYMBOLS]\n')
         out_file.write(';;Gage           X-Coord            Y-Coord\n')
         out_file.write(';;-------------- ------------------ ------------------\n')
+
+    def getTreePitInflow(self, rptfile):
+        inflow = 0
+        with open(rptfile) as f:
+            for l in f:
+                if "tree_pit" in l:
+                    inflow = float(l.split()[2])
+        return inflow
+
 
 
     def getRainVec(self):
@@ -400,6 +413,7 @@ class DMCatchment(Module):
                 tree_pit_storage_depth = c.GetFieldAsDouble("tree_pit_storage_depth")
 
 
+
             wsud = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
                                    "rwht": {"number": number_rwht,
                                             "connected_imp_fraction": connected_area / (imp/100 * area  *10000.) * 100},
@@ -407,10 +421,13 @@ class DMCatchment(Module):
                                             "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100,  "tree_pit_area": tree_pit_area}
 
                                    }}, tree_pit_storage_depth)
-            print wsud
+            #print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
             pydynamind.dm_set_double_list(c, "peak_flows", wsud["peak_flows"])
+
+
+
 
 
         self.view_catchments.finalise()
