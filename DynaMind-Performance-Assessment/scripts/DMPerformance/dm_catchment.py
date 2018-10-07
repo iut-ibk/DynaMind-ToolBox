@@ -260,6 +260,8 @@ class DMCatchment(Module):
             out_file.write('o' + c + '                 0        FREE       NO          \n')
         for c in sub_satchment.keys():
             out_file.write('n' + c + '                 0        FREE       NO         \n')
+        for c in sub_satchment.keys():
+            out_file.write('r' + c + '                 0        FREE       NO         \n')
 
         out_file.write('\n')
         out_file.write('[LID_CONTROLS]\n')
@@ -292,7 +294,7 @@ class DMCatchment(Module):
                 out_file.write(c + '                barrel           ' + str(
                     sub_satchment[c]["rwht"]["number"]) + '   1          0.5        0          ' + str(
                     sub_satchment[c]["rwht"][
-                        "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
+                        "connected_imp_fraction"]) + '        0          *                        r' + c + '     \n')
             if 'bc' in sub_satchment[c]:
                 out_file.write(c + '                bc           ' + str(
                     sub_satchment[c]["bc"]["number"]) + '   25          1        0          ' + str(
