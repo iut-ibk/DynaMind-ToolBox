@@ -144,11 +144,15 @@ class DMCatchment(Module):
                         id = getattr(c, r[3])
                         for c_r in r[1][id].keys():
                             r[1][id][c_r] += getattr(c, c_r) * r[2][c_r]
+
+                # sim.report()
             peak_flows.append(max_runoff)
             # sim.report()
         results["peak_flows"] = peak_flows
-        os.remove("/tmp/" + filename + ".inp")
-        os.remove("/tmp/" + filename + ".rpt")
+        # os.remove("/tmp/" + filename + ".inp")
+
+
+        # os.remove("/tmp/" + filename + ".rpt")
         os.remove("/tmp/" + filename + ".out")
         if self.rain_vector_from_city != "":
             os.remove("/tmp/" + filename + ".dat")
@@ -271,9 +275,9 @@ class DMCatchment(Module):
         out_file.write('bc              STORAGE    200        0.75       0.5        0      \n')
         out_file.write('bc              DRAIN      200        0         0          0     \n')
         out_file.write('tree_pit              BC\n')
-        out_file.write('tree_pit              SURFACE    300        0.15       0.24       0.5        5   \n')
+        out_file.write('tree_pit              SURFACE    100        0.15       0.24       0.5        5   \n')
         out_file.write(
-            'tree_pit              SOIL       500        0.5        0.2        0.1        0.5        10.0       3.5\n')
+            'tree_pit              SOIL       500        0.5        0.2        0.1        5.0       10.0       3.5\n')
         out_file.write('tree_pit              STORAGE    200        0.75       0.5        0      \n')
         out_file.write('tree_pit              DRAIN      200        0         0          0     \n')
 
@@ -284,13 +288,21 @@ class DMCatchment(Module):
         out_file.write(
             ';;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------\n')
         for c in sub_satchment.keys():
-            out_file.write(c + '                barrel           ' + str(
-                sub_satchment[c]["rwht"]["number"]) + '   1          0.5        0          ' + str(
-                sub_satchment[c]["rwht"][
-                    "connected_imp_fraction"]  ) + '        1          *                        n' + c + '     \n')
-            out_file.write(c + '                bc           ' + str(
-                sub_satchment[c]["bc"]["number"]) + '   25          1        0          ' + str(sub_satchment[c]["bc"][
-                                                                                                    "connected_imp_fraction"] ) + '        1          *                        n' + c + '     \n')
+            if 'rwht' in sub_satchment[c]:
+                out_file.write(c + '                barrel           ' + str(
+                    sub_satchment[c]["rwht"]["number"]) + '   1          0.5        0          ' + str(
+                    sub_satchment[c]["rwht"][
+                        "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
+            if 'bc' in sub_satchment[c]:
+                out_file.write(c + '                bc           ' + str(
+                    sub_satchment[c]["bc"]["number"]) + '   25          1        0          ' + str(
+                    sub_satchment[c]["bc"][
+                        "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
+            if 'tree_pits' in sub_satchment[c]:
+                out_file.write(c + '                tree_pit           ' + str(
+                    sub_satchment[c]["tree_pits"]["number"]) + '   2.25          1        0          ' + str(
+                    sub_satchment[c]["tree_pits"][
+                        "connected_imp_fraction"]) + '        0          /tmp/test.rpt                        n' + c + '     \n')
 
         out_file.write('\n')
         out_file.write('[REPORT]\n')
@@ -368,10 +380,10 @@ class DMCatchment(Module):
             wsud = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
                                    "rwht": {"number": number_rwht,
                                             "connected_imp_fraction": connected_area / (imp/100 * area  *10000.) * 100},
-                                   "bc": {"number": number_tree,
+                                   "tree_pits": {"number": number_tree,
                                             "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100},
                                    }})
-
+            print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
             pydynamind.dm_set_double_list(c, "peak_flows", wsud["peak_flows"])
