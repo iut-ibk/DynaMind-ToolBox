@@ -304,7 +304,7 @@ class DMCatchment(Module):
                 out_file.write(c + '                tree_pit           ' + str(
                     sub_satchment[c]["tree_pits"]["number"]) + '   2.25          1        0          ' + str(
                     sub_satchment[c]["tree_pits"][
-                        "connected_imp_fraction"]) + '        0          /tmp/test.rpt                        n' + c + '     \n')
+                        "connected_imp_fraction"]) + '        0          *                        n' + c + '     \n')
 
         out_file.write('\n')
         out_file.write('[REPORT]\n')
