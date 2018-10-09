@@ -63,6 +63,7 @@ class DMCatchment(Module):
 
         self.view_catchments.addAttribute("runoff", DM.Attribute.DOUBLE, DM.WRITE)
         self.view_catchments.addAttribute("runoff_treated", DM.Attribute.DOUBLE, DM.WRITE)
+        self.view_catchments.addAttribute("tree_pit_inflow", DM.Attribute.DOUBLE, DM.WRITE)
         self.view_catchments.addAttribute("peak_flows", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.rwht = None
@@ -158,8 +159,6 @@ class DMCatchment(Module):
         tree_pit_inflow = self.getTreePitInflow("/tmp/" + filename + ".rpt")
         results["tree_pit_inflow"] = tree_pit_inflow
         os.remove("/tmp/" + filename + ".inp")
-
-
         os.remove("/tmp/" + filename + ".rpt")
         os.remove("/tmp/" + filename + ".out")
         if self.rain_vector_from_city != "":
@@ -424,11 +423,9 @@ class DMCatchment(Module):
             #print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
+            if "tree_pit_inflow" in wsud:
+                c.SetField("tree_pit_inflow", wsud['tree_pit_inflow'])
             pydynamind.dm_set_double_list(c, "peak_flows", wsud["peak_flows"])
-
-
-
-
 
         self.view_catchments.finalise()
         if self.rain_vector_from_city != "":
