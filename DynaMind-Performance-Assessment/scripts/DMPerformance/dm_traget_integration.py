@@ -26,6 +26,7 @@ class TargetInegration(Module):
         self.micro_climate_grid.addAttribute("grass_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.micro_climate_grid.addAttribute("irrigated_grass_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.micro_climate_grid.addAttribute("taf", DM.Attribute.DOUBLE, DM.WRITE)
+        self.micro_climate_grid.addAttribute("taf_period", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.micro_climate_grid.addAttribute("ts", DM.Attribute.DOUBLE, DM.WRITE)
         self.micro_climate_grid.addAttribute("ucan", DM.Attribute.DOUBLE, DM.WRITE)
 
@@ -89,32 +90,34 @@ class TargetInegration(Module):
         # DTE=np.zeros((n))
         TAF[:] = np.NAN
 
+        taf_vec = []
         for count in range(n):
-            # if (count == n-1):
-            #  count = n-2
-            # print (i,j,count)
-            Z[count] = img_array[time, count, 0][UCAN_ITEM]
-            UCAN[count] = img_array[time, count, 0][UCAN_ITEM]
-            TS[count] = img_array[time, count, 0][TS_ITEM]
-            TAF[count] = img_array[time, count, 0][TAF_ITEM]
-            RN[count] = img_array[time, count, 0][RN_ITEM]
-            QG[count] = img_array[time, count, 0][QG_ITEM]
-            QE[count] = img_array[time, count, 0][QE_ITEM]
-            QH[count] = img_array[time, count, 0][QH_ITEM]
-            # print (img_array[time,count,0][DTE_ITEM], time)
-            # DTE[count]=img_array[time,count,0][DTE_ITEM]
-            # print (count,img_array[time,count,0][TAF_ITEM])
-            if (TAF[count] > 50):
-                # print (i,j,TAF[count])
-                TAF[count] = np.nan
-            # else:
-            #    taf[j,i]=TAF[count]
+            taf_vec.append(np.zeros(l1))
+        for t in range(l1):
+            for count in range(n):
+                # if (count == n-1):
+                #  count = n-2
+                # print (i,j,count)
+                Z[count] = img_array[time, count, 0][UCAN_ITEM]
+                UCAN[count] = img_array[time, count, 0][UCAN_ITEM]
+                TS[count] = img_array[time, count, 0][TS_ITEM]
+                TAF[count] = img_array[time, count, 0][TAF_ITEM]
+                RN[count] = img_array[time, count, 0][RN_ITEM]
+                QG[count] = img_array[time, count, 0][QG_ITEM]
+                QE[count] = img_array[time, count, 0][QE_ITEM]
+                QH[count] = img_array[time, count, 0][QH_ITEM]
+
+                taf_vec[count][t] = img_array[t, count, 0][TAF_ITEM]
+                if TAF[count] > 50:
+                    TAF[count] = np.nan
+
         self.micro_climate_grid.reset_reading()
 
         for (idx, m) in enumerate(self.micro_climate_grid):
-            m.SetField("taf", TAF[idx])
+            m.SetField("taf", taf_vec[idx].max())
             m.SetField("ts", TS[idx])
             m.SetField("ucan", UCAN[idx])
+            dm_set_double_list(m, "taf_period", taf_vec[idx])
         self.micro_climate_grid.finalise()
 
     def write_input_file(self, landuse_file):
