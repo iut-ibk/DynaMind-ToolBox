@@ -3,15 +3,7 @@
 
 __author__ = 'christianurich'
 
-import swmmread
-import numpy as np
 import math
-from ctypes import *
-from sys import platform as _platform
-import pydynamind
-import ogr
-
-import uuid
 import os
 
 import datetime
@@ -56,7 +48,11 @@ class DMCatchment(Module):
         self.createParameter("view_name_catchment", DM.STRING)
         self.view_name_catchment = "city"
 
+        self.createParameter("consider_inital_loss", DM.BOOL)
+        self.consider_inital_loss = False
+
     def init(self):
+
         self.view_catchments = ViewContainer(self.view_name_catchment, DM.COMPONENT, DM.READ)
         self.view_catchments.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.view_catchments.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
@@ -65,6 +61,9 @@ class DMCatchment(Module):
         self.view_catchments.addAttribute("runoff_treated", DM.Attribute.DOUBLE, DM.WRITE)
         self.view_catchments.addAttribute("tree_pit_inflow", DM.Attribute.DOUBLE, DM.WRITE)
         self.view_catchments.addAttribute("peak_flows", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        if self.consider_inital_loss:
+            self.view_catchments.addAttribute("initial_loss", DM.Attribute.DOUBLE, DM.READ)
+        self.city = ViewContainer(self.view_name, DM.COMPONENT, DM.READ)
 
         self.rwht = None
         self.tree_pit = None
@@ -74,6 +73,7 @@ class DMCatchment(Module):
         if self.rain_vector_from_city != "":
             self.city = ViewContainer(self.view_name, DM.COMPONENT, DM.READ)
             self.city.addAttribute(self.rain_vector_from_city, DM.Attribute.DOUBLEVECTOR, DM.READ)
+
 
 
         if self.isViewInStream("city", "rwht"):
@@ -91,7 +91,7 @@ class DMCatchment(Module):
         view_register.append(self.city)
         self.registerViewContainers(view_register)
 
-    def SEI(self, catchment, tree_pit_storage_depth):
+    def SEI(self, catchment, tree_pit_storage_depth,inital_loss):
         filename = str(uuid.uuid4())
 
         fo = open("/tmp/" + filename + ".inp", 'w')
@@ -108,7 +108,8 @@ class DMCatchment(Module):
         self.init_swmm_model(fo, rainfile=swmm_rain_filename, start='01/01/2000', stop='12/30/2000',
                              intervall=intervall,
                              sub_satchment=catchment,
-                             tree_pit_storage_depth = tree_pit_storage_depth)
+                             tree_pit_storage_depth = tree_pit_storage_depth,
+                             inital_loss=inital_loss)
         fo.close()
 
         results = {}
@@ -190,6 +191,7 @@ class DMCatchment(Module):
                     '%H %M') + ' ' + str(val) + '\n')
                 start += dt
         f.close()
+
     def write_barrel(self, out_file):
         if not self.rwht:
             return
@@ -199,7 +201,7 @@ class DMCatchment(Module):
             out_file.write('barrel' + r.GetFID() + '          STORAGE    2000       0.75       0.5        0  \n')
             out_file.write('barrel' + r.GetFID() + '         DRAIN      20.        0          0          24  \n')
 
-    def init_swmm_model(self, out_file, rainfile, start, stop, intervall, sub_satchment, tree_pit_storage_depth):
+    def init_swmm_model(self, out_file, rainfile, start, stop, intervall, sub_satchment, tree_pit_storage_depth, inital_loss):
         out_file.write('[TITLE]\n')
         out_file.write('\n')
         out_file.write('[OPTIONS]\n')
@@ -260,7 +262,7 @@ class DMCatchment(Module):
         out_file.write(
             ';;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n')
         for c in sub_satchment.keys():
-            out_file.write(c + '                0.01       0.2        2.0       15       25         OUTLET\n')
+            out_file.write(c + '                0.01       0.2   ' + str(inital_loss) +  '        15       25         OUTLET\n')
         out_file.write('\n')
         out_file.write('[INFILTRATION]\n')
         out_file.write(';;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil\n')
@@ -380,6 +382,7 @@ class DMCatchment(Module):
         number_rwht = 0
         connected_area_tree = 0
         number_tree = 0
+        self.tree_pit_area = 0
         if self.rwht:
             for r in self.rwht:
                 connected_area += r.GetFieldAsDouble("connected_area")
@@ -397,21 +400,17 @@ class DMCatchment(Module):
             imp = c.GetFieldAsDouble("impervious_fraction") * 100.  # Convert to %
 
 
-            #
-            # natural = self.SEI({"1": {"id": 1, "area": area, "imp": 0,
-            #                           "rwht": {"number": 0, "connected_imp_fraction": 0},
-            #                           "bc": {"number": 0, "connected_imp_fraction": 0}}})
-            #
-            # urbanised = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
-            #                             "rwht": {"number": 0, "connected_imp_fraction": 0},
-            #                             "bc": {"number": 0, "connected_imp_fraction": 0}}})
             tree_pit_area = 2.5
             tree_pit_storage_depth = 150
             if self.tree_pit:
                 tree_pit_area = c.GetFieldAsDouble("tree_pit_area")
+                self.tree_pit_area += tree_pit_area * number_tree
                 tree_pit_storage_depth = c.GetFieldAsDouble("tree_pit_storage_depth")
 
+            inital_loss = 1.8
 
+            if self.consider_inital_loss:
+                inital_loss = c.GetFieldAsDouble("initial_loss")
 
             wsud = self.SEI({"1": {"id": 1, "area": area, "imp": imp,
                                    "rwht": {"number": number_rwht,
@@ -419,13 +418,13 @@ class DMCatchment(Module):
                                    "tree_pits": {"number": number_tree,
                                             "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100,  "tree_pit_area": tree_pit_area}
 
-                                   }}, tree_pit_storage_depth)
-            #print wsud
+                                   }}, tree_pit_storage_depth, inital_loss)
+            print wsud
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
             if "tree_pit_inflow" in wsud:
                 c.SetField("tree_pit_inflow", wsud['tree_pit_inflow'])
-            pydynamind.dm_set_double_list(c, "peak_flows", wsud["peak_flows"])
+            dm_set_double_list(c, "peak_flows", wsud["peak_flows"])
 
         self.view_catchments.finalise()
         if self.rain_vector_from_city != "":
