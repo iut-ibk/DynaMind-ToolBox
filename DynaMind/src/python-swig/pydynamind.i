@@ -69,6 +69,7 @@ namespace std {
 	%template(viewcontainervector) vector<DM::ViewContainer >;
 	%template(viewcontainervector_p) vector<DM::ViewContainer*>;
 	%template(viewpointermap) map<string, vector<DM::View* > >;
+	%template(viewmap) std::map<std::string,View>;
 	%template(componentvector) vector<DM::Component* >;
 	%template(attributevector) vector<DM::Attribute* >;
 	%template(attributemap) map<string, DM::Attribute* >;
@@ -80,6 +81,7 @@ namespace std {
 	%template(modulelist) list<DM::Module* >;
 	%template(filtervector) vector<DM::Filter>;
 	%template(linkvector) list<DM::Link*>;
+
 }
 
 %pointer_class(std::string,p_string)
@@ -207,9 +209,10 @@ public:
     ") getParameterAsString;
 	virtual std::string getParameterAsString(std::string Name);
 
+	bool isViewInStream(const std::string& streamName, const std::string& viewName) const;
 	std::map<std::string,DM::View> getViewsInStdStream() const;
 	std::map<std::string,DM::View> getViewsOutStdStream() const;
-	 std::map<std::string,DM::View> getAccessedStdViews() const;
+	std::map<std::string,DM::View> getAccessedStdViews() const;
 
 	virtual const char* getClassName() const = 0;
 	virtual const char* getDisplayName() const = 0;

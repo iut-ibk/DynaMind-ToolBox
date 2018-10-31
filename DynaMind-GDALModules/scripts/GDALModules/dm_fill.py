@@ -6,10 +6,11 @@ import numpy as np
 import compiler
 import paramiko
 import os
+import richdem as rd
 
 
-class DM_ImportLandCoverGeoscape(Module):
-    display_name = "Import Landcover Geoscape"
+class DM_Fill(Module):
+    display_name = "Min Value"
     group_name = "Data Import and Export"
 
     def getHelpUrl(self):
@@ -86,42 +87,7 @@ class DM_ImportLandCoverGeoscape(Module):
         self.node_view = ViewContainer(self.view_name, FACE, READ)
         self.city = ViewContainer("city", FACE, READ)
 
-        self.geoscape_landclass = {
-            2: 5, # grass
-            3: 13,
-            4: 7,
-            5: 1,
-            6: 4,
-            7: 15,
-            8: 2,
-            9: 12,
-            10: -1,
-            11: -1,
-            12: 2
-        }
-
-        self.landuse_classes = {
-            "tree_cover_fraction": 1,
-            "water_fraction": 2,
-            "pond_and_basin_fraction": 3,
-            "wetland_fraction": 4,
-            "grass_fraction": 5,
-            "swale_fraction": 6,
-            "irrigated_grass_fraction": 7,
-            "bio_retention_fraction": 8,
-            "infiltration_fraction": 9,
-            "green_roof_fraction": 10,
-            "green_wall_fraction": 11,
-            "roof_fraction": 12,
-            "road_fraction": 13,
-            "porous_fraction": 14,
-            "concrete_fraction": 15
-        }
-        for key in self.landuse_classes:
-            self.node_view.addAttribute(key, Attribute.DOUBLE, WRITE)
-        self.node_view.addAttribute("geoscape_count", Attribute.INT, WRITE)
-        self.node_view.addAttribute("geoscape_missed", Attribute.INT, WRITE)
-
+        self.node_view.addAttribute("elevation", Attribute.DOUBLE, WRITE)
 
 
         self.registerViewContainers([self.node_view, self.city ])
@@ -168,16 +134,21 @@ class DM_ImportLandCoverGeoscape(Module):
                     miny = maxy
                     maxy = min_y_tmp
                     log("swapsy", Standard)
-                minx -= 100
-                miny -= 100
-                maxx += 100
-                maxy += 100
+                minx -= 50
+                miny -= 50
+                maxx += 50
+                maxy += 50
                 print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
                 log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
 
                 values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
                 gminy = miny
                 gminx = minx
+
+                rda = rd.rdarray(values, no_data=band.GetNoDataValue())
+                rda.projection = dataset.GetProjectionRef()
+                rda.geotransform = gt
+                rd.FillDepressions(rda, in_place=True)
 
         for node in self.node_view:
             geom = node.GetGeometryRef()
@@ -194,39 +165,30 @@ class DM_ImportLandCoverGeoscape(Module):
                 miny = maxy
                 maxy = min_y_tmp
             # print minx, miny, maxx, maxy
-            datatype = band.DataType
-            sum_val = 0
 
-            val_array = np.zeros(16)
-            missed = 0
-            count = 0
+            min_val = None
 
             for x in range(minx, maxx + 1):
                 for y in range(miny, maxy + 1):
                     if inMemory:
                         if x < 0 or y < 0 or x > band.XSize - 1 or y > band.YSize - 1:
                             continue
-                        try:
-                            idx = int(values[int(y) - gminy][int(x) - gminx])
-                        except IndexError:
-                            log("Index out of bound for " + str(x) + "/" + str(y), Warning)
-                            missed+=1
+                        # print y, gminy, x, gminx
+                        # print int(y) - gminy, int(x) - gminx
+                        val = rda[int(y) - gminy][int(x) - gminx]
+
+                        if val < -0.01:
                             continue
 
-                        if idx < 0 or idx > 12:
+                        if not min_val:
+                            min_val = val
                             continue
-                        val = self.geoscape_landclass[idx]
-                        if val < 1:
-                            continue
-                        val_array[val] += 1
-                        count+=1
-            node.SetField("geoscape_count", count)
-            node.SetField("geoscape_missed", missed)
-            for key in self.landuse_classes:
 
-                if val_array.sum() < 1:
-                    continue
-                node.SetField(key, float(val_array[self.landuse_classes[key]] / val_array.sum()))
+                        if min_val > val:
+                            min_val = val
+
+            if min_val:
+                node.SetField("elevation", float(min_val))
         print "syncronise"
         self.node_view.finalise()
         self.city.finalise()

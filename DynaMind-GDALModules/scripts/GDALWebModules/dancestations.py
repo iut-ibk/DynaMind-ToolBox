@@ -30,6 +30,9 @@ class LoadDAnCEStations(Module):
             self.createParameter("append", BOOL)
             self.append = False
 
+            self.createParameter("filter", STRING)
+            self.filter = ""
+
 
         def init(self):
 
@@ -61,6 +64,13 @@ class LoadDAnCEStations(Module):
             filter_query = ""
             if self.node_station.get_attribute_filter_sql_string(""):
                 filter_query = "WHERE " + self.node_station.get_attribute_filter_sql_string("")
+
+            if filter_query == "" and self.filter != "":
+                filter_query = "WHERE " + self.filter
+            elif self.filter != "":
+                filter_query = filter_query + " AND " + self.filter
+
+            log(filter_query, Standard)
 
             cur.execute("SELECT * from station " + filter_query)
             rows = cur.fetchall()

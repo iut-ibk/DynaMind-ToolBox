@@ -21,8 +21,10 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 	if (geo->getNumGeometries() == 0)
 		return 0;
 	int polygons = geo->getNumGeometries();
-	for (int i = 0; i < geo->getNumGeometries(); i++) {
-		OGRFeature * f = db_worker->getGridView()->createFeature();
+	for (int i = 0; i <  geo->getNumGeometries(); i++) {
+		if (i%100000 == 0)
+			db_worker->getGridView()->syncAlteredFeatures();
+		OGRFeature * f = db_worker->getGridView()->createFeature();		
 		f->SetGeometry(geo->getGeometryRef(i));
 	}
 	DM::Logger(DM::Standard) << "Number of polygons " << polygons;

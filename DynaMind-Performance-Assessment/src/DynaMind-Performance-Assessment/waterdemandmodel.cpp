@@ -80,8 +80,15 @@ void WaterDemandModel::run()
 
 
 	// init rain
-	if (this->from_rain_station)
-		initRain();
+
+	if (this->from_rain_station) {
+		if (!initRain()) {
+			DM::Logger(DM::Error) << "No rainfall defined";
+			this->setStatus(DM::MOD_EXECUTION_ERROR);
+			return;
+		}
+
+	}
 
 	// Calculate outdoor demand for standard unit (100m2 roof, 100m2 garden, 1 person)
 	double imp_fraction = 0.2;
@@ -464,13 +471,32 @@ void WaterDemandModel::setRainfile(const std::string &value)
 	rainfile = value;
 }
 
-void WaterDemandModel::initRain()
+bool WaterDemandModel::initRain()
 {
+
+	std::stringstream sstation_id;
+	sstation_id << this->station.getName() << "_id";
+
+	OGRFeature * s;
+	this->station.resetReading();
+	int id = -1;
+	while (s = this->station.getNextFeature()) {
+		id = s->GetFID() ;
+	}
+
+	if (id == -1) {
+		DM::Logger(DM::Error) << "No rainfall station defined";
+		return false;
+	}
+
+	std::stringstream squery;
+	squery << "(type = 'rainfall intensity' or type = 'evapotranspiration') and " << sstation_id.str() << " = " << id;
+
 	//time series naming
 	this->timeseries.resetReading();
-	this->timeseries.setAttributeFilter("type = 'rainfall intensity' or type = 'evapotranspiration'");
-	OGRFeature * r;
+	this->timeseries.setAttributeFilter(squery.str());
 
+	OGRFeature * r;
 	while (r = this->timeseries.getNextFeature()) {
 		std::vector<double> vec;
 		DM::DMFeature::GetDoubleList(r, "data", vec);
@@ -480,6 +506,7 @@ void WaterDemandModel::initRain()
 			rainfalls[station_id] = vec;
 		if (type == "evapotranspiration")
 			evaotranspirations[station_id] = vec;
+		std::cout << station_id << std::endl;
 		station_ids.insert(station_id);
 	}
 }

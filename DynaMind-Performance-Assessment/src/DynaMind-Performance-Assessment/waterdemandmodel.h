@@ -51,7 +51,7 @@ class WaterDemandModel: public DM::Module
 
 		bool from_rain_station;
 		bool to_rain_station;
-		void initRain();
+		bool initRain();
 
 		std::set<int> station_ids;
 		std::map<int, std::vector<double> > rainfalls;
