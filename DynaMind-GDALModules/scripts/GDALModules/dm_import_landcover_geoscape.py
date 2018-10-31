@@ -119,6 +119,9 @@ class DM_ImportLandCoverGeoscape(Module):
         }
         for key in self.landuse_classes:
             self.node_view.addAttribute(key, Attribute.DOUBLE, WRITE)
+        self.node_view.addAttribute("geoscape_count", Attribute.INT, WRITE)
+        self.node_view.addAttribute("geoscape_missed", Attribute.INT, WRITE)
+
 
 
         self.registerViewContainers([self.node_view, self.city ])
@@ -165,10 +168,10 @@ class DM_ImportLandCoverGeoscape(Module):
                     miny = maxy
                     maxy = min_y_tmp
                     log("swapsy", Standard)
-                minx -= 50
-                miny -= 50
-                maxx += 50
-                maxy += 50
+                minx -= 100
+                miny -= 100
+                maxx += 100
+                maxy += 100
                 print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
                 log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
 
@@ -195,17 +198,20 @@ class DM_ImportLandCoverGeoscape(Module):
             sum_val = 0
 
             val_array = np.zeros(16)
-
-
+            missed = 0
+            count = 0
 
             for x in range(minx, maxx + 1):
                 for y in range(miny, maxy + 1):
                     if inMemory:
                         if x < 0 or y < 0 or x > band.XSize - 1 or y > band.YSize - 1:
                             continue
-                        # print y, gminy, x, gminx
-                        # print int(y) - gminy, int(x) - gminx
-                        idx = int(values[int(y) - gminy][int(x) - gminx])
+                        try:
+                            idx = int(values[int(y) - gminy][int(x) - gminx])
+                        except IndexError:
+                            log("Index out of bound for " + str(x) + "/" + str(y), Warning)
+                            missed+=1
+                            continue
 
                         if idx < 0 or idx > 12:
                             continue
@@ -213,8 +219,11 @@ class DM_ImportLandCoverGeoscape(Module):
                         if val < 1:
                             continue
                         val_array[val] += 1
-
+                        count+=1
+            node.SetField("geoscape_count", count)
+            node.SetField("geoscape_missed", missed)
             for key in self.landuse_classes:
+
                 if val_array.sum() < 1:
                     continue
                 node.SetField(key, float(val_array[self.landuse_classes[key]] / val_array.sum()))
