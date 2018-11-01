@@ -16,10 +16,12 @@ public:
 	void init();
 
 	DM::ViewContainer *getGridView();
+	void addedFeatures(int number);
 private:
 	sqlite3 *db;
 	std::string lead_view_name;
 	std::string grid_view_name;
+	int writenFeatures;
 
     bool in_bounding_box;
 

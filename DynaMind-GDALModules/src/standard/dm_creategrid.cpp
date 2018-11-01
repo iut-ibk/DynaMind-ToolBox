@@ -22,12 +22,12 @@ int DM_CreateGrid::callback(void *db_w, int argc, char **argv, char **azColName)
 		return 0;
 	int polygons = geo->getNumGeometries();
 	for (int i = 0; i <  geo->getNumGeometries(); i++) {
-		if (i%100000 == 0)
-			db_worker->getGridView()->syncAlteredFeatures();
 		OGRFeature * f = db_worker->getGridView()->createFeature();		
 		f->SetGeometry(geo->getGeometryRef(i));
 	}
-	DM::Logger(DM::Standard) << "Number of polygons " << polygons;
+
+//	DM::Logger(DM::Standard) << "Number of polygons " << polygons;
+	db_worker->addedFeatures(polygons);
 
 	return 0;
 }
@@ -40,6 +40,7 @@ string DM_CreateGrid::getHelpUrl()
 
 DM_CreateGrid::DM_CreateGrid()
 {
+	writenFeatures = 0;
 	this->GDALModule = true;
 
 	this->addParameter("lead_view_name", DM::STRING, &this->lead_view_name);
@@ -54,8 +55,6 @@ DM_CreateGrid::DM_CreateGrid()
     this->addParameter("in_bounding_box", DM::BOOL, &this->in_bounding_box);
     this->in_bounding_box = false;
 
-
-
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -64,17 +63,34 @@ DM_CreateGrid::DM_CreateGrid()
 
 void DM_CreateGrid::run()
 {
-	initDatabase();
 
-	std::stringstream sql_stream;
+	OGRFeature * f;
 
-    if (!this->in_bounding_box)
-        sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, " << grid_size << ")) FROM " << this->lead_view_name;
-    else
-        sql_stream << "SELECT ASWKT(ST_SquareGrid(ST_Envelope(geometry), " << grid_size << ")) FROM " << this->lead_view_name;
-	this->execute_query(sql_stream.str().c_str(), true);
+	while (f = lead_view.getNextFeature()) {
 
-	sqlite3_close(db);
+
+//		DM::Logger(DM::Standard) << "Number ID " << (int) f->GetFID();
+		initDatabase();
+		std::stringstream sql_stream;
+
+		if (!this->in_bounding_box)
+			sql_stream << "SELECT ASWKT(ST_SquareGrid(geometry, " << grid_size << ")) FROM " << this->lead_view_name << " WHERE ogc_fid=" << f->GetFID();
+		else
+			sql_stream << "SELECT ASWKT(ST_SquareGrid(ST_Envelope(geometry), " << grid_size << ")) FROM " << this->lead_view_name << " WHERE ogc_fid=" << f->GetFID();
+		this->execute_query(sql_stream.str().c_str(), true);
+		sqlite3_close(db);
+
+//		DM::Logger(DM::Standard) << writenFeatures;
+
+		if (writenFeatures > 10000) {
+//			DM::Logger(DM::Standard) << "sync";
+			this->grid_view.syncAlteredFeatures();
+			this->lead_view.syncReadFeatures();
+			writenFeatures = 0;
+
+		}
+
+	}
 }
 
 void DM_CreateGrid::execute_query(const char *sql, bool cb ) {
@@ -108,6 +124,8 @@ void DM_CreateGrid::initDatabase(){
 		execute_query("SELECT load_extension('/usr/local/lib/mod_spatialite')", false);
 	#endif
 
+
+
 }
 
 void DM_CreateGrid::init()
@@ -132,4 +150,8 @@ void DM_CreateGrid::init()
 DM::ViewContainer *DM_CreateGrid::getGridView()
 {
 	return &grid_view;
+}
+
+void DM_CreateGrid::addedFeatures(int number) {
+	writenFeatures+=number;
 }
