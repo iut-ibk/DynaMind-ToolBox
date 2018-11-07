@@ -45,6 +45,8 @@ class WTP_Extream_Heat_AU(Module):
             wtp = max(0.0, random.normal(7.348656, 9.407043))
             h.SetField("wtp_extreme_heat", wtp)
             if counter % 100000 == 0:
+                print counter
+                print h.GetFID()
                 self.households.sync()
-                self.__container.set_next_by_index(counter)
+                self.households.set_next_by_index(counter)
         self.households.finalise()

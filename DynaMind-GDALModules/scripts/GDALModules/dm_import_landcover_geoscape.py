@@ -179,6 +179,8 @@ class DM_ImportLandCoverGeoscape(Module):
                 gminy = miny
                 gminx = minx
 
+        print "start nodes"
+
         for node_idx, node in enumerate(self.node_view):
             geom = node.GetGeometryRef()
             env = geom.GetEnvelope()
@@ -223,12 +225,13 @@ class DM_ImportLandCoverGeoscape(Module):
             node.SetField("geoscape_count", count)
             node.SetField("geoscape_missed", missed)
             for key in self.landuse_classes:
-
                 if val_array.sum() < 1:
                     continue
                 node.SetField(key, float(val_array[self.landuse_classes[key]] / val_array.sum()))
             if node_idx % 100000 == 0:
-                self.node_view.syncAlteredFeatures()
+                print "sync", node_idx
+                self.node_view.sync()
+                self.node_view.set_next_by_index(node_idx)
         print "syncronise"
         self.node_view.finalise()
         self.city.finalise()
