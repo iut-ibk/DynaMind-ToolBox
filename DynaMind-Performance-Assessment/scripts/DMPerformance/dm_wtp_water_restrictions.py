@@ -41,8 +41,7 @@ class WTP_Water_Restrictions_AU(Module):
             wtp = max(0.0, (3.208593 - 0.6362358 * bedrooms + 0.356186 * age - 0.0027977 * age * age - 1.883466 * self.education_levels[education]))
             h.SetField("wtp_water_restrictions", wtp)
             if counter % 100000 == 0:
-                print counter
-                print h.GetFID()
+                log(str(counter), DM.Standard)
                 self.households.sync()
                 self.households.set_next_by_index(counter)
                 

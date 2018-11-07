@@ -51,8 +51,7 @@ class WTP_Stream_Health_AU(Module):
             wtp = 10.99824 + 0.3368328 * bedrooms - 0.0334691 * age - 0.0765181 * self.education_levels[education]
             h.SetField("wtp_stream_health", wtp)
             if counter % 100000 == 0:
-                print counter
-                print h.GetFID()
+                log(str(counter), DM.Standard)
                 self.households.sync()
                 self.households.set_next_by_index(counter)
         self.households.finalise()

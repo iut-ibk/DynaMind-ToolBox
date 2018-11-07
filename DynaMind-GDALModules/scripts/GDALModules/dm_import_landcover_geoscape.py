@@ -180,6 +180,7 @@ class DM_ImportLandCoverGeoscape(Module):
                 gminx = minx
 
         print "start nodes"
+        self.city.finalise()
 
         for node_idx, node in enumerate(self.node_view):
             geom = node.GetGeometryRef()
@@ -231,7 +232,11 @@ class DM_ImportLandCoverGeoscape(Module):
             if node_idx % 100000 == 0:
                 print "sync", node_idx
                 self.node_view.sync()
+                print "set index"
                 self.node_view.set_next_by_index(node_idx)
+                print "finished sync"
         print "syncronise"
+
         self.node_view.finalise()
-        self.city.finalise()
+        print "finalise city"
+

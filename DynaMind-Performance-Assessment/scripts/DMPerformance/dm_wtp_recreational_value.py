@@ -39,8 +39,7 @@ class WTP_Recreational_Value_AU(Module):
             wtp = max(0.0, (2.844952 - 11.62263*self.education_levels[education] + 6.))
             h.SetField("wtp_recreational_value", wtp)
             if counter % 100000 == 0:
-                print counter
-                print h.GetFID()
+                log(str(counter), DM.Standard)
                 self.households.sync()
                 self.households.set_next_by_index(counter)
         self.households.finalise()
