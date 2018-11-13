@@ -249,7 +249,12 @@ class Polder(Module):
                 c = []
                 if data_array_c is not None:
                     c = self.flow_probes["flow_n_" + str(idx)].get_state_value_as_double_vector("Flow")
-
+                    if len(data_array_c) == 0:
+                        for i in c:
+                            data_array_c.append(i)
+                    else:
+                        for i, v in enumerate(c):
+                            data_array_c[i] = data_array_c[i] + v
                 if len(data_array) == 0:
                     for i in o:
                         data_array.append(i)
@@ -257,11 +262,7 @@ class Polder(Module):
                     for i, v in enumerate(o):
                         data_array[i] = data_array[i] + v
 
-                if len(data_array_c) == 0:
-                    for i in c:
-                            data_array_c.append(i)
-                    for i, v in enumerate(c):
-                        data_array_c[i] = data_array_c[i] + v
+
 
             dm_set_double_list(polder, "overflow", overflow)
             dm_set_double_list(polder, "overflow_concentration", overflow_concentration)
@@ -269,7 +270,7 @@ class Polder(Module):
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
 
-            # print overflow, overflow_concentration
+            # print sum(overflow), sum(water_supply)
 
             for idx, r in enumerate(reticulations):
                 r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])
