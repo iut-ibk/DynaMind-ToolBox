@@ -30,6 +30,7 @@ class Polder(Module):
         self.polder.addAttribute("storage_level", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("overflow_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
@@ -73,6 +74,10 @@ class Polder(Module):
             self.getSimulationConfig().getDefaultLibraryPath() + "/CD3Modules/libdance4water-nodes")
 
     def setup_catchment(self, polder):
+        """
+        Creates initial CD3 model. Including rainfall import -> impervious runoff -> flow probe (Q and TN)
+
+        """
         # rain = self.cd3.add_node("IxxRainRead_v2")
         # rain.setStringParameter("rain_file", "/tmp/rainfall_clean.ixx")
 
@@ -85,7 +90,7 @@ class Polder(Module):
         rain.setDoubleVectorParameter("source", rain_data)
 
         catchment = self.cd3.add_node("ImperviousRunoff")
-        # print "imp", p.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction")
+
         catchment.setDoubleParameter("area", polder.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction"))
         catchment.setDoubleVectorParameter("loadings", [2.4])
 
@@ -106,6 +111,11 @@ class Polder(Module):
         return [flow_probe_n, "out"]
 
     def setup_polder(self, mixer, pump_volumes):
+        """
+        Add polder nodes and pumps
+        Polder  -> Pumps -> Probe (Overflow)
+                -> Pumps -> Probe -> Mixer -> (Polder)
+        """
         polder = self.cd3.add_node("Polder")
 
         pv = []
@@ -131,9 +141,15 @@ class Polder(Module):
                 # Add pump to overflow
                 flow_probe_pump = self.cd3.add_node("FlowProbe")
                 self.cd3.add_connection(polder, "out_" + str(i), flow_probe_pump, "in")
-                self.flow_probes[str(i)] = flow_probe_pump
+                self.flow_probes["flow_" + str(i)] = flow_probe_pump
 
+                flow_probe_n = self.cd3.add_node("FlowProbe")
+                flow_probe_n.setIntParameter("element", 1)
+                self.cd3.add_connection(flow_probe_pump, "out", flow_probe_n, "in")
+                self.flow_probes["flow_n_" + str(i)] = flow_probe_n
                 continue
+
+            # Add Circulation to wetland
             mixer_port_id += 1
             self.add_loop(i, polder, mixer, mixer_port_id)
 
@@ -157,7 +173,7 @@ class Polder(Module):
 
         self.cd3.add_connection(n_start, "out", mixer[0], "in_" + str(mixer_port_id))
 
-        self.flow_probes[str(id)] = flow_probe_pump_1
+        self.flow_probes["flow_" + str(id)] = flow_probe_pump_1
 
         return n_start, n_end
 
@@ -189,11 +205,17 @@ class Polder(Module):
             pump_volumes.append([r.GetFieldAsDouble("pumping_rate"), 100, True, r])
             reticulations.append(r)
 
+
         for polder in self.polder:
             self.init_citydrain()
+
+            # Setup inital dynamind model
             c = self.setup_catchment(polder)
 
+            # Set up mixer needed to connect all pumps
             m = self.setup_mixer(pump_volumes)
+
+            # Add pumps to polder model
             p = self.setup_polder(m, pump_volumes)
 
             self.cd3.init_nodes()
@@ -206,40 +228,51 @@ class Polder(Module):
             dm_set_double_list(polder, "run_off", self.flow_probes["catchment"].get_state_value_as_double_vector("Flow"))
 
             #Calculate Overflow
+
             overflow = []
             water_supply = []
+            overflow_concentration = []
 
             for idx, p in enumerate(pump_volumes):
+                data_array_c = None
                 if p[2]:
                     continue
                 type = p[3].GetFieldAsString("type")
+
                 if type == "overflow":
                     data_array = overflow
+                    data_array_c = overflow_concentration
+
                 else:
                     data_array = water_supply
-                o = self.flow_probes[str(idx)].get_state_value_as_double_vector("Flow")
+                o = self.flow_probes["flow_" + str(idx)].get_state_value_as_double_vector("Flow")
+                c = []
+                if data_array_c is not None:
+                    c = self.flow_probes["flow_n_" + str(idx)].get_state_value_as_double_vector("Flow")
+
                 if len(data_array) == 0:
                     for i in o:
                         data_array.append(i)
                 else:
-                    for i in o:
-                        data_array[i] = data_array[i] + o
+                    for i, v in enumerate(o):
+                        data_array[i] = data_array[i] + v
+
+                if len(data_array_c) == 0:
+                    for i in c:
+                            data_array_c.append(i)
+                    for i, v in enumerate(c):
+                        data_array_c[i] = data_array_c[i] + v
 
             dm_set_double_list(polder, "overflow", overflow)
+            dm_set_double_list(polder, "overflow_concentration", overflow_concentration)
             dm_set_double_list(polder, "provided_water", water_supply)
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
 
-            for idx, r in enumerate(reticulations):
-                # print "treated", self.treatments[idx].get_state_value_as_double_vector("treated")
-                r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])
+            # print overflow, overflow_concentration
 
-            #
-            # print "storage", p.get_state_value_as_double_vector("storage_level")
-            # print "total_pollution", p.get_state_value_as_double_vector("storage_level")
-            # print "overflow", overflow
-            # for probe in self.flow_probes.keys():
-            #     print probe, self.flow_probes[probe].get_state_value_as_double_vector("Flow")
+            for idx, r in enumerate(reticulations):
+                r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])
 
         self.reticulation.finalise()
         self.timeseries.finalise()
