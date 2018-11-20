@@ -606,11 +606,11 @@ class DM::ViewContainer {
 		db_id = self.getDBID()
 		self.__features = []
 		if db_id not in self.__ds.keys():
-			log("Register Datasource " + str(db_id), Standard)
+			log("Register Datasource " + str(db_id), Debug)
 			self.__ds[db_id] = gdal.OpenEx(db_id, gdal.OF_UPDATE)
 			self.__connection_counter[db_id] = 0
 		else:
-			log("Reuse connection " + str(db_id), Standard)
+			log("Reuse connection " + str(db_id), Debug)
 		table_name = str(self.getName())
 		log("Register Layer " + str(table_name), Debug)
 
@@ -765,7 +765,7 @@ class DM::ViewContainer {
 		log("Destroy Layer " + str(self.getName()), Debug)
 		log(str(self.__connection_counter[self.getDBID()]), Debug)
 		if self.__connection_counter[self.getDBID()] == 1:
-			log("Really Destroy Connection", Standard)
+			log("Really Destroy Connection", Debug)
 			ds = self.__ds[self.getDBID()]
 			del self.__ds[self.getDBID()]
 			self.__ds[self.getDBID()] = None
