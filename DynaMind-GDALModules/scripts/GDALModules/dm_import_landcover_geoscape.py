@@ -6,6 +6,7 @@ import numpy as np
 import compiler
 import paramiko
 import os
+import gc
 
 
 class DM_ImportLandCoverGeoscape(Module):
@@ -20,6 +21,9 @@ class DM_ImportLandCoverGeoscape(Module):
         self.setIsGDALModule(True)
         self.createParameter("view_name", STRING)
         self.view_name = "node"
+
+        self.createParameter("view_name_grid", STRING)
+        self.view_name_grid = "grid_big"
 
         self.createParameter("raster_file", STRING)
         self.raster_file = ""
@@ -84,7 +88,7 @@ class DM_ImportLandCoverGeoscape(Module):
 
     def init(self):
         self.node_view = ViewContainer(self.view_name, FACE, READ)
-        self.city = ViewContainer("city", FACE, READ)
+        self.city = ViewContainer(self.view_name_grid, FACE, READ)
 
         self.geoscape_landclass = {
             2: 5, # grass
@@ -119,6 +123,7 @@ class DM_ImportLandCoverGeoscape(Module):
         }
         for key in self.landuse_classes:
             self.node_view.addAttribute(key, Attribute.DOUBLE, WRITE)
+        # self.node_view.addAttribute(key, Attribute.INT, WRITE)
         self.node_view.addAttribute("geoscape_count", Attribute.INT, WRITE)
         self.node_view.addAttribute("geoscape_missed", Attribute.INT, WRITE)
 
@@ -151,10 +156,55 @@ class DM_ImportLandCoverGeoscape(Module):
         srsLatLong = osr.SpatialReference()
         srsLatLong.ImportFromEPSG(self.getSimulationConfig().getCoorindateSystem())
         ct = osr.CoordinateTransformation(srsLatLong, srs)
-        inMemory = True
-        if inMemory:
-            for c in self.city:
-                geom = c.GetGeometryRef()
+
+
+        areas = []
+
+        for c_idx, c in enumerate(self.city):
+            log(str(c.GetFID()), Standard )
+            geom = c.GetGeometryRef()
+            env = geom.GetEnvelope()
+            p1 = ct.TransformPoint(env[0], env[2])
+            p2 = ct.TransformPoint(env[1], env[3])
+            minx = int((p1[0] - gt[0]) / gt[1])
+            miny = int((p1[1] - gt[3]) / gt[5])
+            maxx = int((p2[0] - gt[0]) / gt[1])
+            maxy = int((p2[1] - gt[3]) / gt[5])
+
+            if miny > maxy:
+                min_y_tmp = miny
+                miny = maxy
+                maxy = min_y_tmp
+                # log("swapsy", Standard)
+            minx -= 100
+            miny -= 100
+            maxx += 100
+            maxy += 100
+            # print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
+            #
+            # log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
+            # values = band.ReadAsArray()
+
+            # values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
+            # print values
+            # gminy = miny
+            # gminx = minx
+            areas.append([c.GetFID(), minx, miny, maxx - minx, maxy - miny])
+            # print "start nodes"
+
+        self.city.finalise()
+
+        for a in areas:
+            log(str(a), Standard)
+            self.node_view.set_attribute_filter("grid_big_id = " + str(a[0]))
+            values = band.ReadAsArray(a[1], a[2], a[3], a[4])
+            # print values
+
+            gminy = a[2]
+            gminx = a[1]
+
+            for node_idx, node in enumerate(self.node_view):
+                geom = node.GetGeometryRef()
                 env = geom.GetEnvelope()
                 p1 = ct.TransformPoint(env[0], env[2])
                 p2 = ct.TransformPoint(env[1], env[3])
@@ -167,75 +217,41 @@ class DM_ImportLandCoverGeoscape(Module):
                     min_y_tmp = miny
                     miny = maxy
                     maxy = min_y_tmp
-                    log("swapsy", Standard)
-                minx -= 100
-                miny -= 100
-                maxx += 100
-                maxy += 100
-                print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
-                log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
 
-                values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
-                gminy = miny
-                gminx = minx
+                val_array = np.zeros(16)
+                missed = 0
+                count = 0
 
-        print "start nodes"
-        self.city.finalise()
+                for x in range(minx, maxx + 1):
+                    for y in range(miny, maxy + 1):
+                            if x < 0 or y < 0 or x > band.XSize - 1 or y > band.YSize - 1:
+                                continue
+                            try:
+                                #print "y",int(y),  gminy, "x", int(x) , gminx, "val", int(values[int(y) - gminy][int(x) - gminx])
+                                idx = int(values[int(y) - gminy][int(x) - gminx])
 
-        for node_idx, node in enumerate(self.node_view):
-            geom = node.GetGeometryRef()
-            env = geom.GetEnvelope()
-            p1 = ct.TransformPoint(env[0], env[2])
-            p2 = ct.TransformPoint(env[1], env[3])
-            minx = int((p1[0] - gt[0]) / gt[1])
-            miny = int((p1[1] - gt[3]) / gt[5])
-            maxx = int((p2[0] - gt[0]) / gt[1])
-            maxy = int((p2[1] - gt[3]) / gt[5])
-            # print env print gt print minx, miny, maxx, maxy
-            if miny > maxy:
-                min_y_tmp = miny
-                miny = maxy
-                maxy = min_y_tmp
-            # print minx, miny, maxx, maxy
-            datatype = band.DataType
-            sum_val = 0
+                            except IndexError:
+                                missed+=1
+                                continue
+                            if idx < 0 or idx > 12:
+                                continue
+                            val = self.geoscape_landclass[idx]
+                            if val < 1:
+                                continue
 
-            val_array = np.zeros(16)
-            missed = 0
-            count = 0
+                            val_array[val] += 1
+                            count+=1
+                # print count, missed
+                node.SetField("geoscape_count", count)
+                node.SetField("geoscape_missed", missed)
+                for key in self.landuse_classes:
+                    if val_array.sum() < 1:
+                        continue
+                    node.SetField(key, float(val_array[self.landuse_classes[key]] / val_array.sum()))
 
-            for x in range(minx, maxx + 1):
-                for y in range(miny, maxy + 1):
-                    if inMemory:
-                        if x < 0 or y < 0 or x > band.XSize - 1 or y > band.YSize - 1:
-                            continue
-                        try:
-                            idx = int(values[int(y) - gminy][int(x) - gminx])
-                        except IndexError:
-                            log("Index out of bound for " + str(x) + "/" + str(y), Warning)
-                            missed+=1
-                            continue
-
-                        if idx < 0 or idx > 12:
-                            continue
-                        val = self.geoscape_landclass[idx]
-                        if val < 1:
-                            continue
-                        val_array[val] += 1
-                        count+=1
-            node.SetField("geoscape_count", count)
-            node.SetField("geoscape_missed", missed)
-            for key in self.landuse_classes:
-                if val_array.sum() < 1:
-                    continue
-                node.SetField(key, float(val_array[self.landuse_classes[key]] / val_array.sum()))
-            if node_idx % 100000 == 0:
-                print "sync", node_idx
-                self.node_view.sync()
-                print "set index"
-                self.node_view.set_next_by_index(node_idx)
-                print "finished sync"
-        print "syncronise"
+            self.node_view.sync()
+            self.node_view.set_next_by_index(0)
+            # gc.collect()
 
         self.node_view.finalise()
         print "finalise city"
