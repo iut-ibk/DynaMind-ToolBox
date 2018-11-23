@@ -40,6 +40,9 @@ class DM_ImportLandCoverGeoscape(Module):
         self.createParameter("host", STRING)
         self.host = ""
 
+        self.createParameter("big_raster_file", BOOL)
+        self.big_raster_file = False
+
         self.transport = None
         self.sftp = None
 
@@ -196,7 +199,10 @@ class DM_ImportLandCoverGeoscape(Module):
 
         for a in areas:
             log(str(a), Standard)
-            self.node_view.set_attribute_filter("grid_big_id = " + str(a[0]))
+            if self.big_raster_file:
+                self.node_view.set_attribute_filter(self.view_name_grid + "_id) = " + str(a[0]))
+            else:
+                self.node_view.reset_reading()
             values = band.ReadAsArray(a[1], a[2], a[3], a[4])
             # print values
 
