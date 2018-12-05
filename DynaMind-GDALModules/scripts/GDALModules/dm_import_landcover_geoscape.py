@@ -200,7 +200,7 @@ class DM_ImportLandCoverGeoscape(Module):
         for a in areas:
             log(str(a), Standard)
             if self.big_raster_file:
-                self.node_view.set_attribute_filter(self.view_name_grid + "_id) = " + str(a[0]))
+                self.node_view.set_attribute_filter(self.view_name_grid + "_id = " + str(a[0]))
             else:
                 self.node_view.reset_reading()
             values = band.ReadAsArray(a[1], a[2], a[3], a[4])
@@ -247,7 +247,7 @@ class DM_ImportLandCoverGeoscape(Module):
 
                             val_array[val] += 1
                             count+=1
-                # print count, missed
+                print count, missed
                 node.SetField("geoscape_count", count)
                 node.SetField("geoscape_missed", missed)
                 for key in self.landuse_classes:
