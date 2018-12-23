@@ -9,6 +9,7 @@
 #include "sourcevector.h"
 #include "polder.h"
 #include "simpletreatment.h"
+#include "monthlyevo.h"
 
 #include <noderegistry.h>
 #include <nodefactory.h>
@@ -33,6 +34,8 @@ extern "C" {
 				registry->addNodeFactory(new NodeFactory<SourceVector>(SOURCE));
                 registry->addNodeFactory(new NodeFactory<Polder>(SOURCE));
 				registry->addNodeFactory(new NodeFactory<SimpleTreatment>(SOURCE));
+				registry->addNodeFactory(new NodeFactory<MonthlyEvo>(SOURCE));
+
 	}
 
     void CD3_PUBLIC registerSimulations(SimulationRegistry *registry) {

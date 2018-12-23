@@ -32,6 +32,7 @@ class Polder(Module):
 
         self.polder = ViewContainer("polder", DM.COMPONENT, DM.READ)
         self.polder.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
+        self.polder.addAttribute("surface_water_area", DM.Attribute.DOUBLE, DM.READ)
         self.polder.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.polder.addAttribute("storage_level", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
@@ -116,7 +117,7 @@ class Polder(Module):
 
         return [flow_probe_n, "out"]
 
-    def setup_polder(self, mixer, pump_volumes):
+    def setup_polder(self, mixer, pump_volumes, surface_water_area):
         """
         Add polder nodes and pumps
         Polder  -> Pumps -> Probe (Overflow)
@@ -132,13 +133,17 @@ class Polder(Module):
         for p in pump_volumes:
             vv.append(p[1])
 
-        print pv
-        print vv
+        # print pv
+        # print vv
+
+        evapo = self.cd3.add_node("MonthlyEvo")
 
         polder.setDoubleVectorParameter("Qp", pv)
         polder.setDoubleVectorParameter("Vmin", vv)
+        polder.setDoubleParameter("surface_area", surface_water_area)
         self.cd3.init_nodes()
 
+        self.cd3.add_connection(evapo, "out", polder, "evapo")
         self.cd3.add_connection(mixer[0], "out", polder, "in")
 
         mixer_port_id = 0
@@ -222,7 +227,9 @@ class Polder(Module):
             m = self.setup_mixer(pump_volumes)
 
             # Add pumps to polder model
-            p = self.setup_polder(m, pump_volumes)
+            p = self.setup_polder(m, pump_volumes, polder.GetFieldAsDouble("surface_water_area"))
+
+
 
             self.cd3.init_nodes()
             self.connect_catchment(c, m)

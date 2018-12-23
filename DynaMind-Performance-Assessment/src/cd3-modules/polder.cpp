@@ -11,16 +11,23 @@ Polder::Polder()
 	addParameter(ADD_PARAMETERS(Vmin))
 		.setUnit("m^3");
 
+	addParameter(ADD_PARAMETERS(surface_area))
+		.setUnit("m^2");
+
 	addState(ADD_PARAMETERS(storage_level));
 
 	addState(ADD_PARAMETERS(total_pollution));
 
     addInPort(ADD_PARAMETERS(in));
+	addInPort(ADD_PARAMETERS(evapo));
+
+	addOutPort(ADD_PARAMETERS(evapo_loss));
 }
 
 int Polder::f(ptime time, int dt) {
         (void) time;
 		storage_volume += in[0];
+		double evapotrasporation_loss = evapo[0]*surface_area;
 
 
 		// Add inflow loading to total load
@@ -53,10 +60,24 @@ int Polder::f(ptime time, int dt) {
 			for (size_t j = 1; j < in.size(); j++) {
 				(*outputs[i])[j] = loadings[j-1] / storage_volume; // current concentraion
 				loadings[j-1] -= (storage_volume - ds) * loadings[j-1]/ storage_volume; //reduce total load by extracted water
-
 			}
 
 			storage_volume = ds;
+
+			//Reduce storage volume with evapo
+
+			if (storage_volume > 0) {
+				ds = storage_volume - evapotrasporation_loss;
+				if (ds > 0) {
+					storage_volume = ds;
+					evapo_loss[0] = evapotrasporation_loss;
+				}
+				else {
+					evapo_loss[0] = evapotrasporation_loss + ds;
+					storage_volume = 0;
+				}
+			}
+
 
 		}
 		storage_level.push_back(storage_volume);

@@ -13,8 +13,8 @@ public:
     int f(ptime time, int dt);
 
 private:
-    double storage_volume;
-    Flow in;
+	double storage_volume, surface_area;
+	Flow in, evapo, evapo_loss;
 //    int num_pumps;
 
     std::vector<double> Qp;
