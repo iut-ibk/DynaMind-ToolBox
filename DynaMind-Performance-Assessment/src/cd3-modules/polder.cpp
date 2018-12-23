@@ -63,23 +63,22 @@ int Polder::f(ptime time, int dt) {
 			}
 
 			storage_volume = ds;
-
-			//Reduce storage volume with evapo
-
-			if (storage_volume > 0) {
-				ds = storage_volume - evapotrasporation_loss;
-				if (ds > 0) {
-					storage_volume = ds;
-					evapo_loss[0] = evapotrasporation_loss;
-				}
-				else {
-					evapo_loss[0] = evapotrasporation_loss + ds;
-					storage_volume = 0;
-				}
-			}
-
-
 		}
+
+		//Reduce storage volume with evapo
+
+		if (storage_volume > 0) {
+			ds = storage_volume - evapotrasporation_loss;
+			if (ds > 0) {
+				storage_volume = ds;
+				evapo_loss[0] = evapotrasporation_loss;
+			}
+			else {
+				evapo_loss[0] = evapotrasporation_loss + ds;
+				storage_volume = 0;
+			}
+		}
+
 		storage_level.push_back(storage_volume);
 		total_pollution.push_back(loadings[0]);
         return dt;
