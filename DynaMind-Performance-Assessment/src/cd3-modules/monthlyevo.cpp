@@ -30,7 +30,7 @@ int MonthlyEvo::f(ptime time, int dt) {
 	monthly_evo.push_back(43.7/31./(60*60*24));
 
 	int month = time.date().month();
-	out[0] = monthly_evo[month-1] * dt;
+	out[0] = monthly_evo[month-1] * dt / 1000.;
 
 	return dt;
 }
