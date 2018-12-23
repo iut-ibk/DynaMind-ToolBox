@@ -68,7 +68,7 @@ int Polder::f(ptime time, int dt) {
 		//Reduce storage volume with evapo
 
 		if (storage_volume > 0) {
-			ds = storage_volume - evapotrasporation_loss;
+			double ds = storage_volume - evapotrasporation_loss;
 			if (ds > 0) {
 				storage_volume = ds;
 				evapo_loss[0] = evapotrasporation_loss;
