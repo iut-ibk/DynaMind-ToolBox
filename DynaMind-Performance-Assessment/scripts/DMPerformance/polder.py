@@ -17,6 +17,12 @@ class Polder(Module):
         Module.__init__(self)
         self.setIsGDALModule(True)
 
+        self.createParameter("start_date", DM.STRING)
+        self.start_date = "2005-Jan-01 00:00:00"
+
+        self.createParameter("end_date", DM.STRING)
+        self.end_date = "2006-Jan-01 00:00:00"
+
         self.cd3 = None
         self.flow_probes = dict()
 
@@ -61,8 +67,8 @@ class Polder(Module):
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
         # print flow
         self.cd3 = cd3.CityDrain3(
-            "2005-Jan-01 00:00:00",
-            "2006-Jan-01 00:00:00",
+            self.start_date,
+            self.end_date,
             "86400",
             flow
         )
@@ -221,7 +227,7 @@ class Polder(Module):
             self.cd3.init_nodes()
             self.connect_catchment(c, m)
 
-            self.cd3.start("2005-Jan-01 00:00:00")
+            self.cd3.start(self.start_date)
 
             dm_set_double_list(polder, "storage_level",  p.get_state_value_as_double_vector("storage_level"))
             dm_set_double_list(polder, "total_pollution", p.get_state_value_as_double_vector("total_pollution"))
