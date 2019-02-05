@@ -98,7 +98,7 @@ class DM_ImportLandCoverGeoscape(Module):
             3: 13,
             4: 7,
             5: 1,
-            6: 4,
+            6: 7,
             7: 15,
             8: 2,
             9: 12,
