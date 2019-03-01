@@ -132,7 +132,7 @@ class LoadExtremeTemperature(Module):
                 end_date = self.get_extreme_date(cur, station_id)
                 start_date = end_date - datetime.timedelta(days=3)
 
-                print start_date, end_date
+                # print start_date, end_date
 
                 if start_date:
                     filter_query += " AND date >= '" + str(start_date) + "'"
@@ -145,11 +145,13 @@ class LoadExtremeTemperature(Module):
                 rows = cur.fetchall()
                 result_temp = []
                 inserted = 0
+                val = 9999
                 for entry in rows:
-                    val = float(entry[1])
+                    if float(entry[1]) < 9999:
+                        val = float(entry[1])
                     result_temp.append(val)
                     inserted+=1
-                    print entry[0], entry[1]
+                    # print entry[0], val
 
 
 
