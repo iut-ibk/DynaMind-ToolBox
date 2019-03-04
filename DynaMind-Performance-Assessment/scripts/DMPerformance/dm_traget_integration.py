@@ -80,6 +80,8 @@ class TargetInegration(Module):
             self.temperature_station.finalise()
             return t, rh, ws, p, kd, ld
 
+        log("Load data from station " + str(station_id), Standard)
+
         self.timeseries.setAttributeFilter("temperature_station_id = " + str(station_id))
         self.timeseries.reset_reading()
 
