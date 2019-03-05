@@ -81,7 +81,7 @@ class LoadExtremeTemperature(Module):
             return measurment_types
 
         def get_extreme_date(self, cur, station_id):
-            cur.execute("Select  *, avg(at) over(rows 2 preceding) as rolling_avg  from (SELECT  date_trunc('day', date) AS d, avg(value) as at,max(value) as mt, min(value) as mint, count(value) from measurment where station_id = " + str(station_id) + " and value < 9999 GROUP BY d order by d) temp order by rolling_avg DESC LIMIT 1")
+            cur.execute("Select  *, avg(at) over(rows 2 preceding) as rolling_avg  from (SELECT  date_trunc('day', date) AS d, avg(value) as at,max(value) as mt, min(value) as mint, count(value) from measurment where station_id = " + str(station_id) + " and value < 9999 and measurment_type_id = 6 GROUP BY d order by d) temp order by rolling_avg DESC LIMIT 1")
             rows = cur.fetchall()
             for r in rows:
                 print r[0]
