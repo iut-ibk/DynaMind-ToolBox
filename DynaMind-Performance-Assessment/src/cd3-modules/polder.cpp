@@ -22,14 +22,14 @@ Polder::Polder()
 	addInPort(ADD_PARAMETERS(evapo));
 
 	addOutPort(ADD_PARAMETERS(evapo_loss));
+
+	addOutPort(ADD_PARAMETERS(fstorage));
 }
 
 int Polder::f(ptime time, int dt) {
         (void) time;
 		storage_volume += in[0];
 		double evapotrasporation_loss = evapo[0]*surface_area;
-
-
 		// Add inflow loading to total load
 		for (size_t i = 1; i < in.size(); i++) {
 			loadings[i-1]+=in[0]*in[i];
@@ -81,6 +81,9 @@ int Polder::f(ptime time, int dt) {
 
 		storage_level.push_back(storage_volume);
 		total_pollution.push_back(loadings[0]);
+
+		fstorage[0] = storage_volume;
+		fstorage[1] = loadings[0]/storage_volume;
         return dt;
 }
 

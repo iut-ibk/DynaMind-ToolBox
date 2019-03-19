@@ -14,7 +14,7 @@ public:
 
 private:
 	double storage_volume, surface_area;
-	Flow in, evapo, evapo_loss;
+	Flow in, evapo, evapo_loss, fstorage;
 //    int num_pumps;
 
     std::vector<double> Qp;
@@ -23,6 +23,7 @@ private:
 	std::vector<double> loadings;
 
     std::vector<Flow *> outputs;
+
     std::vector<std::string> output_names;
 
 	std::vector<double> storage_level;
