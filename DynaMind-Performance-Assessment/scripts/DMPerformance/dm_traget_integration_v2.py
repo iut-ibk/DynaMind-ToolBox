@@ -10,6 +10,7 @@ import numpy as np
 import uuid
 import datetime
 import subprocess
+from netCDF4 import Dataset
 
 class TargetInegrationv2(Module):
     display_name = "Targetv2"
@@ -96,6 +97,7 @@ class TargetInegrationv2(Module):
 
         return temperatures, rh, ws, p, kd, ld
 
+
     def write_climate_file(self, cimate_file):
         t, rh, ws, p, kd, ld = self.load_temperature_data()
 
@@ -121,10 +123,25 @@ class TargetInegrationv2(Module):
                 f.write(str("\n"))
                 d = d + datetime.timedelta(minutes=30)
 
-    def write_config(self,config_file, climate_file, landuse_file):
+
+    def read_output_file(self, output):
+        dataset = Dataset(output)
+        self.micro_climate_grid.reset_reading()
+        for (idx, m) in enumerate(self.micro_climate_grid):
+            at = []
+            for t in range(143):
+                air_temperature = (dataset.variables['TEMP_AIR'][:][t])
+
+                at.append(air_temperature[idx // 12][idx - (idx // 12) * 12])
+            dm_set_double_list(m, "taf_period", at)
+            m.SetField("taf", np.array(at).max())
+        self.micro_climate_grid.finalise()
+
+
+    def write_config(self,config_file, output_uuid, climate_file, landuse_file):
         with open(config_file, "w") as f:
             f.write("site_name=Mawson\n")
-            f.write("run_name=MawsonExample\n")
+            f.write("run_name="+str(output_uuid)+"\n")
             f.write("inpt_met_file=" + str(climate_file) + str("\n"))
             f.write("inpt_lc_file=" + str(landuse_file) + str("\n"))
             f.write("output_dir=/tmp"+ str("\n"))
@@ -148,6 +165,7 @@ class TargetInegrationv2(Module):
     def run(self):
         sys.path.append(self.target_path + "/Toolkit2-Runs/bin/")
         import runToolkit as target
+        output_uuid = str(uuid.uuid4())
         landuse_file = "/tmp/" + str(uuid.uuid4()) + "lc.csv"
         config_file = "/tmp/" + str(uuid.uuid4()) + "conf.txt"
         result_file = "/tmp/" + str(uuid.uuid4()) + "output"
@@ -155,23 +173,14 @@ class TargetInegrationv2(Module):
 
         self.write_input_file(landuse_file)
         self.write_climate_file(cimate_file)
-        self.write_config(config_file, cimate_file, landuse_file)
+        self.write_config(config_file, output_uuid, cimate_file, landuse_file)
         self.run_target(config_file)
+        self.read_output_file(str("/tmp/"+str(output_uuid)+str(".nc")))
 
     def run_target(self, config_file):
-        # subprocess.call("/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/example2/run_example.sh",
-        #                 shell=True, cwd="/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/example2")
+
         subprocess.call("java -cp ../netcdfAll-4.6.11.jar:. Target.RunToolkit " + str(config_file),
                         shell=True, cwd="/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/src")
-        # Run target
-        # target.run_target(
-        #     self.target_path + "/Sunbury1Extreme/controlfiles/Sunbury1Extreme/Sunbury1Extreme.txt", landuse_file,
-        #     cimate_file, result_file)
-        #
-        # self.read_output(result_file)
-        #
-        # os.remove(result_file+ ".npy")
-        # os.remove(landuse_file )
 
     def read_output(self, result_file):
         img_array = np.load(result_file + ".npy")
@@ -237,6 +246,7 @@ class TargetInegrationv2(Module):
     def write_input_file(self, landuse_file):
         text_file = open(landuse_file, "w")
         text_file.write("FID,roof,road,watr,conc,Veg,dry,irr,H,W" + '\n')
+        first = True
         for m in self.micro_climate_grid:
 
             # for high rise H/W is > 2
@@ -255,14 +265,18 @@ class TargetInegrationv2(Module):
             tree_cover_fraction = self.fixNulls(m.GetFieldAsDouble("tree_cover_fraction"))
             grass_fraction = self.fixNulls(m.GetFieldAsDouble("grass_fraction"))
             irrigated_grass_fraction = self.fixNulls(m.GetFieldAsDouble("irrigated_grass_fraction"))
-            irrigated_grass_fraction = 1.0
+            # irrigated_grass_fraction = 1.0
+            # if first:
+            #     water_fraction = 1.0
+            #     irrigated_grass_fraction = 0.
+            #     first = False
 
             H = '4'
             W = '30'
 
             if (roof_fraction > 0.3):
-                H = '1'
-                W = '1'
+                H = '4'
+                W = '30'
             else:
                 if (grass_fraction + irrigated_grass_fraction > 0.5):
                     H = '4'
