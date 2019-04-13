@@ -11,3 +11,4 @@ from scale_demand import *
 from polder import *
 from dm_traget_integration import *
 from dm_catchment import *
+from dm_traget_integration_v2 import *
