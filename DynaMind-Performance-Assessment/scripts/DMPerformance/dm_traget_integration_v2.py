@@ -37,6 +37,7 @@ class TargetInegrationv2(Module):
         self.micro_climate_grid.addAttribute("ucan", DM.Attribute.DOUBLE, DM.WRITE)
 
         self.createParameter("target_path", STRING)
+        #/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/src
         self.target_path = ""
 
         self.registerViewContainers([self.micro_climate_grid])
@@ -73,7 +74,6 @@ class TargetInegrationv2(Module):
 
         station_id = -1
         for s in self.temperature_station:
-            # dance_station_id = s.Feature.GetFieldAsInteger("dance_station_id")
             station_id = s.GetFID()
 
         if station_id < 0:
@@ -88,15 +88,12 @@ class TargetInegrationv2(Module):
         self.timeseries.reset_reading()
 
         for t in self.timeseries:
-            # d = datetime.datetime.strptime(t.GetFieldAsString("start"), "%Y-%m-%d %H:%M:%S")
-
             temperatures = dm_get_double_list(t, "data")
 
         self.timeseries.finalise()
         self.temperature_station.finalise()
 
         return temperatures, rh, ws, p, kd, ld
-
 
     def write_climate_file(self, cimate_file):
         t, rh, ws, p, kd, ld = self.load_temperature_data()
@@ -137,7 +134,6 @@ class TargetInegrationv2(Module):
             m.SetField("taf", np.array(at).max())
         self.micro_climate_grid.finalise()
 
-
     def write_config(self,config_file, output_uuid, climate_file, landuse_file):
         with open(config_file, "w") as f:
             f.write("site_name=Mawson\n")
@@ -161,87 +157,29 @@ class TargetInegrationv2(Module):
             f.write("lonResolution=0.00110" + str("\n"))
             f.write("disableOutput=Fid,tb,TsurfWall,TsurfCan,TsurfHorz,Ucan,Pet" + str("\n"))
 
-
     def run(self):
         sys.path.append(self.target_path + "/Toolkit2-Runs/bin/")
-        import runToolkit as target
         output_uuid = str(uuid.uuid4())
         landuse_file = "/tmp/" + str(uuid.uuid4()) + "lc.csv"
         config_file = "/tmp/" + str(uuid.uuid4()) + "conf.txt"
-        result_file = "/tmp/" + str(uuid.uuid4()) + "output"
-        cimate_file = "/tmp/" + str(uuid.uuid4()) + "climate.csv"
+        climate_file = "/tmp/" + str(uuid.uuid4()) + "climate.csv"
 
         self.write_input_file(landuse_file)
-        self.write_climate_file(cimate_file)
-        self.write_config(config_file, output_uuid, cimate_file, landuse_file)
+        self.write_climate_file(climate_file)
+        self.write_config(config_file, output_uuid, climate_file, landuse_file)
         self.run_target(config_file)
         self.read_output_file(str("/tmp/"+str(output_uuid)+str(".nc")))
 
+        os.remove(str("/tmp/"+str(output_uuid)+str(".nc")))
+        os.remove(landuse_file)
+        os.remove(climate_file)
+        os.remove(config_file)
+
     def run_target(self, config_file):
-
+        subprocess.call("javac -cp ../../netcdfAll-4.6.11.jar:../../slf4j-jdk14-1.7.14.jar:. *.java HTC/*.java",
+                        shell=True, cwd=self.target_path + "/Target")
         subprocess.call("java -cp ../netcdfAll-4.6.11.jar:. Target.RunToolkit " + str(config_file),
-                        shell=True, cwd="/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/src")
-
-    def read_output(self, result_file):
-        img_array = np.load(result_file + ".npy")
-        l1, l2, l3 = img_array.shape
-        DTE_ITEM = 8
-        QH_ITEM = 7
-        QE_ITEM = 6
-        QG_ITEM = 5
-        RN_ITEM = 4
-        TAF_ITEM = 3
-        TS_ITEM = 2
-        UCAN_ITEM = 1
-        time = 29
-        n = l2
-        Z = np.zeros((n))
-        UCAN = np.zeros((n))
-        UCAN[:] = np.NAN
-        TS = np.zeros((n))
-        TS[:] = np.NAN
-        TAF = np.zeros((n))
-        TAF[:] = np.NAN
-        RN = np.zeros((n))
-        RN[:] = np.NAN
-        QG = np.zeros((n))
-        QG[:] = np.NAN
-        QE = np.zeros((n))
-        QE[:] = np.NAN
-        QH = np.zeros((n))
-        QH[:] = np.NAN
-        # DTE=np.zeros((n))
-        TAF[:] = np.NAN
-
-        taf_vec = []
-        for count in range(n):
-            taf_vec.append(np.zeros(l1))
-        for t in range(l1):
-            for count in range(n):
-                # if (count == n-1):
-                #  count = n-2
-                # print (i,j,count)
-                Z[count] = img_array[time, count, 0][UCAN_ITEM]
-                UCAN[count] = img_array[time, count, 0][UCAN_ITEM]
-                TS[count] = img_array[time, count, 0][TS_ITEM]
-                TAF[count] = img_array[time, count, 0][TAF_ITEM]
-                RN[count] = img_array[time, count, 0][RN_ITEM]
-                QG[count] = img_array[time, count, 0][QG_ITEM]
-                QE[count] = img_array[time, count, 0][QE_ITEM]
-                QH[count] = img_array[time, count, 0][QH_ITEM]
-
-                taf_vec[count][t] = img_array[t, count, 0][TAF_ITEM]
-                if TAF[count] > 50:
-                    TAF[count] = np.nan
-
-        self.micro_climate_grid.reset_reading()
-
-        for (idx, m) in enumerate(self.micro_climate_grid):
-            m.SetField("taf", taf_vec[idx].max())
-            m.SetField("ts", TS[idx])
-            m.SetField("ucan", UCAN[idx])
-            dm_set_double_list(m, "taf_period", taf_vec[idx])
-        self.micro_climate_grid.finalise()
+                        shell=True, cwd=self.target_path)
 
     def write_input_file(self, landuse_file):
         text_file = open(landuse_file, "w")
@@ -257,7 +195,6 @@ class TargetInegrationv2(Module):
             # and open low rise H/W 0.3-0.75
 
             ogc_fid = self.fixNulls(m.GetFID())
-            print m.GetGeometryRef().Centroid()
             roof_fraction = self.fixNulls(m.GetFieldAsDouble("roof_fraction"))
             road_fraction = self.fixNulls(m.GetFieldAsDouble("road_fraction"))
             water_fraction = self.fixNulls(m.GetFieldAsDouble("water_fraction"))
@@ -275,8 +212,8 @@ class TargetInegrationv2(Module):
             W = '30'
 
             if (roof_fraction > 0.3):
-                H = '4'
-                W = '30'
+                H = '8'
+                W = '10'
             else:
                 if (grass_fraction + irrigated_grass_fraction > 0.5):
                     H = '4'
