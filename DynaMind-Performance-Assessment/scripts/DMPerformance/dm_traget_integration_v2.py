@@ -203,7 +203,7 @@ class TargetInegrationv2(Module):
         # os.remove(config_file)
 
     def run_target(self, config_file):
-        subprocess.call("javac -cp ../../netcdfAll-4.6.11.jar:../../slf4j-jdk14-1.7.14.jar:. *.java HTC/*.java",
+        subprocess.call("javac -cp ../../netcdfAll-4.6.11.jar:../../slf4j-jdk14-1.7.14.jar:. *.java HTC/*.java -encoding UTF-8",
                         shell=True, cwd=self.target_path + "/Target")
         subprocess.call("java -cp ../netcdfAll-4.6.11.jar:. Target.RunToolkit " + str(config_file),
                         shell=True, cwd=self.target_path)
