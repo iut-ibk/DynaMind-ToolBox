@@ -129,8 +129,7 @@ class TargetInegrationv2(Module):
 
     def read_output_file(self, output):
         # print "read me"
-        dataset = Dataset(output)
-
+        dataset = Dataset(output, 'r')
         self.city.reset_reading()
 
         for c in self.city:
@@ -138,23 +137,19 @@ class TargetInegrationv2(Module):
             min_long = c.GetFieldAsDouble("min_long")
             height = c.GetFieldAsDouble("max_lat") - c.GetFieldAsDouble("min_lat")
             length = c.GetFieldAsDouble("max_long") - c.GetFieldAsDouble("min_long")
-
-        print "ms"
-        log("ms", Standard)
         self.micro_climate_grid.reset_reading()
+        log("start writing", Standard)
+        data = dataset.variables['TEMP_AIR'][:]
         for (idx, m) in enumerate(self.micro_climate_grid):
             element_y = int(round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/20))
             element_x = int(round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/20))
             new_pos = element_y * round(length / 20 + 1) + element_x
             at = []
-            log("ms", Standard)
-            print idx, new_pos, element_x, element_y
             for t in range(143):
-                air_temperature = (dataset.variables['TEMP_AIR'][:][t])
-
+                air_temperature = data[t]
                 at.append(air_temperature[element_y][element_x])
-            # dm_set_double_list(m, "taf_period", at)
             m.SetField("taf", np.array(at).max())
+            dm_set_double_list(m, "taf_period", at)
         log("done", Standard)
         self.micro_climate_grid.finalise()
 
@@ -258,8 +253,6 @@ class TargetInegrationv2(Module):
             # tree_cover_fraction = 0
             # grass_fraction = 0
             # irrigated_grass_fraction = 1.0 - 1.0 * current_pos / ((length/20+1) * (height/20+1))
-
-
 
 
             H = '4'
