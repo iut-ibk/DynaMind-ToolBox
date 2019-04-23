@@ -23,6 +23,15 @@ class TargetInegrationv2(Module):
         self.createParameter("from_temperature_station", DM.BOOL)
         self.from_temperature_station = False
 
+        self.createParameter("grid_size_from_city", BOOL)
+        self.grid_size_from_city = False
+
+        self.createParameter("grid_size", DOUBLE)
+        self.grid_size = 20.0
+
+        self.internal_grid_size = 0.0
+
+
         self.micro_climate_grid = ViewContainer("micro_climate_grid", DM.COMPONENT, DM.READ)
         self.micro_climate_grid.addAttribute("roof_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.micro_climate_grid.addAttribute("road_fraction", DM.Attribute.DOUBLE, DM.READ)
@@ -48,7 +57,12 @@ class TargetInegrationv2(Module):
 
         self.registerViewContainers([self.micro_climate_grid, self.city])
 
+
+
     def init(self):
+
+        datastream = []
+
         if self.from_temperature_station:
 
             self.temperature_station = ViewContainer("temperature_station", DM.COMPONENT, DM.READ)
@@ -58,8 +72,15 @@ class TargetInegrationv2(Module):
             self.timeseries.addAttribute("data", DM.Attribute.DOUBLEVECTOR, DM.READ)
             self.timeseries.addAttribute("temperature_station_id", DM.Attribute.INT, DM.READ)
             self.timeseries.addAttribute("start", DM.Attribute.STRING, DM.READ)
-            self.registerViewContainers([self.micro_climate_grid, self.timeseries, self.temperature_station, self.city])
+            datastream.append(self.micro_climate_grid)
+            datastream.append(self.timeseries)
+            datastream.append(self.temperature_station)
 
+            if self.grid_size_from_city:
+                self.city.addAttribute("grid_size", DM.Attribute.DOUBLE, READ)
+            datastream.append(self.city)
+
+            self.registerViewContainers(datastream)
 
     def fixNulls(self, text):
         if (text == None):
@@ -138,19 +159,17 @@ class TargetInegrationv2(Module):
             height = c.GetFieldAsDouble("max_lat") - c.GetFieldAsDouble("min_lat")
             length = c.GetFieldAsDouble("max_long") - c.GetFieldAsDouble("min_long")
         self.micro_climate_grid.reset_reading()
-        log("start writing", Standard)
         data = dataset.variables['TEMP_AIR'][:]
         for (idx, m) in enumerate(self.micro_climate_grid):
-            element_y = int(round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/20))
-            element_x = int(round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/20))
-            new_pos = element_y * round(length / 20 + 1) + element_x
+            element_y = int(round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/self.internal_grid_size))
+            element_x = int(round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/self.internal_grid_size))
+            new_pos = element_y * round(length / self.internal_grid_size + 1) + element_x
             at = []
             for t in range(143):
                 air_temperature = data[t]
                 at.append(air_temperature[element_y][element_x])
             m.SetField("taf", np.array(at).max())
             dm_set_double_list(m, "taf_period", at)
-        log("done", Standard)
         self.micro_climate_grid.finalise()
 
 
@@ -192,10 +211,10 @@ class TargetInegrationv2(Module):
 
         self.city.finalise()
 
-        # os.remove(str("/tmp/"+str(output_uuid)+str(".nc")))
-        # os.remove(landuse_file)
-        # os.remove(climate_file)
-        # os.remove(config_file)
+        os.remove(str("/tmp/"+str(output_uuid)+str(".nc")))
+        os.remove(landuse_file)
+        os.remove(climate_file)
+        os.remove(config_file)
 
     def run_target(self, config_file):
         subprocess.call("javac -cp ../../netcdfAll-4.6.11.jar:../../slf4j-jdk14-1.7.14.jar:. *.java HTC/*.java -encoding UTF-8",
@@ -207,27 +226,26 @@ class TargetInegrationv2(Module):
         text_file = open(landuse_file, "w")
         text_file.write("FID,roof,road,watr,conc,Veg,dry,irr,H,W" + '\n')
 
+        self.internal_grid_size = self.grid_size
+
         for c in self.city:
             min_lat = c.GetFieldAsDouble("min_lat")
             min_long = c.GetFieldAsDouble("min_long")
             height = c.GetFieldAsDouble("max_lat") - c.GetFieldAsDouble("min_lat")
             length = c.GetFieldAsDouble("max_long") - c.GetFieldAsDouble("min_long")
 
+            if self.grid_size_from_city:
+                self.internal_grid_size = c.GetFieldAsDouble("grid_size")
+
+            print self.internal_grid_size 
+
         current_pos = -1
 
         for m in self.micro_climate_grid:
+            element_y = round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/self.internal_grid_size)
+            element_x = round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/self.internal_grid_size)
 
-            # for high rise H/W is > 2
-            # for compact high rise H/W = 0.75-2
-            # compact low rise 0.75-1.5
-            #
-            # probably bush/scrub, so H/W = 0.25-1.0
-            # and open low rise H/W 0.3-0.75
-
-            element_y = round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/20)
-            element_x = round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/20)
-
-            new_pos = element_y * round(length/20+1) + element_x
+            new_pos = element_y * round(length/self.internal_grid_size+1) + element_x
             for i in range(int(round(new_pos - (current_pos+1)))):
                 row_text = str(current_pos+i+1) + ',' + str(0) + ',' + str(0) + ',' + str(
                     0) + ',' + str(0) + ',' + str(0) + ',' + str(
@@ -248,11 +266,11 @@ class TargetInegrationv2(Module):
 
             # roof_fraction = 0
             # road_fraction = 0
-            # water_fraction = 1.0 * current_pos / ((length/20+1) * (height/20+1))
+            # water_fraction = 1.0 * current_pos / ((length/self.internal_grid_size+1) * (height/self.internal_grid_size+1))
             # concrete_fraction = 0
             # tree_cover_fraction = 0
             # grass_fraction = 0
-            # irrigated_grass_fraction = 1.0 - 1.0 * current_pos / ((length/20+1) * (height/20+1))
+            # irrigated_grass_fraction = 1.0 - 1.0 * current_pos / ((length/self.internal_grid_size+1) * (height/self.internal_grid_size+1))
 
 
             H = '4'
@@ -272,8 +290,8 @@ class TargetInegrationv2(Module):
                 grass_fraction) + ',' + str(irrigated_grass_fraction) + ',' + H + ',' + W + '\n'
             text_file.write(row_text)
 
-        # print length/20, height/20
-        last_pos = (length/20+1) * (height/20+1)
+        # print length/self.internal_grid_size, height/self.internal_grid_size
+        last_pos = (length/self.internal_grid_size+1) * (height/self.internal_grid_size+1)
 
         for i in range(int(round(last_pos - (current_pos + 1)))):
             # print "fill", current_pos + i + 1
@@ -285,5 +303,5 @@ class TargetInegrationv2(Module):
         text_file.close()
         # self.micro_climate_grid.finalise()
 
-        return int(round(length/20+1)), int(round(height/20+1))
+        return int(round(length/self.internal_grid_size+1)), int(round(height/self.internal_grid_size+1))
 
