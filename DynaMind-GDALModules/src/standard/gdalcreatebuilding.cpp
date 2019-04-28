@@ -18,6 +18,11 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 
 	char* geo;
 	ogr_poly->exportToWkt(&geo);
+
+	double width = this->width;
+	double height = this->height;
+
+
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 	OGRFree(geo); //Not needed after here
 
@@ -53,13 +58,18 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	Vector_2 v2 = (p3-p2);
 
 	bool v1_bigger = true;
+
+
 	if (v1.squared_length() < v2.squared_length()) {
 		v1_bigger = false;
 	}
 
 
+
 	Vector_2 e1 = v1 / sqrt(CGAL::to_double(v1.squared_length()));
 	Vector_2 e2 = v2 / sqrt(CGAL::to_double(v2.squared_length()));
+
+
 
 	OGRPoint ct;
 	ogr_poly->Centroid(&ct);
@@ -69,7 +79,25 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	double w = (!v1_bigger) ? this->width/2. : this->height/2.;
 	double h = (!v1_bigger) ? this->height/2. : this->width/2.;
 
+
+	if (this->site_coverage > 0.01 ) {
+		double area = CGAL::to_double(poly.toPolygon_2(false).area());
+		width =  sqrt(CGAL::to_double(v2.squared_length()));
+		height = sqrt(CGAL::to_double(v1.squared_length()));
+		if (v1_bigger) {
+			h = (width > 13) ? 6  : width/2 - 1;
+			w = area / (h*2)*this->site_coverage / 2;
+		}else {
+			w = (height > 13) ? 6  : height/2 - 1;
+			h = area / (w*2)*this->site_coverage / 2;
+			h = (h > width/2) ? width/2 : h;
+		}
+	}
+	//DM::Logger(DM::Standard) << (int)v1_bigger  << sqrt(CGAL::to_double(v1.squared_length())) << "/"<<sqrt(CGAL::to_double(v2.squared_length()))  << "/"<< w << "/"<< h << "/" << sqrt(CGAL::to_double(e1.squared_length()));
 	Polygon_with_holes_2 footprint;
+
+	//DM::Logger(DM::Standard) << (int)v1_bigger  << sqrt(CGAL::to_double(c1.squared_length()));
+
 	footprint.outer_boundary().push_back( centre - e1*w - e2*h );
 	footprint.outer_boundary().push_back( centre + e1*w - e2*h );
 	footprint.outer_boundary().push_back( centre + e1*w + e2*h );
@@ -119,6 +147,9 @@ GDALCreateBuilding::GDALCreateBuilding()
 
 	this->height = 10;
 	this->addParameter("length", DM::DOUBLE, &this->height);
+
+	this->site_coverage = 0.0;
+	this->addParameter("site_coverage", DM::DOUBLE, &this->site_coverage);
 
 	this->residential_units = 1;
 	this->addParameter("residential_units", DM::INT, &this->residential_units);

@@ -40,6 +40,7 @@
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/offset.h>
+#include <SFCGAL/algorithm/intersection.h>
 
 class DM_HELPER_DLL_EXPORT OGRPolygon;
 
@@ -56,6 +57,9 @@ private:
 	int residential_units;
 	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
 	OGRGeometry *addToSystem(SFCGAL::Polygon &poly);
+
+	double site_coverage;
+
 public:
 	GDALCreateBuilding();
 	void run();
