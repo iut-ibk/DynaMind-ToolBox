@@ -39,6 +39,7 @@ public:
 	GDALRandomSelector();
 	void run();
 	void init();
+	void mark_parcels(int id, int elements_max);
 
 private:
 	DM::ViewContainer vc;

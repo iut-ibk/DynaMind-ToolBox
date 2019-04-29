@@ -1,4 +1,5 @@
 #include "gdalrandomselector.h"
+#include <sstream>
 
 DM_DECLARE_CUSTOM_NODE_NAME(GDALRandomSelector,Randomly Select Features, Data Handling)
 
@@ -58,10 +59,15 @@ void GDALRandomSelector::init()
 	this->registerViewContainers(data_stream);
 }
 
-void GDALRandomSelector::run()
+void GDALRandomSelector::mark_parcels(int id, int elements_max)
 {
+	DM::Logger(DM::Standard) << "place " << elements_max;
 
+	std::stringstream ss;
+	ss << this->viewNameFrom << "_id=" << QString::number(id).toStdString();
+	vc.setAttributeFilter(ss.str());
 	vc.resetReading();
+
 	int total_number_of_featurers = vc.getFeatureCount();
 	if (total_number_of_featurers == -1) {
 		DM::Logger(DM::Error) << "Error feature counter";
@@ -69,18 +75,6 @@ void GDALRandomSelector::run()
 	}
 	std::vector<int> rand_elements;
 	std::vector<int> ids;
-
-	int elements_max = elements;
-
-	if (this->valueFromView) {
-		view_from.resetReading();
-		OGRFeature * from;
-		while(from = view_from.getNextFeature()) {
-			elements_max = from->GetFieldAsInteger(this->attributeNameFrom.c_str());
-		}
-	}
-	DM::Logger(DM::Debug) << "Number of elements to select " << elements_max;
-
 
 	OGRFeature * f;
 
@@ -148,7 +142,20 @@ void GDALRandomSelector::run()
 		f->SetField(attribute.c_str(), 1);
 		elements_max-=e;
 	}
-	DM::Logger(DM::Debug) << "Rest "<< elements_max;
+	DM::Logger(DM::Standard) << "Rest "<< elements_max;
+}
+
+void GDALRandomSelector::run()
+{
+	if (this->valueFromView) {
+		view_from.resetReading();
+		OGRFeature * from;
+		while(from = view_from.getNextFeature()) {
+			this->mark_parcels(from->GetFID(),from->GetFieldAsInteger(this->attributeNameFrom.c_str()));
+		}
+	} else {
+		this->mark_parcels(0, this->elements);
+	}
 }
 
 
