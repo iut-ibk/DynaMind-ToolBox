@@ -23,6 +23,7 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	double height = this->height;
 
 
+
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 	OGRFree(geo); //Not needed after here
 
@@ -148,6 +149,9 @@ GDALCreateBuilding::GDALCreateBuilding()
 	this->height = 10;
 	this->addParameter("length", DM::DOUBLE, &this->height);
 
+	this->building_height = 6;
+	this->addParameter("height", DM::DOUBLE, &this->building_height);
+
 	this->site_coverage = 0.0;
 	this->addParameter("site_coverage", DM::DOUBLE, &this->site_coverage);
 
@@ -157,6 +161,7 @@ GDALCreateBuilding::GDALCreateBuilding()
 	parcel = DM::ViewContainer("parcel", DM::FACE, DM::READ);
 	building = DM::ViewContainer("building", DM::FACE, DM::WRITE);
 	building.addAttribute("residential_units", DM::Attribute::INT, DM::WRITE);
+	building.addAttribute("height", DM::Attribute::DOUBLE, DM::WRITE);
 
 	std::vector<DM::ViewContainer*> data_stream;
 	data_stream.push_back(&parcel);
@@ -183,6 +188,7 @@ void GDALCreateBuilding::run()
 		OGRFeature * b = building.createFeature();
 		b->SetGeometry(building_geo);
 		b->SetField("residential_units", this->residential_units);
+		b->SetField("height", this->building_height);
 		OGRGeometryFactory::destroyGeometry(building_geo);
 	}
 }

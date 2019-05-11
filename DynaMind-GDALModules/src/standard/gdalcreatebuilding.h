@@ -54,6 +54,8 @@ private:
 
 	double width;
 	double height;
+	double building_height;
+
 	int residential_units;
 	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
 	OGRGeometry *addToSystem(SFCGAL::Polygon &poly);
