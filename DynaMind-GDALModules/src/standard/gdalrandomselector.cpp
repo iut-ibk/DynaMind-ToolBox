@@ -135,7 +135,7 @@ void GDALRandomSelector::mark_parcels(int id, int elements_max)
 		}
 
 		int e = f->GetFieldAsInteger(units.c_str());
-		if (e == 0) {
+		if (e < 1) {
 			continue;
 		}
 
