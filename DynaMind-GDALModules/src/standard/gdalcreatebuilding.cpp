@@ -22,8 +22,6 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	double width = this->width;
 	double height = this->height;
 
-
-
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 	OGRFree(geo); //Not needed after here
 
@@ -88,10 +86,21 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 		if (v1_bigger) {
 			h = (width > 13) ? 6  : width/2 - 1;
 			w = area / (h*2)*this->site_coverage / 2;
+			//Correct if height is to big
+			if(w > height/2){
+				w = height/2 - 1;
+				h = area / (w*2)*this->site_coverage / 2;
+			}
+
 		}else {
 			w = (height > 13) ? 6  : height/2 - 1;
 			h = area / (w*2)*this->site_coverage / 2;
-			h = (h > width/2) ? width/2 : h;
+			if (h > width/2) {
+				h =  width/2 -1;
+				w = area / (h*2)*this->site_coverage / 2;
+			}
+
+
 		}
 	}
 	//DM::Logger(DM::Standard) << (int)v1_bigger  << sqrt(CGAL::to_double(v1.squared_length())) << "/"<<sqrt(CGAL::to_double(v2.squared_length()))  << "/"<< w << "/"<< h << "/" << sqrt(CGAL::to_double(e1.squared_length()));
