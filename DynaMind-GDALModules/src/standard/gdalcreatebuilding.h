@@ -51,10 +51,14 @@ private:
 
 	DM::ViewContainer parcel;
 	DM::ViewContainer building;
+    DM::ViewContainer linked_view;
 
 	double width;
 	double height;
 	double building_height;
+
+    std::string paramter_from_linked_view;
+    std::string link_view_id;
 
 	int residential_units;
 	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
@@ -65,6 +69,7 @@ private:
 public:
 	GDALCreateBuilding();
 	void run();
+    void init();
 	std::string getHelpUrl();
 
 

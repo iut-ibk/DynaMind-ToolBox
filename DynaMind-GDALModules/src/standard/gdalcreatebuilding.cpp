@@ -167,6 +167,9 @@ GDALCreateBuilding::GDALCreateBuilding()
 	this->residential_units = 1;
 	this->addParameter("residential_units", DM::INT, &this->residential_units);
 
+    this->paramter_from_linked_view = "";
+    this->addParameter("paramter_from_linked_view", DM::STRING, &this->paramter_from_linked_view);
+
 	parcel = DM::ViewContainer("parcel", DM::FACE, DM::READ);
 	building = DM::ViewContainer("building", DM::FACE, DM::WRITE);
 	building.addAttribute("residential_units", DM::Attribute::INT, DM::WRITE);
@@ -179,13 +182,71 @@ GDALCreateBuilding::GDALCreateBuilding()
 	this->registerViewContainers(data_stream);
 }
 
+void GDALCreateBuilding::init()
+{
+
+
+    std::vector<DM::ViewContainer*> views;
+    views.push_back(&parcel);
+    views.push_back(&building);
+
+    if (!this->paramter_from_linked_view.empty()) {
+        this->linked_view = DM::ViewContainer(this->paramter_from_linked_view, DM::COMPONENT, DM::READ);
+        this->linked_view.addAttribute("residential_units", DM::Attribute::DOUBLE, DM::READ);
+        this->linked_view.addAttribute("building_height", DM::Attribute::DOUBLE, DM::READ);
+
+        std::stringstream ss_link_view_id;
+        ss_link_view_id << this->paramter_from_linked_view << "_id";
+        this->link_view_id = ss_link_view_id.str();
+
+        views.push_back(&linked_view);
+    }
+
+    this->registerViewContainers(views);
+}
+
 void GDALCreateBuilding::run()
 {
+
+    std::map<int, std::map<std::string, double> > templates;
+    OGRFeature *poFeature;
+    if (!this->paramter_from_linked_view.empty()) {
+        this->linked_view.resetReading();
+        while ( (poFeature = linked_view.getNextFeature()) != NULL ) {
+            std::map<std::string, double> params;
+            params["residential_units"] = poFeature->GetFieldAsDouble("residential_units");
+            params["building_height"] = poFeature->GetFieldAsDouble("building_height");
+            templates[poFeature->GetFID()] = params;
+        }
+    }
+
 	parcel.resetReading();
 
 	OGRFeature * f;
 
 	while (f = parcel.getNextFeature()) {
+
+        double ru = this->residential_units;
+        double bh= this->building_height;
+        int link_id = 0;
+
+        if (!this->paramter_from_linked_view.empty()) {
+            link_id = f->GetFieldAsInteger(this->link_view_id.c_str());
+
+            if (link_id == 0) // If field returns zero the no template has been set
+                continue;
+
+            //Check if link ID exists
+            std::map<int, std::map<std::string, double> >::const_iterator it = templates.find(link_id);
+            if (it == templates.end()) {
+                DM::Logger(DM::Warning) << "Template " << link_id << "not found" << "for " << (int) f->GetFID();
+                continue;
+            }
+
+            ru = templates[link_id]["residential_units"];
+            bh = templates[link_id]["building_height"];
+        }
+
 		OGRPolygon * geo = (OGRPolygon *)f->GetGeometryRef();
 		if (!geo)
 			continue;
@@ -196,8 +257,10 @@ void GDALCreateBuilding::run()
 		//Create Feature
 		OGRFeature * b = building.createFeature();
 		b->SetGeometry(building_geo);
-		b->SetField("residential_units", this->residential_units);
-		b->SetField("height", this->building_height);
+
+		b->SetField("residential_units", ru);
+		b->SetField("height", bh);
+
 		OGRGeometryFactory::destroyGeometry(building_geo);
 	}
 }
