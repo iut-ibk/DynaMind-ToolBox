@@ -16,14 +16,18 @@ ParcelSplitWorker::ParcelSplitWorker()
 {
 }
 
-ParcelSplitWorker::ParcelSplitWorker(int id, GDALParcelSplit * module, double width,  double target_length, bool splitFirst, char *poly_wkt, int split_max = 2) :
+ParcelSplitWorker::ParcelSplitWorker(int id,
+                                     GDALParcelSplit *module,
+                                     double width, double target_length, bool splitFirst, char *poly_wkt,
+                                     int split_max = 2, int link_id = 0) :
 	id(id),
 	module(module),
 	width(width),
 	splitFirst(splitFirst),
 	target_length(target_length),
     poly_wkt(poly_wkt),
-    split_max(split_max)
+    split_max(split_max),
+    link_id(link_id)
 {
 
 }
@@ -70,7 +74,7 @@ void ParcelSplitWorker::splitePoly(Polygon_with_holes_2 &p)
 		foreach(Polygon_with_holes_2 pwh_split, split_ress) {
 			SFCGAL::Polygon split_geo(pwh_split);
 			QString wkt = QString(split_geo.asText(16).c_str());
-			module->addToSystem(wkt);
+			module->addToSystem(wkt, link_id);
 			//emit resultPolygon(wkt);
 		}
 	}
@@ -98,7 +102,7 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 	int numberOfElements_x  = -1;
 	int numberOfElements_y =  -1;
 
-    //Split Polygon on the short side in half, or if split_first is false not, and the rest in small peaces of 15m
+	//Split Polygon on the short when split first is true, and the rest in small pieces of 15m
 	if (this->target_length > 0 ){
 		numberOfElements_x  = (!v1_bigger) ? sqrt(CGAL::to_double(v1.squared_length())) / this->target_length : sqrt(CGAL::to_double(v1.squared_length()))/this->width;
 		numberOfElements_y =  (!v1_bigger) ? sqrt(CGAL::to_double(v2.squared_length())) / this->width : sqrt(CGAL::to_double(v2.squared_length())) / this->target_length;
@@ -140,7 +144,7 @@ Pwh_list_2 ParcelSplitWorker::splitter(Polygon_2 &rect)
 
 void ParcelSplitWorker::run()
 {
-	//DM::Logger(DM::Standard) << "start " << id;
+	DM::Logger(DM::Debug) << "start " << id;
 	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(poly_wkt));
 	OGRFree(poly_wkt); //Not needed after here
 	switch ( g->geometryTypeId() ) {
@@ -155,6 +159,6 @@ void ParcelSplitWorker::run()
 	Polygon_with_holes_2 p = poly.toPolygon_with_holes_2(true);
 
 	this->splitePoly(p);
-	//DM::Logger(DM::Standard) << "end " << id;
+	DM::Logger(DM::Debug) << "end " << id;
 }
 

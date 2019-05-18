@@ -35,8 +35,6 @@ GDALParcelSplit::GDALParcelSplit()
 	this->paramter_from_linked_view = "";
 	this->addParameter("paramter_from_linked_view", DM::STRING, &this->paramter_from_linked_view);
 
-
-
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
 	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
 
@@ -72,6 +70,7 @@ void GDALParcelSplit::init()
 		this->link_view_id = ss_link_view_id.str();
 
 		this->cityblocks.addAttribute(this->link_view_id, DM::Attribute::LINK, DM::READ);
+		this->parcels.addAttribute(this->link_view_id, DM::Attribute::LINK, DM::WRITE);
 
 		views.push_back(&linked_view);
 	}
@@ -89,7 +88,6 @@ void GDALParcelSplit::run()
 {
 
 	std::map<int, std::map<std::string, double> > templates;
-
 	OGRFeature *poFeature;
 	if (!this->paramter_from_linked_view.empty()) {
 		this->linked_view.resetReading();
@@ -99,9 +97,7 @@ void GDALParcelSplit::run()
 			params["width"] = poFeature->GetFieldAsDouble("width");
 			templates[poFeature->GetFID()] = params;
 		}
-
 	}
-
 
 	this->counter_added = 0;
 
@@ -114,9 +110,10 @@ void GDALParcelSplit::run()
 
 		double w = this->width;
 		double tl= this->target_length;
+		int link_id = 0;
 
 		if (!this->paramter_from_linked_view.empty()) {
-			int link_id = poFeature->GetFieldAsInteger(this->link_view_id.c_str());
+		    link_id = poFeature->GetFieldAsInteger(this->link_view_id.c_str());
 
 			if (link_id == 0) // If field returns zero the no template has been set
 			    continue;
@@ -139,7 +136,8 @@ void GDALParcelSplit::run()
 					tl,
 					this->splitFirst,
 					geo,
-					2);
+					2,
+                    link_id);
 
 		pool.start(ps);
 	}
@@ -148,7 +146,7 @@ void GDALParcelSplit::run()
 }
 
 
-void GDALParcelSplit::addToSystem(QString poly)
+void GDALParcelSplit::addToSystem(QString poly, int link_id)
 {
 	QMutexLocker ml(&mMutex);
 
@@ -182,6 +180,9 @@ void GDALParcelSplit::addToSystem(QString poly)
 	//Create Feature
 	OGRFeature * parcel = parcels.createFeature();
 	parcel->SetGeometry(ogr_poly);
+    if (!this->paramter_from_linked_view.empty()) {
+        parcel->SetField(this->link_view_id.c_str(), link_id);
+    }
 	OGRGeometryFactory::destroyGeometry(ogr_poly);
 
 	counter_added++;

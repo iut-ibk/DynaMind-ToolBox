@@ -63,7 +63,7 @@ public:
 	std::string getHelpUrl();
 
 public slots:
-	void addToSystem(QString poly);
+	void addToSystem(QString poly, int link_id);
 
 };
 

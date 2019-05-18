@@ -8,6 +8,7 @@
 #include <dm.h>
 #include <dmviewcontainer.h>
 
+
 #include "gdalparcelsplit.h"
 
 #include <CGAL/Simple_cartesian.h>
@@ -40,10 +41,13 @@ private:
 	char * poly_wkt;
 	GDALParcelSplit * module;
 	int id;
+	int link_id;
 
 public:
 	ParcelSplitWorker();
-    ParcelSplitWorker(int id, GDALParcelSplit * module, double width, double target_length, bool splitFirst, char * poly_wkt, int split_max);
+
+    ParcelSplitWorker(int id, GDALParcelSplit *module, double width, double target_length, bool splitFirst,
+                      char *poly_wkt, int split_max, int link_id);
 	void splitePoly(Polygon_with_holes_2 &poly);
 	Pwh_list_2 splitter(Polygon_2 & rect);
 	void run();
