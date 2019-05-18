@@ -41,10 +41,13 @@ class DM_HELPER_DLL_EXPORT GDALParcelSplit:  public QObject, public DM::Module
 private:
 	DM::ViewContainer cityblocks;
 	DM::ViewContainer parcels;
+	DM::ViewContainer linked_view;
 	int counter_added;
 	double width;
 	double target_length;
+	std::string link_view_id;
 	int generated;
+	std::string paramter_from_linked_view;
 
 	bool splitFirst;
 

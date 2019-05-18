@@ -32,6 +32,10 @@ GDALParcelSplit::GDALParcelSplit()
 	this->target_length = 0;
 	this->addParameter("target_length", DM::DOUBLE, &this->target_length);
 
+	this->paramter_from_linked_view = "";
+	this->addParameter("paramter_from_linked_view", DM::STRING, &this->paramter_from_linked_view);
+
+
 
 	cityblocks = DM::ViewContainer(this->blockName, DM::FACE, DM::READ);
 	parcels = DM::ViewContainer(this->subdevisionName, DM::FACE, DM::WRITE);
@@ -58,6 +62,20 @@ void GDALParcelSplit::init()
 	views.push_back(&cityblocks);
 	views.push_back(&parcels);
 
+	if (!this->paramter_from_linked_view.empty()) {
+		this->linked_view = DM::ViewContainer(this->paramter_from_linked_view, DM::COMPONENT, DM::READ);
+		this->linked_view.addAttribute("target_length", DM::Attribute::DOUBLE, DM::READ);
+		this->linked_view.addAttribute("width", DM::Attribute::DOUBLE, DM::READ);
+
+		std::stringstream ss_link_view_id;
+		ss_link_view_id << this->paramter_from_linked_view << "_id";
+		this->link_view_id = ss_link_view_id.str();
+
+		this->cityblocks.addAttribute(this->link_view_id, DM::Attribute::LINK, DM::READ);
+
+		views.push_back(&linked_view);
+	}
+
 	this->registerViewContainers(views);
 }
 
@@ -69,16 +87,60 @@ string GDALParcelSplit::getHelpUrl()
 
 void GDALParcelSplit::run()
 {
-	cityblocks.resetReading();
+
+	std::map<int, std::map<std::string, double> > templates;
+
 	OGRFeature *poFeature;
+	if (!this->paramter_from_linked_view.empty()) {
+		this->linked_view.resetReading();
+		while ( (poFeature = linked_view.getNextFeature()) != NULL ) {
+			std::map<std::string, double> params;
+			params["target_length"] = poFeature->GetFieldAsDouble("target_length");
+			params["width"] = poFeature->GetFieldAsDouble("width");
+			templates[poFeature->GetFID()] = params;
+		}
+
+	}
+
+
 	this->counter_added = 0;
 
+	cityblocks.resetReading();
 	QThreadPool pool;
+
 	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
 		char* geo;
-
 		poFeature->GetGeometryRef()->exportToWkt(&geo); //Geo destroyed by worker
-        ParcelSplitWorker * ps = new ParcelSplitWorker(poFeature->GetFID(), this, this->width, this->target_length, this->splitFirst, geo, 2);
+
+		double w = this->width;
+		double tl= this->target_length;
+
+		if (!this->paramter_from_linked_view.empty()) {
+			int link_id = poFeature->GetFieldAsInteger(this->link_view_id.c_str());
+
+			if (link_id == 0) // If field returns zero the no template has been set
+			    continue;
+
+			//Check if link ID exists
+            std::map<int, std::map<std::string, double> >::const_iterator it = templates.find(link_id);
+            if (it == templates.end()) {
+                DM::Logger(DM::Warning) << "Template " << link_id << "not found" << "for " << (int) poFeature->GetFID();
+                continue;
+            }
+
+            w = templates[link_id]["width"];
+			tl = templates[link_id]["target_length"];
+		}
+
+		auto *ps = new ParcelSplitWorker(
+					poFeature->GetFID(),
+					this,
+					w,
+					tl,
+					this->splitFirst,
+					geo,
+					2);
+
 		pool.start(ps);
 	}
 	pool.waitForDone();
