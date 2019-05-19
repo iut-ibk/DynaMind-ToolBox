@@ -200,6 +200,9 @@ void GDALCreateBuilding::init()
         this->link_view_id = ss_link_view_id.str();
 
         views.push_back(&linked_view);
+        parcel.addAttribute(link_view_id, DM::Attribute::LINK, DM::READ);
+
+
     }
 
     this->registerViewContainers(views);
@@ -224,10 +227,11 @@ void GDALCreateBuilding::run()
 
 	OGRFeature * f;
 
-	while (f = parcel.getNextFeature()) {
+	while ((f = parcel.getNextFeature())) {
 
         double ru = this->residential_units;
         double bh= this->building_height;
+
         int link_id = 0;
 
         if (!this->paramter_from_linked_view.empty()) {
@@ -250,13 +254,20 @@ void GDALCreateBuilding::run()
 		OGRPolygon * geo = (OGRPolygon *)f->GetGeometryRef();
 		if (!geo)
 			continue;
-		OGRGeometry * building_geo  = this->createBuilding(geo);
+        OGRPolygon * building_geo  = (OGRPolygon *) this->createBuilding(geo);
 
 		if (!building_geo)
 			continue;
 		//Create Feature
 		OGRFeature * b = building.createFeature();
 		b->SetGeometry(building_geo);
+
+		//Cacluate RU
+		if (ru < 0) {
+            double area =  building_geo->get_Area();
+            ru = (int) (area * (int) (building_height) / 3) / 125;
+
+		}
 
 		b->SetField("residential_units", ru);
 		b->SetField("height", bh);

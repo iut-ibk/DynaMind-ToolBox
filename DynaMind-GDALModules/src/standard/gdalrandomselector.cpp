@@ -29,6 +29,9 @@ GDALRandomSelector::GDALRandomSelector()
 	this->attributeNameFrom= "";
 	this->addParameter("attribute_from", DM::STRING, &this->attributeNameFrom);
 
+    this->distribution= "";
+    this->addParameter("distribution", DM::STRING, &this->distribution);
+
 	//dummy to get the ports
 	std::vector<DM::ViewContainer> data;
 	data.push_back(  DM::ViewContainer ("dummy", DM::SUBSYSTEM, DM::MODIFY) );
@@ -56,22 +59,41 @@ void GDALRandomSelector::init()
 		data_stream.push_back(&view_from);
 		valueFromView = true;
 	}
+
+    if (!this->distribution.empty()) {
+        this->view_distribution = DM::ViewContainer(this->distribution, DM::COMPONENT, DM::READ);
+        this->view_distribution.addAttribute("zone", DM::Attribute::STRING, DM::READ);
+        this->view_distribution.addAttribute("distribution", DM::Attribute::DOUBLE, DM::READ);
+//        this->view_from.addAttribute(this->attributeNameFrom, DM::Attribute::INT, DM::READ);
+        this->vc.addAttribute("zone", DM::Attribute::STRING, DM::READ);
+        data_stream.push_back(&view_distribution);
+//        valueFromView = true;
+    }
+
 	this->registerViewContainers(data_stream);
 }
 
-void GDALRandomSelector::mark_parcels(int id, int elements_max)
+int GDALRandomSelector::mark_parcels(int id, int elements_max, std::string zone = "")
 {
 	DM::Logger(DM::Standard) << "place " << elements_max;
 
 	std::stringstream ss;
 	ss << this->viewNameFrom << "_id=" << QString::number(id).toStdString();
+
+	if (!zone.empty()) {
+	    ss << " and ";
+	    ss << "zone = " << "'" << zone << "'";
+	}
+
+	DM::Logger(DM::Standard) << ss.str();
+
 	vc.setAttributeFilter(ss.str());
 	vc.resetReading();
 
 	int total_number_of_featurers = vc.getFeatureCount();
 	if (total_number_of_featurers == -1) {
 		DM::Logger(DM::Error) << "Error feature counter";
-		return;
+		return elements_max;
 	}
 	std::vector<int> rand_elements;
 	std::vector<int> ids;
@@ -79,14 +101,14 @@ void GDALRandomSelector::mark_parcels(int id, int elements_max)
 	OGRFeature * f;
 
 	int counter = 0;
-	while(f = vc.getNextFeature()) {
+	while( (f = vc.getNextFeature()) ) {
 		rand_elements.push_back(counter);
 		ids.push_back(f->GetFID());
 		counter++;
 	}
-	if (ids.size() == 0) {
+	if (ids.empty()) {
 		DM::Logger(DM::Warning) << "No elements found";
-		return;
+		return elements_max;
 	}
 	vc.syncAlteredFeatures();
 	vc.syncReadFeatures();
@@ -143,15 +165,39 @@ void GDALRandomSelector::mark_parcels(int id, int elements_max)
 		elements_max-=e;
 	}
 	DM::Logger(DM::Standard) << "Rest "<< elements_max;
+
+	return elements_max;
 }
 
 void GDALRandomSelector::run()
 {
+
+    //SA1
+    std::vector<std::pair<std::string, double> > distributions;
+    OGRFeature *poFeature;
+    if (!this->distribution.empty()) {
+        this->view_distribution.resetReading();
+        while ( (poFeature = view_distribution.getNextFeature()) != NULL ) {
+            std::pair<std::string, double> dist;
+            dist.first = poFeature->GetFieldAsString("zone");
+            dist.second = poFeature->GetFieldAsDouble("distribution");
+            distributions.push_back(dist);
+        }
+    }
+
 	if (this->valueFromView) {
 		view_from.resetReading();
 		OGRFeature * from;
-		while(from = view_from.getNextFeature()) {
-			this->mark_parcels(from->GetFID(),from->GetFieldAsInteger(this->attributeNameFrom.c_str()));
+		while( (from = view_from.getNextFeature()) ) {
+		    double total_households = from->GetFieldAsInteger(this->attributeNameFrom.c_str());
+		    double households = 0;
+
+            for(size_t i = 0; i < distributions.size(); i++) {
+                households += total_households * distributions[i].second / 100.;
+                DM::Logger(DM::Standard) << "Number of households to be placed " << households << " " << distributions[i].first;
+                households = this->mark_parcels(from->GetFID(),(int) households, distributions[i].first);
+                DM::Logger(DM::Standard) << "Number of households not placed " << households;
+            }
 		}
 	} else {
 		this->mark_parcels(0, this->elements);

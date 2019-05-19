@@ -39,11 +39,12 @@ public:
 	GDALRandomSelector();
 	void run();
 	void init();
-	void mark_parcels(int id, int elements_max);
+	int mark_parcels(int id, int elements_max, std::string zone);
 
 private:
 	DM::ViewContainer vc;
 	DM::ViewContainer view_from;
+    DM::ViewContainer view_distribution;
 
 	std::string viewName;
 	std::string attribute;
@@ -55,6 +56,9 @@ private:
 
 	std::string viewNameFrom;
 	std::string attributeNameFrom;
+
+	std::string distribution;
+
 
 
 };

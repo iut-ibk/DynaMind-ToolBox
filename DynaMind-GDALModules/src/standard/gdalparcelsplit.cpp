@@ -91,7 +91,7 @@ void GDALParcelSplit::run()
 	OGRFeature *poFeature;
 	if (!this->paramter_from_linked_view.empty()) {
 		this->linked_view.resetReading();
-		while ( (poFeature = linked_view.getNextFeature()) != NULL ) {
+		while ( (poFeature = linked_view.getNextFeature()) ) {
 			std::map<std::string, double> params;
 			params["target_length"] = poFeature->GetFieldAsDouble("target_length");
 			params["width"] = poFeature->GetFieldAsDouble("width");
@@ -104,7 +104,7 @@ void GDALParcelSplit::run()
 	cityblocks.resetReading();
 	QThreadPool pool;
 
-	while( (poFeature = cityblocks.getNextFeature()) != NULL ) {
+	while( (poFeature = cityblocks.getNextFeature())  ) {
 		char* geo;
 		poFeature->GetGeometryRef()->exportToWkt(&geo); //Geo destroyed by worker
 
@@ -114,6 +114,7 @@ void GDALParcelSplit::run()
 
 		if (!this->paramter_from_linked_view.empty()) {
 		    link_id = poFeature->GetFieldAsInteger(this->link_view_id.c_str());
+		    // DM::Logger(DM::Standard) << (int) poFeature->GetFID() << "/" << link_id;
 
 			if (link_id == 0) // If field returns zero the no template has been set
 			    continue;
@@ -128,6 +129,8 @@ void GDALParcelSplit::run()
             w = templates[link_id]["width"];
 			tl = templates[link_id]["target_length"];
 		}
+
+        // DM::Logger(DM::Standard) << (int) poFeature->GetFID() << "/split";
 
 		auto *ps = new ParcelSplitWorker(
 					poFeature->GetFID(),
