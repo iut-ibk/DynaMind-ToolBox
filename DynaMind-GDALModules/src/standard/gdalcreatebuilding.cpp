@@ -265,7 +265,7 @@ void GDALCreateBuilding::run()
 		//Cacluate RU
 		if (ru < 0) {
             double area =  building_geo->get_Area();
-            ru = (int) (area * (int) (building_height) / 3) / 125;
+            ru = (int) (area * (int) (bh) / 3) / 125;
 
 		}
 
