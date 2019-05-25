@@ -1,9 +1,9 @@
-
 from osgeo import ogr, osr
 from pydynamind import *
 import psycopg2
 import datetime
 
+from pydynamind import ViewContainer
 
 
 class LoadExtremeTemperature(Module):
@@ -39,13 +39,13 @@ class LoadExtremeTemperature(Module):
             self.createParameter("deltaT", INT)
             self.deltaT = 0
 
-            self.createParameter("from_city", BOOL)
-            self.from_city = False
+            # self.createParameter("from_city", BOOL)
+            # self.from_city = False
 
             self.createParameter("view_name", STRING)
             self.view_name = "station"
 
-
+            self.temperature_time_series = None
 
         def init(self):
             datastream = []
@@ -63,13 +63,12 @@ class LoadExtremeTemperature(Module):
             datastream.append(self.node_station)
             datastream.append(self.timeseries)
 
-            if self.from_city:
-                self.city = ViewContainer("city", COMPONENT, READ)
-                self.city.addAttribute("start_date", Attribute.STRING, READ)
-                self.city.addAttribute("end_date", Attribute.STRING, READ)
-                datastream.append(self.city)
+            if self.isViewInStream("city", "temperature_timeseries"):
+                self.temperature_time_series = ViewContainer("temperature_timeseries", DM.COMPONENT, DM.READ)
+                self.temperature_time_series.addAttribute("start_date", DM.Attribute.STRING, DM.READ)
+                # self.temperature_time_series.addAttribute("end_date", DM.Attribute.STRING, DM.READ)
+                datastream.append(self.temperature_time_series)
 
-            #self.node_station.addAttribute("station_id", Attribute.DOUBLEVECTOR, WRITE)
             self.registerViewContainers(datastream)
 
         def measurement_types(self, cur):
@@ -96,50 +95,47 @@ class LoadExtremeTemperature(Module):
                 return
             cur = conn.cursor()
 
-            start_date = self.start
-            end_date = self.end
+            start_date = None #self.start
+            end_date = None #self.end
 
-            if self.from_city:
-                for c in self.city:
+            if self.temperature_time_series:
+                for c in self.temperature_time_series:
                     start_date = c.GetFieldAsString("start_date")
-                    end_date = c.GetFieldAsString("end_date")
+                    # end_date = c.GetFieldAsString("end_date")
 
 
             # for id, name in self.measurement_types(cur):
-            self.createTimeseries(cur)
+            self.createTimeseries(cur, start_date)
 
-            if self.from_city:
-                self.city.finalise()
+            if self.temperature_time_series:
+                self.temperature_time_series.finalise()
             self.node_station.finalise()
             self.timeseries.finalise()
 
-        def createTimeseries(self, cur):
+        def createTimeseries(self, cur, start_date):
             filter_query = ""
             if self.node_station.get_attribute_filter_sql_string(""):
                 filter_query = " AND " + self.node_station.get_attribute_filter_sql_string("")
-
-            # 2010-1-1 00:00:00
-            # if start_date:
-            #     filter_query += " AND date > '" + start_date + "'"
-            #
-            # if end_date:
-            #     filter_query += " AND date <= '" +end_date + "'"
 
             log(filter_query, Debug)
 
             for station in self.node_station:
                 station_id = station.GetFieldAsInteger("dance_station_id")
-                end_date = self.get_extreme_date(cur, station_id)
-                start_date = end_date - datetime.timedelta(days=3)
+                if not start_date:
+                    end_date = self.get_extreme_date(cur, station_id)
+                    start_date = end_date - datetime.timedelta(days=3)
+                else:
+                    end_date = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S") + datetime.timedelta(days=3)
 
-                # print start_date, end_date
 
+                # 2010-1-1 00:00:00
                 if start_date:
                     filter_query += " AND date >= '" + str(start_date) + "'"
 
                 if end_date:
                     filter_query += " AND date < '" + str(end_date) + "'"
 
+                log(str(filter_query), Standard)
 
                 cur.execute("SELECT date, value from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(6) + filter_query + " ORDER BY date ASC")
                 rows = cur.fetchall()
@@ -151,66 +147,11 @@ class LoadExtremeTemperature(Module):
                         val = float(entry[1])
                     result_temp.append(val)
                     inserted+=1
-                    # print entry[0], val
-
-
-
-                # Find start and end date
-                # cur.execute("SELECT date from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date DESC LIMIT 1 ")
-                # rows = cur.fetchall()
-                # for r in rows:
-                #     end = r[0].strftime('%d.%m.%Y %H:%M:%S')
-                #
-                # cur.execute("SELECT date  from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 1 ")
-                #
-                # rows = cur.fetchall()
-                # for r in rows:
-                #    start = r[0].strftime('%d.%m.%Y %H:%M:%S')
-                #
-                # cur.execute("SELECT date from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 2 ")
-                # rows = cur.fetchall()
-                # times = []
-                # for r in rows:
-                #     times.append(r[0])
-                # if len(times) != 2:
-                #     log("No data for this slice found ", Warning)
-                #     continue
-                # db_timestep = (times[1] - times[0]).total_seconds()
-                #
                 timeseries = self.timeseries.create_feature()
                 timeseries.SetField("start", str(start_date))
                 timeseries.SetField("end", str(end_date))
                 timeseries.SetField(self.view_name+"_id", station.GetFID())
-                # delta_t = self.deltaT
-                # if self.deltaT < db_timestep:
-                #     log( "used timestep " + str(db_timestep), Warning)
-                #     delta_t = db_timestep
-                #
-                # if self.deltaT % db_timestep != 0:
-                #     log("non integer multiplier for timestep use nearest timestep " + str(int(delta_t / db_timestep) * db_timestep), Warning)
-                #
-                # skipper = int(delta_t / db_timestep)
-                #
-                # timeseries.SetField("timestep", int(db_timestep * skipper))
-                #
-                # cur.execute("SELECT date, value from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC")
-                # rows = cur.fetchall()
-                # counter = 0
-                # r = 0
-                # result_rain = []
 
-                # for entry in rows:
-                #     val = float(entry[1])
-                #     if val < 0.0:
-                #         val = 0
-                #     r += val
-                #     if counter % skipper == 0:
-                #         result_rain.append(r)
-                #         r = 0
-                #         inserted+=1
-                #
-                #
-                #     counter+=1
                 log(str(inserted), Standard)
                 dm_set_double_list(timeseries, "data", result_temp)
                 timeseries.SetField("type", "temperature")
