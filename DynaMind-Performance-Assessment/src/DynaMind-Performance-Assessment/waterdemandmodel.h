@@ -66,6 +66,12 @@ class WaterDemandModel: public DM::Module
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
+    double d_leak_other;
+    double d_washing_machine;;
+    double d_taps;
+    double d_toilet;
+    double d_shower_bath;
+
 		bool createRainInput(MapBasedModel *m);
 
 public:

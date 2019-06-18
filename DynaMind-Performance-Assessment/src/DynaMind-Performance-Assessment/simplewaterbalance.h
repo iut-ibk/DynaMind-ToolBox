@@ -35,6 +35,13 @@ private:
 	std::string cd3_dir;
 	std::vector<double> create_montlhy_values(std::vector<double> daily);
 
+
+    double d_leak_other;
+    double d_washing_machine;;
+    double d_taps;
+    double d_toilet;
+    double d_shower_bath;
+
 	Node *createHousehold(int persons);
 public:
 

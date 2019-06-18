@@ -60,6 +60,21 @@ WaterDemandModel::WaterDemandModel()
 	to_rain_station = false;
 	this->addParameter("to_rain_station", DM::BOOL, &this->to_rain_station);
 
+    d_leak_other = 6;
+    this->addParameter("leak_other", DM::DOUBLE, &this->d_leak_other);
+
+    d_washing_machine = 22;
+    this->addParameter("washing_machine", DM::DOUBLE, &this->d_washing_machine);
+
+    d_taps = 21;
+    this->addParameter("taps", DM::DOUBLE, &this->d_taps);
+
+    d_toilet = 19;
+    this->addParameter("toilet", DM::DOUBLE, &this->d_toilet);
+
+    d_shower_bath = 34;
+    this->addParameter("shower_bath", DM::DOUBLE, &this->d_shower_bath);
+
 }
 
 void WaterDemandModel::run()
@@ -431,13 +446,13 @@ Flow WaterDemandModel::createConstFlow(double const_flow)
 
 Node *WaterDemandModel::createConsumer(int persons)
 {
-	Node *consumption = nodereg->createNode("Consumption");
-	double l_d_to_m_s = 1./(1000.*60.*60.*24.) * (double) persons;
-	double leak_other = 6. *l_d_to_m_s;
-	double washing_machine = 22. * l_d_to_m_s;
-	double taps = 21. * l_d_to_m_s;
-	double toilet = 19. * l_d_to_m_s;
-	double shower_bath = 34. * l_d_to_m_s;
+    Node *consumption = nodereg->createNode("Consumption");
+    double l_d_to_m_s = 1./(1000.*60.*60.*24.) * (double) persons;
+    double leak_other = d_leak_other *l_d_to_m_s;
+    double washing_machine = d_washing_machine * l_d_to_m_s;
+    double taps = d_taps * l_d_to_m_s;
+    double toilet = d_toilet * l_d_to_m_s;
+    double shower_bath = d_shower_bath * l_d_to_m_s;
 
 	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other  + taps ) ));
 	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet + washing_machine + shower_bath));

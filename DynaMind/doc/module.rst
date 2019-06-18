@@ -383,8 +383,8 @@ Therefore a vector should be converted before stored into a feature. Following c
 .. code-block:: python
 
         # Access vector
-        s = str(feat.GetFieldAsString("my_vector"))
-        floats = map(float, s.split())
+        d = dm_get_double_list(my_feature, "attribute_name")
+
 
 
 ..
