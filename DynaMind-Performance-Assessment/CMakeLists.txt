@@ -46,7 +46,7 @@ ELSE()
     INCLUDE(${QT_USE_FILE})
 ENDIF()
 
-SET(BOOST_COMPONENTS system signals program_options thread date_time filesystem)
+SET(BOOST_COMPONENTS system program_options thread date_time filesystem)
 SET(Boost_USE_STATIC_LIBS OFF)
 FIND_PACKAGE(Boost 1.38.0 COMPONENTS ${BOOST_COMPONENTS} REQUIRED)
 ADD_DEFINITIONS(${Boost_LIB_DIAGNOSTIC_DEFINITIONS} "-fPIC")

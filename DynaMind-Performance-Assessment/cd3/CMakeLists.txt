@@ -72,7 +72,7 @@ set(LIBRARY_OUTPUT_PATH ${OUTPUT_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${OUTPUT_DIR})
 
 set(CD3_FRONTEND_LIBS cd3core)
-set(BOOST_COMPONENTS system signals program_options thread date_time filesystem)
+set(BOOST_COMPONENTS system program_options thread date_time filesystem)
 
 
 include_directories(src/cd3core)

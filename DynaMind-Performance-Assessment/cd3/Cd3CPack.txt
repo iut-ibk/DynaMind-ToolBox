@@ -29,7 +29,6 @@ IF(WIN32 AND NOT UNIX)
 	${QT_BINARY_DIR}/QtXml4.dll
 	${QT_BINARY_DIR}/QtSvg4.dll
 	${QT_PLUINGS_DIR}/imageformats/qsvg4.dll
-	${Boost_LIBRARY_DIRS}/boost_signals-*-mt-1_*.dll
 	${Boost_LIBRARY_DIRS}/boost_thread-*-mt-1_*.dll
 	${Boost_LIBRARY_DIRS}/boost_program_options-*-mt-1_*.dll
 	${Boost_LIBRARY_DIRS}/boost_date_time-*-mt-1_*.dll
