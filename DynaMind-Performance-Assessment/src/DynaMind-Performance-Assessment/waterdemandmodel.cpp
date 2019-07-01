@@ -524,6 +524,7 @@ bool WaterDemandModel::initRain()
 		std::cout << station_id << std::endl;
 		station_ids.insert(station_id);
 	}
+	return true;
 }
 
 std::vector<double> WaterDemandModel::create_montlhy_values(std::vector<double> daily, int seconds)
