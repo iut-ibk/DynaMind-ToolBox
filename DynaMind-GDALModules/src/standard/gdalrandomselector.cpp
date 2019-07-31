@@ -184,7 +184,6 @@ void GDALRandomSelector::run()
             distributions.push_back(dist);
         }
     }
-
 	if (this->valueFromView) {
 		view_from.resetReading();
 		OGRFeature * from;
@@ -192,12 +191,20 @@ void GDALRandomSelector::run()
 		    double total_households = from->GetFieldAsInteger(this->attributeNameFrom.c_str());
 		    double households = 0;
 
+
+			 if (this->distribution.empty()) {
+				 households += total_households;
+				 households = this->mark_parcels(from->GetFID(),(int) households);
+			 }
+
             for(size_t i = 0; i < distributions.size(); i++) {
                 households += total_households * distributions[i].second / 100.;
                 DM::Logger(DM::Standard) << "Number of households to be placed " << households << " " << distributions[i].first;
                 households = this->mark_parcels(from->GetFID(),(int) households, distributions[i].first);
                 DM::Logger(DM::Standard) << "Number of households not placed " << households;
             }
+
+
 		}
 	} else {
 		this->mark_parcels(0, this->elements);
