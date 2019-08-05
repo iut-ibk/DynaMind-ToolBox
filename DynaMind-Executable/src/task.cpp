@@ -19,6 +19,7 @@
 #include <dmlogger.h>
 #include <dmlog.h>
 #include <dmlogsink.h>
+#include <dmsimulationconfig.h>
 #include <dmdbconnector.h>
 #include <dmpythonenv.h>
 #include <QUuid>
@@ -284,6 +285,7 @@ void Task::run()
             ("logpath", po::value<string>(), "Save path for log file")
             ("ompthreads", po::value<int>(), "number of threads used by omp")
             ("settings", po::value<string>(), "set an environment variable")
+			("epsg", po::value<int>(), "force epsg setting")
             ("show-settings", "show environment variables")
             //("python-modules", po::value<vector <string> >(), "set path to python modules")
             ("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
@@ -291,9 +293,7 @@ void Task::run()
             ("with-status-updates", "print custom status updates")
             ("version", "shows the current version of the dynamind core")
             ("license", "shows used license of the dynamind core")
-            ("author", "shows the names of the core programmers")
-            ;
-
+			("author", "shows the names of the core programmers");
 
     std::string simulationfile, realsimulationfile;
     std::vector<std::string> pythonModules;
@@ -457,6 +457,7 @@ void Task::run()
 #endif
 
     DM::Simulation s;
+
     if (withStatusUpdates) {
         stringstream path;
         path << "dynamindstatus-" << QCoreApplication::applicationPid() << ".log";
@@ -474,6 +475,15 @@ void Task::run()
 
     s.loadSimulation(realsimulationfile);
     OverloadParameters(&s, parameteroverloads);
+
+	// Overload EPSG
+	if (vm.count("epsg"))
+	{
+		int epsgcode = vm["epsg"].as<int>();
+		DM::SimulationConfig sc = s.getSimulationConfig();
+		sc.setCoordinateSystem(epsgcode);
+		s.setSimulationConfig(sc);
+	}
 
 
     if (vm.count("parameterlist"))
