@@ -41,4 +41,7 @@ from dm_value_from_raster_poly import *
 from dm_import_landuse import *
 from dm_import_landcover_geoscape import *
 from dm_fill import *
+from simplify_abs_education_2016 import *
+from simplify_abs_income_2016 import *
+from simplify_abs_age_2016 import *
 

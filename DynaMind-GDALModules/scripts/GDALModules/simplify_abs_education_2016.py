@@ -26,7 +26,7 @@ from osgeo import ogr
 from pydynamind import *
 
 
-class SimplifyABSEducation(Module):
+class SimplifyABSEducation2016(Module):
         display_name = "Categories Education from Census (AU)"
         group_name = "Urban Form"
 
@@ -38,29 +38,27 @@ class SimplifyABSEducation(Module):
 
             self.translation_table = {}
             #B40b
-            self.translation_table["persons_postgraduate_degree_level_total"] = "tertiary"
-            self.translation_table["persons_graduate_diploma_and_graduate_certificate_level_total"] = "tertiary"
-            self.translation_table["persons_bachelor_degree_level_total"] = "tertiary"
-            self.translation_table["persons_advanced_diploma_and_diploma_level_total"] = "technical"
+            self.translation_table["p_pgrad_deg_total"] = "tertiary"
+            self.translation_table["p_graddip_and_gradcert_total"] = "tertiary"
+            self.translation_table["p_bachdeg_total"] = "tertiary"
+            self.translation_table["p_advdip_and_dip_total"] = "technical"
             # self.translation_table["persons_certificate_level_certificate_level_nfd_total"]= "technical"
             # self.translation_table["persons_certificate_level_certificate_iii_and_iv_level_total"]= "technical"
             # self.translation_table["persons_certificate_level_certificate_i_and_ii_level_total"]= "technical"
-            self.translation_table["persons_certificate_level_total_total"] = "technical"
-            self.translation_table["persons_level_of_education_inadequately_described_total"] = "other"
-            self.translation_table["persons_level_of_education_not_stated_total"] = "other"
-            #self.translation_table["persons_total_total"]
+            self.translation_table["p_cert_lev_tot_total"] = "technical"
+            self.translation_table["p_lev_edu_ides_total"] = "other"
+            self.translation_table["p_lev_edu_ns_total"] = "other"
 
             # self.translation_table_1 = {}
-            #self.translation_table["total_persons_persons"] = "other"
-            self.translation_table["highest_year_of_school_completed_year_12_or_equivalent_persons"] = "secondary"
-            self.translation_table["highest_year_of_school_completed_year_11_or_equivalent_persons"] = "secondary"
-            self.translation_table["highest_year_of_school_completed_year_10_or_equivalent_persons"] = "secondary"
-            self.translation_table["highest_year_of_school_completed_year_9_or_equivalent_persons"] = "secondary"
-            self.translation_table["highest_year_of_school_completed_year_8_or_below_persons"] = "secondary"
-            self.translation_table["highest_year_of_school_completed_did_not_go_to_school_persons"] = "other"
+            # self.translation_table["highest_year_of_school_completed_year_12_or_equivalent_persons"] = "secondary"
+            # self.translation_table["highest_year_of_school_completed_year_11_or_equivalent_persons"] = "secondary"
+            # self.translation_table["highest_year_of_school_completed_year_10_or_equivalent_persons"] = "secondary"
+            # self.translation_table["highest_year_of_school_completed_year_9_or_equivalent_persons"] = "secondary"
+            # self.translation_table["highest_year_of_school_completed_year_8_or_below_persons"] = "secondary"
+            # self.translation_table["highest_year_of_school_completed_did_not_go_to_school_persons"] = "other"
 
 
-            self.__b40b = ViewContainer("b40b", NODE, READ)
+            self.__b40b = ViewContainer("g46b", NODE, READ)
 
             for k in self.translation_table.keys():
                 self.__b40b.addAttribute(k, Attribute.INT, READ)
@@ -70,7 +68,7 @@ class SimplifyABSEducation(Module):
             # for k in self.translation_table_1.keys():
             #     self.__b01.addAttribute(k, Attribute.INT, READ)
 
-            self.__ress = ViewContainer("education", NODE, WRITE)
+            self.__ress = ViewContainer("education_2016", NODE, WRITE)
             self.__ress.addAttribute("tertiary", Attribute.INT, WRITE)
             self.__ress.addAttribute("technical", Attribute.INT, WRITE)
             self.__ress.addAttribute("secondary", Attribute.INT, WRITE)

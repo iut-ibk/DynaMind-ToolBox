@@ -39,6 +39,8 @@ public:
 	GDALCreateHouseholds();
 	void run();
 	void placeHouseholds();
+	void init();
+
 private:
 	DM::ViewContainer district;
 	DM::ViewContainer building;
@@ -46,6 +48,9 @@ private:
 	DM::ViewContainer hh_income;
 	DM::ViewContainer hh_age;
 	DM::ViewContainer education;
+
+	std::string link_id;
+	int census_year = 2011;
 
 	std::vector<std::string> hh_income_names;
 	std::vector<std::string> education_names;

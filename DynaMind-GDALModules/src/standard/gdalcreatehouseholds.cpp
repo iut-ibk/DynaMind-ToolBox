@@ -15,41 +15,113 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 
 	GDALModule = true;
 
-	//district = DM::ViewContainer("district", DM::COMPONENT, DM::READ);
-	//district.addAttribute("hh", DM::Attribute::INT, DM::READ);
+	link_id = "district_id";
+	this->addParameter("link_id", DM::STRING, &this->link_id);
 
-	hh_income = DM::ViewContainer("hh_income", DM::COMPONENT, DM::READ);
-	hh_income.addAttribute("district_id", DM::Attribute::INT, DM::READ);
+
+	census_year = 2011;
+	this->addParameter("census_year", DM::INT, &this->census_year);
+
+	education_names.push_back("cdf_secondary");
+	education_names.push_back("cdf_other");
+	education_names.push_back("cdf_technical");
+	education_names.push_back("cdf_tertiary");
+
+	hh_income_names.push_back("cdf_low");
+	hh_income_names.push_back("cdf_medium");
+	hh_income_names.push_back("cdf_high");
+
+
+	education_names_p.push_back("secondary");
+	education_names_p.push_back("other");
+	education_names_p.push_back("technical");
+	education_names_p.push_back("tertiary");
+
+	hh_income_names_p.push_back("low");
+	hh_income_names_p.push_back("medium");
+	hh_income_names_p.push_back("high");
+
+
+
+
+
+}
+
+void GDALCreateHouseholds::init()
+{
+
+	hh_age_names.clear();
+
+	if (census_year == 2011) {
+		hh_age_names.push_back("cdf_age_20_24");
+		hh_age_names.push_back("cdf_age_25_29");
+		hh_age_names.push_back("cdf_age_30_34");
+		hh_age_names.push_back("cdf_age_35_39");
+		hh_age_names.push_back("cdf_age_40_44");
+		hh_age_names.push_back("cdf_age_45_49");
+		hh_age_names.push_back("cdf_age_50_54");
+		hh_age_names.push_back("cdf_age_55_59");
+		hh_age_names.push_back("cdf_age_60_64");
+		hh_age_names.push_back("cdf_age_65_69");
+		hh_age_names.push_back("cdf_age_70_74");
+		hh_age_names.push_back("cdf_age_75_79");
+		hh_age_names.push_back("cdf_age_80_84");
+	}
+	if (census_year == 2016) {
+		hh_age_names.push_back("cdf_age_20_24");
+		hh_age_names.push_back("cdf_age_25_34");
+		hh_age_names.push_back("cdf_age_35_44");
+		hh_age_names.push_back("cdf_age_45_54");
+		hh_age_names.push_back("cdf_age_55_64");
+		hh_age_names.push_back("cdf_age_65_74");
+		hh_age_names.push_back("cdf_age_75_84");
+	}
+
+
+
+	foreach (std::string name, hh_age_names) {
+		hh_age_names_p.push_back(name.replace(0, 8, "").replace(2,5,""));
+
+	}
+
+	std::string income_str = "hh_income";
+	std::string	education_str = "education";
+	std::string age_str = "hh_age";
+
+	if (census_year == 2016) {
+		income_str = "hh_income_2016";
+		education_str = "education_2016";
+		age_str = "hh_age_2016";
+	}
+
+
+	hh_income = DM::ViewContainer(income_str, DM::COMPONENT, DM::READ);
+	hh_income.addAttribute(link_id, DM::Attribute::INT, DM::READ);
 	hh_income.addAttribute("cdf_low", DM::Attribute::DOUBLE, DM::READ);
 	hh_income.addAttribute("cdf_medium", DM::Attribute::DOUBLE, DM::READ);
 	hh_income.addAttribute("cdf_high", DM::Attribute::DOUBLE, DM::READ);
 
-	education = DM::ViewContainer("education", DM::COMPONENT, DM::READ);
-	education.addAttribute("district_id", DM::Attribute::INT, DM::READ);
+	education = DM::ViewContainer(education_str, DM::COMPONENT, DM::READ);
+	education.addAttribute(link_id, DM::Attribute::INT, DM::READ);
 	education.addAttribute("cdf_tertiary", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_technical", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_secondary", DM::Attribute::DOUBLE, DM::READ);
 	education.addAttribute("cdf_other", DM::Attribute::DOUBLE, DM::READ);
 
-	hh_age = DM::ViewContainer("hh_age", DM::COMPONENT, DM::READ);
-	hh_age.addAttribute("cdf_age_20_24", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_25_29", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_30_34", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_35_39", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_40_44", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_45_49", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_50_54", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_55_59", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_60_64", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_65_69", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_70_74", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_75_79", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_80_84", DM::Attribute::DOUBLE, DM::READ);
-	hh_age.addAttribute("cdf_age_85_89", DM::Attribute::DOUBLE, DM::READ);
+	hh_age = DM::ViewContainer(age_str, DM::COMPONENT, DM::READ);
+	hh_age.addAttribute(link_id, DM::Attribute::INT, DM::READ);
+
+	foreach (std::string name, hh_age_names) {
+		hh_age.addAttribute(name, DM::Attribute::DOUBLE, DM::READ);
+
+	}
+
+
+
 
 	building = DM::ViewContainer("building", DM::FACE, DM::READ);
 	building.addAttribute("residential_units", DM::Attribute::INT, DM::READ);
-	building.addAttribute("district_id", DM::Attribute::INT, DM::READ);
+	building.addAttribute(link_id, DM::Attribute::INT, DM::READ);
 
 	household = DM::ViewContainer("household", DM::NODE, DM::WRITE);
 	household.addAttribute("building_id", DM::Attribute::INT, DM::WRITE);
@@ -66,46 +138,8 @@ GDALCreateHouseholds::GDALCreateHouseholds()
 	datastream.push_back(&household);
 	datastream.push_back(&hh_age);
 
-	education_names.push_back("cdf_secondary");
-	education_names.push_back("cdf_other");
-	education_names.push_back("cdf_technical");
-	education_names.push_back("cdf_tertiary");
-
-	hh_income_names.push_back("cdf_low");
-	hh_income_names.push_back("cdf_medium");
-	hh_income_names.push_back("cdf_high");
-
-	hh_age_names.push_back("cdf_age_20_24");
-	hh_age_names.push_back("cdf_age_25_29");
-	hh_age_names.push_back("cdf_age_30_34");
-	hh_age_names.push_back("cdf_age_35_39");
-	hh_age_names.push_back("cdf_age_40_44");
-	hh_age_names.push_back("cdf_age_45_49");
-	hh_age_names.push_back("cdf_age_50_54");
-	hh_age_names.push_back("cdf_age_55_59");
-	hh_age_names.push_back("cdf_age_60_64");
-	hh_age_names.push_back("cdf_age_65_69");
-	hh_age_names.push_back("cdf_age_70_74");
-	hh_age_names.push_back("cdf_age_75_79");
-	hh_age_names.push_back("cdf_age_80_84");
-	hh_age_names.push_back("cdf_age_85_89");
-
-
-	education_names_p.push_back("secondary");
-	education_names_p.push_back("other");
-	education_names_p.push_back("technical");
-	education_names_p.push_back("tertiary");
-
-	hh_income_names_p.push_back("low");
-	hh_income_names_p.push_back("medium");
-	hh_income_names_p.push_back("high");
-
-	foreach (std::string name, hh_age_names) {
-		hh_age_names_p.push_back(name.replace(0, 8, "").replace(2,5,""));
-
-	}
-
 	this->registerViewContainers(datastream);
+
 }
 
 void GDALCreateHouseholds::run()
@@ -123,10 +157,10 @@ void GDALCreateHouseholds::run()
 	}
 
 
-	building.createIndex("district_id");
-	hh_income.createIndex("district_id");
-	hh_age.createIndex("district_id");
-	education.createIndex("district_id");
+	building.createIndex(link_id);
+	hh_income.createIndex(link_id);
+	hh_age.createIndex(link_id);
+	education.createIndex(link_id);
 
 
 	OGRFeature * b = 0;
@@ -139,7 +173,7 @@ void GDALCreateHouseholds::run()
 	while (b = building.getNextFeature()) {
 
 		int b_id = b->GetFID();
-		int district_id = b->GetFieldAsInteger("district_id");
+		int district_id = b->GetFieldAsInteger(link_id.c_str());
 		int households = b->GetFieldAsInteger("residential_units"); //d->GetFieldAsInteger("hh");
 		//DM::Logger(DM::Standard) << households;
 
@@ -147,9 +181,9 @@ void GDALCreateHouseholds::run()
 		filter << "ogc_fid = " << district_id;
 		//building.setAttributeFilter(filter.str());
 
-		fill_cdf(district_id, "district_id" ,education, this->education_names, this->education_v);
-		fill_cdf(district_id, "district_id" ,hh_income, this->hh_income_names, this->hh_income_v);
-		fill_cdf(district_id, "district_id" ,hh_age, this->hh_age_names, this->hh_age_name_v);
+		fill_cdf(district_id, link_id ,education, this->education_names, this->education_v);
+		fill_cdf(district_id, link_id ,hh_income, this->hh_income_names, this->hh_income_v);
+		fill_cdf(district_id, link_id ,hh_age, this->hh_age_names, this->hh_age_name_v);
 
 		OGRGeometry * geo = b->GetGeometryRef();
 		if (!geo)
@@ -176,8 +210,10 @@ void GDALCreateHouseholds::run()
 			//households--;
 		}
 	}
-	DM::Logger(DM::Standard) << "Create " << counter << " hoseholds";
+	DM::Logger(DM::Standard) << "Created " << counter << " households";
 }
+
+
 
 std::string GDALCreateHouseholds::sampler(std::vector<std::string> & names, std::vector<double> & devec)
 {
