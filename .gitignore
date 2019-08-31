@@ -21,3 +21,4 @@ build
 bin
 BuildWin/
 *.user*
+*.bak
