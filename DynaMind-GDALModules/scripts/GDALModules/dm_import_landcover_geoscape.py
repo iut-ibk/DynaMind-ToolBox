@@ -43,6 +43,9 @@ class DM_ImportLandCoverGeoscape(Module):
         self.createParameter("big_raster_file", BOOL)
         self.big_raster_file = False
 
+        self.createParameter("transform", BOOL)
+        self.transform = True
+
         self.transport = None
         self.sftp = None
 
@@ -83,7 +86,7 @@ class DM_ImportLandCoverGeoscape(Module):
         try:
             self.sftp.get(file_name, self.real_file_name)
         except Exception as e:
-            print e
+            print(e)
             self.real_file_name = ""
             return False
         self.downloaded_file = self.generate_downloaded_file_name()
@@ -93,19 +96,39 @@ class DM_ImportLandCoverGeoscape(Module):
         self.node_view = ViewContainer(self.view_name, FACE, READ)
         self.city = ViewContainer(self.view_name_grid, FACE, READ)
 
-        self.geoscape_landclass = {
-            2: 5, # grass
-            3: 13,
-            4: 7,
-            5: 1,
-            6: 7,
-            7: 15,
-            8: 2,
-            9: 12,
-            10: -1,
-            11: -1,
-            12: 2
-        }
+        self.geoscape_landclass = None
+
+        if transform:
+            self.geoscape_landclass = {
+                2: 5, # grass
+                3: 13,
+                4: 7,
+                5: 1,
+                6: 7,
+                7: 15,
+                8: 2,
+                9: 12,
+                10: -1,
+                11: -1,
+                12: 2
+            }
+        else:
+            self.geoscape_landclass = {
+                2: 2, # grass
+                3: 3,
+                4: 4,
+                5: 5,
+                6: 6,
+                7: 7,
+                8: 8,
+                9: 9,
+                10: 10,
+                11: 11,
+                12: 12,
+                13: 13,
+                14: 14,
+                15: 15
+            }
 
         self.landuse_classes = {
             "tree_cover_fraction": 1,
@@ -247,7 +270,7 @@ class DM_ImportLandCoverGeoscape(Module):
 
                             val_array[val] += 1
                             count+=1
-                print count, missed
+                print(count, missed)
                 node.SetField("geoscape_count", count)
                 node.SetField("geoscape_missed", missed)
                 for key in self.landuse_classes:
@@ -260,5 +283,5 @@ class DM_ImportLandCoverGeoscape(Module):
             # gc.collect()
 
         self.node_view.finalise()
-        print "finalise city"
+        print("finalise city")
 
