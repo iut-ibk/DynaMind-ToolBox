@@ -98,7 +98,7 @@ class DM_ImportLandCoverGeoscape(Module):
 
         self.geoscape_landclass = None
 
-        if transform:
+        if self.transform:
             self.geoscape_landclass = {
                 2: 5, # grass
                 3: 13,
