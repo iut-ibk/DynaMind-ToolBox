@@ -114,7 +114,8 @@ class DM_ImportLandCoverGeoscape(Module):
             }
         else:
             self.geoscape_landclass = {
-                2: 2, # grass
+                1: 1,  # trees
+                2: 2,
                 3: 3,
                 4: 4,
                 5: 5,
