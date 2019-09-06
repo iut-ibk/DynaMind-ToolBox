@@ -267,7 +267,7 @@ class DM_ImportLandCoverGeoscape(Module):
                             except IndexError:
                                 missed+=1
                                 continue
-                            if idx < 0 or idx > self.index_max:
+                            if idx < 1 or idx > self.index_max:
                                 continue
                             val = self.geoscape_landclass[idx]
                             if val < 1:
