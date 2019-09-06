@@ -53,6 +53,10 @@ class DM_ImportLandCoverGeoscape(Module):
 
         self.real_file_name = ""
 
+        self.index_max  = 0
+
+        self.geoscape_landclass = None
+
     def generate_downloaded_file_name(self):
         return self.raster_file + self.username + self.password + self.host
 
@@ -96,8 +100,6 @@ class DM_ImportLandCoverGeoscape(Module):
         self.node_view = ViewContainer(self.view_name, FACE, READ)
         self.city = ViewContainer(self.view_name_grid, FACE, READ)
 
-        self.geoscape_landclass = None
-
         if self.transform:
             self.geoscape_landclass = {
                 2: 5, # grass
@@ -112,6 +114,7 @@ class DM_ImportLandCoverGeoscape(Module):
                 11: -1,
                 12: 2
             }
+            self.index_max = 12
         else:
             self.geoscape_landclass = {
                 1: 1,  # trees
@@ -130,6 +133,7 @@ class DM_ImportLandCoverGeoscape(Module):
                 14: 14,
                 15: 15
             }
+            self.index_max = 15
 
         self.landuse_classes = {
             "tree_cover_fraction": 1,
@@ -263,7 +267,7 @@ class DM_ImportLandCoverGeoscape(Module):
                             except IndexError:
                                 missed+=1
                                 continue
-                            if idx < 0 or idx > 12:
+                            if idx < 0 or idx > self.index_max:
                                 continue
                             val = self.geoscape_landclass[idx]
                             if val < 1:
