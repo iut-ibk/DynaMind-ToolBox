@@ -174,7 +174,6 @@ class DM_ImportLandCoverGeoscape(Module):
         else:
             self.real_file_name = self.raster_file
 
-        # log("Hello its me", Standard)
         dataset = gdal.Open(self.real_file_name, GA_ReadOnly)
         if not dataset:
             log("Failed to open file", Error)
@@ -206,24 +205,13 @@ class DM_ImportLandCoverGeoscape(Module):
                 min_y_tmp = miny
                 miny = maxy
                 maxy = min_y_tmp
-                # log("swapsy", Standard)
             minx -= 100
             miny -= 100
             maxx += 100
             maxy += 100
-            # print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
-            #
-            # log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
-            # values = band.ReadAsArray()
-
-            # values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
-            # print values
-            # gminy = miny
-            # gminx = minx
             areas.append([c.GetFID(), minx, miny, maxx - minx, maxy - miny])
-            # print "start nodes"
-
         self.city.finalise()
+
 
         for a in areas:
             log(str(a), Standard)
@@ -231,8 +219,28 @@ class DM_ImportLandCoverGeoscape(Module):
                 self.node_view.set_attribute_filter(self.view_name_grid + "_id = " + str(a[0]))
             else:
                 self.node_view.reset_reading()
+
+            # a[2]  = 0
+            log(str(a), Standard)
+            log(str(band.XSize), Standard)
+            log(str(band.YSize), Standard)
+
+            # Check if we are within bounds
+            if a[2] < 0:
+                a[2] = 0
+            if a[1] < 0:
+                a[1] = 0
+            if a[1] + a[3] > band.XSize:
+                a[3] = band.XSize - a[1]
+            if a[2] + a[4] > band.YSize:
+                a[4] = band.YSize - a[2]
+
+
+            log(str(a), Standard)
             values = band.ReadAsArray(a[1], a[2], a[3], a[4])
-            # print values
+            if values is None:
+                log("Something went terribly wrong and I didn't get any data", Error)
+                return
 
             gminy = a[2]
             gminx = a[1]
@@ -261,9 +269,7 @@ class DM_ImportLandCoverGeoscape(Module):
                             if x < 0 or y < 0 or x > band.XSize - 1 or y > band.YSize - 1:
                                 continue
                             try:
-                                #print "y",int(y),  gminy, "x", int(x) , gminx, "val", int(values[int(y) - gminy][int(x) - gminx])
                                 idx = int(values[int(y) - gminy][int(x) - gminx])
-
                             except IndexError:
                                 missed+=1
                                 continue
@@ -275,7 +281,7 @@ class DM_ImportLandCoverGeoscape(Module):
 
                             val_array[val] += 1
                             count+=1
-                print(count, missed)
+
                 node.SetField("geoscape_count", count)
                 node.SetField("geoscape_missed", missed)
                 for key in self.landuse_classes:
