@@ -42,6 +42,21 @@ class Catchment_w_Routing(pycd3.Node):
         self.outdoor_use = pycd3.Flow()
         self.inflow = pycd3.Flow()
         self.outdoor_use_check = pycd3.Flow()
+
+        self.effective_evapotranspiration = pycd3.Flow()
+        self.previous_storage = pycd3.Flow()
+        self.groundwater_infiltration = pycd3.Flow()
+
+
+        # self.total_effective_rain / 1000. * self.area_property,
+        # self.total_actual_infiltr + self.total_collected_w + self.total_runoff,
+        # "infiltration:", self.total_actual_infiltr,
+        # "collected:", self.total_collected_w,
+        # "outdoor:", self.total_outdoor_use,
+        # "runoff:", self.total_runoff,
+        # "storage:", self.current_perv_storage_level / self.perv_soil_storage_capacity,
+        # "evapo:", self.total_evapotranspiration,
+        # "groundwater:", self.total_groundwater
         
         #dir (self.inf)
 #        print "init node"
@@ -54,7 +69,11 @@ class Catchment_w_Routing(pycd3.Node):
         self.addOutPort("Collected_Water", self.collected_w)
         self.addOutPort("Outdoor_Demand", self.outdoor_use)
         self.addOutPort("Outdoor_Demand_Check", self.outdoor_use_check)
-        
+
+        self.addOutPort("effective_evapotranspiration", self.effective_evapotranspiration)
+        self.addOutPort("previous_storage", self.previous_storage)
+        self.addOutPort("groundwater_infiltration", self.groundwater_infiltration)
+
         #Catchment with Routing or without
         self.select_model = pycd3.String("without")
         self.addParameter("Catchment_with_or_without_Routing_(with_or_without)", self.select_model)        
@@ -68,15 +87,26 @@ class Catchment_w_Routing(pycd3.Node):
         self.addParameter("Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]", self.imp_area_stormwater)
         self.imp_area_raintank = pycd3.Double(0.2)
         self.addParameter("Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]", self.imp_area_raintank)
-        
+        # https://help.innovyze.com/display/xps/Infiltration
         #default values for gras (Wikipedia)
-        self.Horton_initial_cap = pycd3.Double(0.9)                             
+        self.Horton_initial_cap = pycd3.Double(0.09)
         self.addParameter("Initial_Infiltration_Capacity_[m/h]", self.Horton_initial_cap)
-        self.Horton_final_cap = pycd3.Double(0.29)                              
+        self.Horton_final_cap = pycd3.Double(0.001)
         self.addParameter("Final_Infiltration_Capacity_[m/h]", self.Horton_final_cap)
-        self.Horton_decay_constant = pycd3.Double(2.0)                          
+        self.Horton_decay_constant = pycd3.Double(0.06)
         self.addParameter("Decay_Constant_[1/min]", self.Horton_decay_constant)
-        
+
+        # Storage in mm
+        self.perv_soil_storage_capacity = pycd3.Double(0.030)
+        self.addParameter("Soil Storage Capacity in mm", self.perv_soil_storage_capacity)
+
+        self.daily_recharge_rate = pycd3.Double(0.25) # in %
+        self.addParameter("Daily Recharge Rate", self.daily_recharge_rate)
+
+        # E-Water
+        self.transpiration_capacity = pycd3.Double(7.0)
+        self.addParameter("Transpire Capacity", self.transpiration_capacity)
+
         #default values for suburbs (scrip Prof. Krebs)
         self.depression_loss = pycd3.Double(1.5)                                
         self.addParameter("Depression_Loss_[mm]", self.depression_loss)
@@ -115,6 +145,7 @@ class Catchment_w_Routing(pycd3.Node):
         self.continuous_rain_time_2 = 0.0                                        
         self.rain_storage_perv = 0.0
         self.rain_storage_imp_before = 0.0
+
         
         #variable to check Horten model (has got to be 1 for a real simulation)
         self.k=1
@@ -128,7 +159,18 @@ class Catchment_w_Routing(pycd3.Node):
 #        print start
 #        print stop
 #        print dt
-        
+#print(self.rain[0], self.evapo[0], self.possible_infiltr[0]/400., self.actual_infiltr[0], self.runoff[0],  self.collected_w[0],self.outdoor_use[0],self.outdoor_use_check[0])
+        self.total_rain = 0.
+        self.total_actual_infiltr = 0.
+        self.total_collected_w = 0.
+        self.total_outdoor_use = 0.
+        self.total_runoff = 0.
+        self.total_effective_rain = 0.
+        self.total_groundwater = 0.
+        self.total_evapotranspiration = 0.
+
+        self.current_perv_storage_level = 0.
+
         #starting values for Horton model
         self.possible_infiltr_raw = self.Horton_initial_cap/3600.*dt
         self.temp_cap = self.Horton_initial_cap/3600.*dt
@@ -166,9 +208,12 @@ class Catchment_w_Routing(pycd3.Node):
         elif self.select_model == "without":
             pass
         else:
-            print "Model selection not valid!"
+            print("Model selection not valid!")
             
         return True
+    
+    
+    
         
     def f(self, current, dt):
         
@@ -189,7 +234,10 @@ class Catchment_w_Routing(pycd3.Node):
                 pass
         else:
             self.current_effective_rain_height= self.rain[0]-self.evapo[0]
-            
+
+        if self.current_effective_rain_height > 0:
+            self.total_effective_rain+=self.current_effective_rain_height
+
         #if the current effective rain height is below 0 there wont be any runoff, water collection or infiltration
         #and the outdoor water use is equal to the difference between evapotranspiration (ET) and precipitation (P)
         if self.current_effective_rain_height < 0.0:
@@ -197,7 +245,7 @@ class Catchment_w_Routing(pycd3.Node):
             self.collected_w_raw = 0.0
             self.runoff_raw = 0.0
             self.actual_infiltr[0] =0.0
-            self.outdoor_use[0] = (self.evapo[0] - self.rain[0]) / 1000 * self.area_property * self.perv_area * self.outdoor_demand_coefficient                                
+            self.outdoor_use[0] = (self.evapo[0] - self.rain[0]) / 1000. * self.area_property * self.perv_area * self.outdoor_demand_coefficient
             self.runoff_perv_raw = 0.0
             self.outdoor_use_check[0] = self.outdoor_use[0] 
             #resetting the storage values as a simulation of the drying process respectively the continuous infitlration
@@ -222,6 +270,7 @@ class Catchment_w_Routing(pycd3.Node):
             #calculating the possilbe infiltration rate the the Horton model in a state of "drying" (+ increasing the time step for the model)
             self.temp_cap = self.Horton_final_cap/3600.*dt + (self.temp_cap_2 - self.Horton_final_cap/3600.*dt) * math.exp(-1*self.Horton_decay_constant * dt / (60.*6.) * self.continuous_rain_time/self.k)
             self.possible_infiltr_raw = self.Horton_initial_cap/3600.*dt - (self.Horton_initial_cap/3600.*dt - self.temp_cap) * math.exp(-1*self.Horton_decay_constant * dt / 60. * self.continuous_rain_time_2/self.k)
+            # print("poss", self.possible_infiltr_raw)
             self.continuous_rain_time_2 += 1.0
            
  
@@ -243,7 +292,7 @@ class Catchment_w_Routing(pycd3.Node):
             #if the wetting loss and depression loss hasn't been overcome yet, there won't be any runoff from the impervious area
             #that contributes to stormwater
             if self.rain_storage_imp - self.initial_loss - self.depression_loss <= 0.0:
-                
+
                 #if the wetting loss hasn't beem overcome there will be no flow...
                 if self.rain_storage_perv - self.initial_loss <= 0.0:
                 
@@ -278,7 +327,7 @@ class Catchment_w_Routing(pycd3.Node):
             
             #once the wetting loss and depression loss has been overcome ther will be infiltration, water collection and runoff
             else:
-                
+                #print("runoff",  self.imp_area_stormwater,  self.area_property)
                 #if self.rain_storage_imp_before == 0.0:
                 #    self.large_time_step_loss_imp = self.initial_loss + self.depression_loss
                 #    self.large_time_step_loss_perv = self.initial_loss
@@ -303,7 +352,7 @@ class Catchment_w_Routing(pycd3.Node):
                     self.runoff_perv_raw = (self.current_effective_rain_height - self.large_time_step_loss_perv - self.possible_infiltr_raw * 1000.) / 1000. * self.perv_area * self.area_property
                     self.runoff_raw  = (self.rain[0]-self.evapo[0] - self.large_time_step_loss_imp) * self.imp_area_stormwater * self.area_property / 1000. 
                     self.outdoor_use[0] = 0.0
-                 
+                #print("runoff", self.current_effective_rain_height, str(self.imp_area_stormwater), str(self.area_property), self.runoff_raw,self.runoff_perv_raw , str(self.perv_area ))
                 #saving the information that the initial wetting loss and depression loss has been overcome 
                 self.rain_storage_perv = self.initial_loss + 0.000000000001
                 self.rain_storage_imp = self.initial_loss + self.depression_loss + 0.00000000000001
@@ -314,7 +363,7 @@ class Catchment_w_Routing(pycd3.Node):
             
             self.collected_w_raw = 0.0
             self.runoff_raw = 0.0
-            self.actual_infiltr[0] =0.0
+            self.actual_infiltr[0] = 0.0
             self.outdoor_use[0] = 0.0
             self.runoff_perv_raw = 0.0
         
@@ -368,8 +417,66 @@ class Catchment_w_Routing(pycd3.Node):
             self.runoff[0] = self.inflow[0]+self.runoff_raw + self.runoff_perv_raw
             
         else:
-            print "Model selection not valid!"
-        
+            print("Model selection not valid!")
+
+        # Soil Storage
+        self.current_perv_storage_level += self.actual_infiltr[0] / (self.perv_area * self.area_property)
+
+        # Evapotranspiration
+        evapo = self.transpiration_capacity / 1000. *  self.current_perv_storage_level / self.perv_soil_storage_capacity
+        # print(evapo, self.evapo[0])
+        if evapo > self.current_perv_storage_level:
+            evapo =  self.current_perv_storage_level
+
+        if evapo > self.evapo[0]:
+            evapo = self.evapo[0]
+
+        self.current_perv_storage_level -= evapo
+
+        # Flow to Groundwater
+        groundwater = self.current_perv_storage_level  * self.daily_recharge_rate
+
+        if groundwater > self.current_perv_storage_level:
+            groundwater =  self.current_perv_storage_level
+
+        self.current_perv_storage_level -= groundwater
+
+        self.effective_evapotranspiration[0]  =  evapo *  (self.perv_area * self.area_property)
+        self.previous_storage[0] = self.current_perv_storage_level
+        self.groundwater_infiltration[0] =  groundwater * (self.perv_area * self.area_property)
+
+
+        #print(self.rain[0], self.evapo[0], self.possible_infiltr[0]/400., self.actual_infiltr[0], self.runoff[0],  self.collected_w[0],self.outdoor_use[0],self.outdoor_use_check[0])
+        # self.total_rain += self.rain[0]
+        # self.total_actual_infiltr +=self.actual_infiltr[0]
+        # self.total_collected_w += self.collected_w[0]
+        # self.total_outdoor_use +=self.outdoor_use[0]
+        # self.total_runoff += self.runoff[0]
+        # self.total_groundwater += groundwater * (self.perv_area * self.area_property)
+        # self.total_evapotranspiration += evapo *  (self.perv_area * self.area_property)
+        # print("rain:", self.total_rain  / 1000.*self.area_property,
+        #       self.total_effective_rain / 1000.*self.area_property,
+        #       self.total_actual_infiltr + self.total_collected_w + self.total_runoff,
+        #       "infiltration:", self.total_actual_infiltr,
+        #       "collected:",self.total_collected_w,
+        #       "outdoor:",self.total_outdoor_use,
+        #       "runoff:",self.total_runoff,
+        #       "storage:",self.current_perv_storage_level / self.perv_soil_storage_capacity,
+        #       "evapo:", self.total_evapotranspiration,
+        #       "groundwater:",self.total_groundwater )
+
+
+
+        #
+        # self.addOutPort("Possible_Infiltration", self.possible_infiltr)
+        # self.addOutPort("Actual_Infiltration", self.actual_infiltr)
+        # self.addOutPort("Runoff", self.runoff)
+        # self.addOutPort("Collected_Water", self.collected_w)
+        # self.addOutPort("Outdoor_Demand", )self.outdoor_use
+        # self.addOutPort("Outdoor_Demand_Check", self.outdoor_use_check)
+        #
+
+
         return dt
     
     def getClassName(self):

@@ -93,6 +93,11 @@ void WaterDemandModel::run()
 	infiltration = std::map<int, std::vector<double> >();
 	actual_infiltration = std::map<int, std::vector<double> > ();
 
+
+	effective_evapotranspiration = std::map<int, std::vector<double> >();
+	previous_storage = std::map<int, std::vector<double> > ();
+	groundwater_infiltration = std::map<int, std::vector<double> > ();
+
 	if (!initmodel())
 		return;
 
@@ -125,6 +130,10 @@ void WaterDemandModel::run()
 			DM::DMFeature::SetDoubleList( st, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[st->GetFID()], 1./100.)); //Unit area
 			DM::DMFeature::SetDoubleList( st, "grey_water_daily", this->mutiplyVector(this->grey_water[st->GetFID()], 1));
 			DM::DMFeature::SetDoubleList( st, "black_water_daily", this->mutiplyVector(this->black_water[st->GetFID()], 1));
+
+			DM::DMFeature::SetDoubleList( st, "effective_evapotranspiration", this->mutiplyVector(this->effective_evapotranspiration[st->GetFID()], 1/400.)); //Unit Area
+			DM::DMFeature::SetDoubleList( st, "previous_storage", this->mutiplyVector(this->previous_storage[st->GetFID()], 1.));
+			DM::DMFeature::SetDoubleList( st, "groundwater_infiltration", this->mutiplyVector(this->groundwater_infiltration[st->GetFID()], 1/400.));
 		}
 		return;
 	}
@@ -149,6 +158,10 @@ void WaterDemandModel::run()
 		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[station_id], roof_area/100.)); //Unit area
 		DM::DMFeature::SetDoubleList( p, "grey_water_daily", this->mutiplyVector(this->grey_water[station_id], 1));
 		DM::DMFeature::SetDoubleList( p, "black_water_daily", this->mutiplyVector(this->black_water[station_id], 1));
+
+		DM::DMFeature::SetDoubleList( p, "effective_evapotranspiration", this->mutiplyVector(this->effective_evapotranspiration[station_id], garden_area/400.)); //Unit Area
+		DM::DMFeature::SetDoubleList( p, "previous_storage", this->mutiplyVector(this->previous_storage[station_id], 1.));
+		DM::DMFeature::SetDoubleList( p, "groundwater_infiltration", this->mutiplyVector(this->groundwater_infiltration[station_id], garden_area/400.));
 
 		if (counter % 1000 == 0){
 			this->parcels.syncAlteredFeatures();
@@ -210,6 +223,10 @@ void WaterDemandModel::init()
 		station.addAttribute("black_water_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		station.addAttribute("infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		station.addAttribute("actual_infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+
+		station.addAttribute("effective_evapotranspiration", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("groundwater_infiltration", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("previous_storage", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	}
 
 	this->registerViewContainers(stream);
@@ -389,6 +406,18 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	m.addNode("flow_probe_actual_infiltration", flow_probe_actual_infiltration);
 	m.addConnection(new NodeConnection(catchment_w_routing,"Actual_Infiltration",flow_probe_actual_infiltration,"in" ));
 
+	Node * feffective_evapotranspiration = nodereg->createNode("FlowProbe");
+	m.addNode("effective_evapotranspiration", feffective_evapotranspiration);
+	m.addConnection(new NodeConnection(catchment_w_routing,"effective_evapotranspiration",feffective_evapotranspiration,"in" ));
+
+	Node * fprevious_storage = nodereg->createNode("FlowProbe");
+	m.addNode("previous_storage", fprevious_storage);
+	m.addConnection(new NodeConnection(catchment_w_routing,"previous_storage",fprevious_storage,"in" ));
+
+	Node * fgroundwater_infiltration = nodereg->createNode("FlowProbe");
+	m.addNode("groundwater_infiltration", fgroundwater_infiltration);
+	m.addConnection(new NodeConnection(catchment_w_routing,"groundwater_infiltration",fgroundwater_infiltration,"in" ));
+
 	Node * consumer = this->createConsumer(persons);
 	m.addNode("c_1", consumer);
 
@@ -453,6 +482,10 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 
 		this->infiltration[station_id] = *(flow_probe_infiltration->getState<std::vector<double> >("Flow"));
 		this->actual_infiltration[station_id] = *(flow_probe_actual_infiltration->getState<std::vector<double> >("Flow"));
+
+		this->effective_evapotranspiration[station_id] = *(feffective_evapotranspiration->getState<std::vector<double> >("Flow"));
+		this->previous_storage[station_id] = *(fprevious_storage->getState<std::vector<double> >("Flow"));
+		this->groundwater_infiltration[station_id] = *(fgroundwater_infiltration->getState<std::vector<double> >("Flow"));
 
 	}
 	delete s;
