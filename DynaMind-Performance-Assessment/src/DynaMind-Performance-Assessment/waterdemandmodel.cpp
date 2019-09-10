@@ -90,6 +90,9 @@ void WaterDemandModel::run()
 	grey_water = std::map<int, std::vector<double> >();
 	black_water = std::map<int, std::vector<double> >();
 
+	infiltration = std::map<int, std::vector<double> >();
+	actual_infiltration = std::map<int, std::vector<double> > ();
+
 	if (!initmodel())
 		return;
 
@@ -117,6 +120,8 @@ void WaterDemandModel::run()
 			DM::DMFeature::SetDoubleList( st, "potable_demand_daily", this->mutiplyVector(this->potable_demand[st->GetFID()], 1));
 			DM::DMFeature::SetDoubleList( st, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand[st->GetFID()], 1));
 			DM::DMFeature::SetDoubleList( st, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand[st->GetFID()], 1./400.)); //Unit Area
+			DM::DMFeature::SetDoubleList( st, "infiltration_daily", this->mutiplyVector(this->infiltration[st->GetFID()], 1./400.)); //Unit Area
+			DM::DMFeature::SetDoubleList( st, "actual_infiltration_daily", this->mutiplyVector(this->actual_infiltration[st->GetFID()], 1./400.)); //Unit Area
 			DM::DMFeature::SetDoubleList( st, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[st->GetFID()], 1./100.)); //Unit area
 			DM::DMFeature::SetDoubleList( st, "grey_water_daily", this->mutiplyVector(this->grey_water[st->GetFID()], 1));
 			DM::DMFeature::SetDoubleList( st, "black_water_daily", this->mutiplyVector(this->black_water[st->GetFID()], 1));
@@ -139,9 +144,12 @@ void WaterDemandModel::run()
 		DM::DMFeature::SetDoubleList( p, "potable_demand_daily", this->mutiplyVector(this->potable_demand[station_id], persons));
 		DM::DMFeature::SetDoubleList( p, "non_potable_demand_daily", this->mutiplyVector(this->non_potable_demand[station_id], persons));
 		DM::DMFeature::SetDoubleList( p, "outdoor_demand_daily", this->mutiplyVector(this->outdoor_demand[station_id], garden_area/400.)); //Unit Area
+		DM::DMFeature::SetDoubleList( p, "infiltration_daily", this->mutiplyVector(this->infiltration[station_id], garden_area/400.)); //Unit Area
+		DM::DMFeature::SetDoubleList( p, "actual_infiltration_daily", this->mutiplyVector(this->actual_infiltration[station_id], garden_area/400.)); //Unit Area
 		DM::DMFeature::SetDoubleList( p, "run_off_roof_daily", this->mutiplyVector(this->stormwater_runoff[station_id], roof_area/100.)); //Unit area
 		DM::DMFeature::SetDoubleList( p, "grey_water_daily", this->mutiplyVector(this->grey_water[station_id], 1));
 		DM::DMFeature::SetDoubleList( p, "black_water_daily", this->mutiplyVector(this->black_water[station_id], 1));
+
 		if (counter % 1000 == 0){
 			this->parcels.syncAlteredFeatures();
 			this->parcels.setNextByIndex(counter);
@@ -190,6 +198,8 @@ void WaterDemandModel::init()
 		parcels.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		parcels.addAttribute("grey_water_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		parcels.addAttribute("black_water_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		parcels.addAttribute("infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		parcels.addAttribute("actual_infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		stream.push_back(&parcels);
 	} else {
 		station.addAttribute("non_potable_demand_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
@@ -369,6 +379,14 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	m.addNode("flow_probe_outdoor", flow_probe_outdoor);
 	m.addConnection(new NodeConnection(catchment_w_routing,"Outdoor_Demand",flow_probe_outdoor,"in" ));
 
+	Node * flow_probe_infiltration = nodereg->createNode("FlowProbe");
+	m.addNode("flow_probe_infiltration", flow_probe_infiltration);
+	m.addConnection(new NodeConnection(catchment_w_routing,"Possible_Infiltration",flow_probe_infiltration,"in" ));
+
+	Node * flow_probe_actual_infiltration = nodereg->createNode("FlowProbe");
+	m.addNode("flow_probe_actual_infiltration", flow_probe_actual_infiltration);
+	m.addConnection(new NodeConnection(catchment_w_routing,"Actual_Infiltration",flow_probe_actual_infiltration,"in" ));
+
 	Node * consumer = this->createConsumer(persons);
 	m.addNode("c_1", consumer);
 
@@ -430,6 +448,9 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 		this->outdoor_demand[station_id] = *(flow_probe_outdoor->getState<std::vector<double> >("Flow"));
 		this->grey_water[station_id] = *(grey_water_flow->getState<std::vector<double> >("Flow"));
 		this->black_water[station_id] = *(black_water_flow->getState<std::vector<double> >("Flow"));
+
+		this->infiltration[station_id] = *(flow_probe_infiltration->getState<std::vector<double> >("Flow"));
+		this->actual_infiltration[station_id] = *(flow_probe_actual_infiltration->getState<std::vector<double> >("Flow"));
 
 	}
 	delete s;

@@ -64,6 +64,9 @@ class WaterDemandModel: public DM::Module
 		std::map<int, std::vector<double> > grey_water;
 		std::map<int, std::vector<double> > black_water;
 
+		std::map<int, std::vector<double> >infiltration;
+		std::map<int, std::vector<double> > actual_infiltration;
+
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
     double d_leak_other;
