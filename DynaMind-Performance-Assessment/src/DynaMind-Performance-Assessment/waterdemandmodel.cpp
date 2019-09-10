@@ -208,8 +208,8 @@ void WaterDemandModel::init()
 		station.addAttribute("run_off_roof_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		station.addAttribute("grey_water_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 		station.addAttribute("black_water_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-		parcels.addAttribute("infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
-		parcels.addAttribute("actual_infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
+		station.addAttribute("actual_infiltration_daily", DM::Attribute::DOUBLEVECTOR, DM::WRITE);
 	}
 
 	this->registerViewContainers(stream);
