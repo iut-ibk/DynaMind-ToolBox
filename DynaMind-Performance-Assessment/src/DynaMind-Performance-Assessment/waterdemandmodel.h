@@ -37,6 +37,7 @@ class WaterDemandModel: public DM::Module
 		DM::ViewContainer global_object;
 		DM::ViewContainer station;
 		DM::ViewContainer timeseries;
+		DM::ViewContainer catchment_parameter;
 
 		// local cd3 varaibles
 		std::string varaibles;
@@ -56,6 +57,7 @@ class WaterDemandModel: public DM::Module
 		std::set<int> station_ids;
 		std::map<int, std::vector<double> > rainfalls;
 		std::map<int, std::vector<double> > evaotranspirations;
+		std::map<int, std::map<std::string, double> > soil_parameters;
 
 		std::map<int, std::vector<double> > stormwater_runoff;
 		std::map<int, std::vector<double> > non_potable_demand;
@@ -73,14 +75,25 @@ class WaterDemandModel: public DM::Module
 
 		std::vector<double> create_montlhy_values(std::vector<double> daily, int seconds);
 
-    double d_leak_other;
-    double d_washing_machine;;
-    double d_taps;
-    double d_toilet;
-    double d_shower_bath;
+		double d_leak_other;
+		double d_washing_machine;
+		double d_taps;
+		double d_toilet;
+		double d_shower_bath;
+
+		double horton_initial_cap;
+		double horton_final_cap;
+		double horton_decay_constant;
+
+		double perv_soil_storage_capacity;
+		double daily_recharge_rate;
+		double transpiration_capacity;
+
+		bool catchment_parameter_from_station;
 
 		bool createRainInput(MapBasedModel *m);
 
+		void loadSoilData();
 public:
 		WaterDemandModel();
 		void run();

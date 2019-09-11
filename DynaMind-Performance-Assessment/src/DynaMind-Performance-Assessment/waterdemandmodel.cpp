@@ -75,6 +75,29 @@ WaterDemandModel::WaterDemandModel()
     d_shower_bath = 34;
     this->addParameter("shower_bath", DM::DOUBLE, &this->d_shower_bath);
 
+	horton_initial_cap = 0.09;
+	this->addParameter("horton_initial_cap", DM::DOUBLE, &this->horton_initial_cap);
+
+	horton_final_cap = 0.001;
+	this->addParameter("horton_final_cap", DM::DOUBLE, &this->horton_final_cap);
+
+	horton_decay_constant = 0.06;
+	this->addParameter("horton_decay_constant", DM::DOUBLE, &this->horton_decay_constant);
+
+	perv_soil_storage_capacity = 0.03;
+	this->addParameter("perv_soil_storage_capacity", DM::DOUBLE, &this->perv_soil_storage_capacity);
+
+	daily_recharge_rate = 0.25;
+	this->addParameter("daily_recharge_rate", DM::DOUBLE, &this->daily_recharge_rate);
+
+	transpiration_capacity = 7;
+	this->addParameter("transpiration_capacity", DM::DOUBLE, &this->transpiration_capacity);
+
+
+	catchment_parameter_from_station = false;
+	this->addParameter("soil_parameter_from_station", DM::BOOL, &this->catchment_parameter_from_station);
+
+
 }
 
 void WaterDemandModel::run()
@@ -109,6 +132,9 @@ void WaterDemandModel::run()
 			DM::Logger(DM::Error) << "No rainfall defined";
 			this->setStatus(DM::MOD_EXECUTION_ERROR);
 			return;
+		}
+		if (this->catchment_parameter_from_station) {
+			this->loadSoilData();
 		}
 
 	}
@@ -192,12 +218,25 @@ void WaterDemandModel::init()
 		global_object.addAttribute(this->start_date_name, DM::Attribute::STRING, DM::READ);
 		global_object.addAttribute(this->end_date_name, DM::Attribute::STRING, DM::READ);
 		stream.push_back(&global_object);
+
+
+	}
+
+	if (this->catchment_parameter_from_station) {
+		station.addAttribute("horton_initial_cap", DM::Attribute::DOUBLE, DM::READ);
+		station.addAttribute("horton_final_cap", DM::Attribute::DOUBLE, DM::READ);
+		station.addAttribute("horton_decay_constant", DM::Attribute::DOUBLE, DM::READ);
+		station.addAttribute("perv_soil_storage_capacity", DM::Attribute::DOUBLE, DM::READ);
+		station.addAttribute("daily_recharge_rate", DM::Attribute::DOUBLE, DM::READ);
+		station.addAttribute("transpiration_capacity", DM::Attribute::DOUBLE, DM::READ);
 	}
 
 	if (this->from_rain_station){
 		stream.push_back(&station);
 		stream.push_back(&timeseries);
 	}
+
+
 
 	if (!this->to_rain_station) {
 		parcels = DM::ViewContainer("parcel", DM::COMPONENT, DM::READ);
@@ -385,6 +424,16 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]",1.0 - roof_imp_fra - perv_area_fra);
 	catchment_w_routing->setParameter("Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]",roof_imp_fra);
 	catchment_w_routing->setParameter("Outdoor_Demand_Weighing_Factor_[-]", 1.0);
+
+	catchment_w_routing->setParameter("Initial_Infiltration_Capacity_[m/h]", this->horton_initial_cap);
+	catchment_w_routing->setParameter("Final_Infiltration_Capacity_[m/h]", this->horton_final_cap);
+	catchment_w_routing->setParameter("Decay_Constant_[1/min]", this->horton_decay_constant);
+
+	catchment_w_routing->setParameter("Soil Storage Capacity in mm", this->perv_soil_storage_capacity);
+	catchment_w_routing->setParameter("Daily Recharge Rate", this->daily_recharge_rate);
+	catchment_w_routing->setParameter("Transpire Capacity", this->transpiration_capacity);
+
+
 	m.addNode("cw_1", catchment_w_routing);
 
 	m.addConnection(new NodeConnection(rain,"out",catchment_w_routing,"Rain" ));
@@ -445,6 +494,7 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 	DM::Logger(DM::Debug) << "CD3 Simulation: " << simreg->getRegisteredNames().front();
 	s->setModel(&m);
 
+	// Load values of station
 	for (std::set<int>::const_iterator it = this->station_ids.begin();
 		 it != this->station_ids.end();
 		 ++it) {
@@ -464,6 +514,18 @@ bool WaterDemandModel::calculateRunoffAndDemand(double lot_area,
 			std::vector<double> evaotranspiration = this->evaotranspirations[station_id];
 			m.getNode("r_1")->setParameter("source",rain);
 			m.getNode("e_1")->setParameter("source",evaotranspiration);
+
+			// set soil parameter
+			if (this->catchment_parameter_from_station) {
+				catchment_w_routing->setParameter("Initial_Infiltration_Capacity_[m/h]", soil_parameters[station_id]["horton_initial_cap"] );
+				catchment_w_routing->setParameter("Final_Infiltration_Capacity_[m/h]", soil_parameters[station_id]["horton_final_cap"]);
+				catchment_w_routing->setParameter("Decay_Constant_[1/min]", soil_parameters[station_id]["horton_decay_constant"]);
+
+				catchment_w_routing->setParameter("Soil Storage Capacity in mm", soil_parameters[station_id]["perv_soil_storage_capacity"]);
+				catchment_w_routing->setParameter("Daily Recharge Rate", soil_parameters[station_id]["daily_recharge_rate"]);
+				catchment_w_routing->setParameter("Transpire Capacity", soil_parameters[station_id]["transpiration_capacity"]);
+			}
+
 		}
 
 		s->setSimulationParameters(*p);
@@ -542,6 +604,22 @@ void WaterDemandModel::setRainfile(const std::string &value)
 	rainfile = value;
 }
 
+void WaterDemandModel::loadSoilData() {
+
+	this->station.resetReading();
+	OGRFeature * s;
+	while (s = this->station.getNextFeature()) {
+			std::map<std::string, double> soil_parameter;
+			soil_parameter["horton_initial_cap"] = s->GetFieldAsDouble("horton_initial_cap");
+			soil_parameter["horton_final_cap"] = s->GetFieldAsDouble("horton_final_cap");
+			soil_parameter["horton_decay_constant"] = s->GetFieldAsDouble("horton_decay_constant");
+			soil_parameter["perv_soil_storage_capacity"] = s->GetFieldAsDouble("perv_soil_storage_capacity");
+			soil_parameter["daily_recharge_rate"] = s->GetFieldAsDouble("daily_recharge_rate");
+			soil_parameter["transpiration_capacity"] = s->GetFieldAsDouble("transpiration_capacity");
+			soil_parameters[s->GetFID()] = soil_parameter;
+	}
+}
+
 bool WaterDemandModel::initRain()
 {
 
@@ -550,35 +628,35 @@ bool WaterDemandModel::initRain()
 
 	OGRFeature * s;
 	this->station.resetReading();
-	int id = -1;
+//	int id = -1;
 	while (s = this->station.getNextFeature()) {
-		id = s->GetFID() ;
-	}
+		int id = s->GetFID() ;
 
-	if (id == -1) {
-		DM::Logger(DM::Error) << "No rainfall station defined";
-		return false;
-	}
+//		if (id == -1) {
+//			DM::Logger(DM::Error) << "No rainfall station defined";
+//			return false;
+//		}
 
-	std::stringstream squery;
-	squery << "(type = 'rainfall intensity' or type = 'evapotranspiration') and " << sstation_id.str() << " = " << id;
+		std::stringstream squery;
+		squery << "(type = 'rainfall intensity' or type = 'evapotranspiration') and " << sstation_id.str() << " = " << id;
 
-	//time series naming
-	this->timeseries.resetReading();
-	this->timeseries.setAttributeFilter(squery.str());
+		//time series naming
+		this->timeseries.resetReading();
+		this->timeseries.setAttributeFilter(squery.str());
 
-	OGRFeature * r;
-	while (r = this->timeseries.getNextFeature()) {
-		std::vector<double> vec;
-		DM::DMFeature::GetDoubleList(r, "data", vec);
-		std::string type = r->GetFieldAsString("type");
-		int station_id = r->GetFieldAsInteger("station_id");
-		if (type == "rainfall intensity")
-			rainfalls[station_id] = vec;
-		if (type == "evapotranspiration")
-			evaotranspirations[station_id] = vec;
-		std::cout << station_id << std::endl;
-		station_ids.insert(station_id);
+		OGRFeature * r;
+		while (r = this->timeseries.getNextFeature()) {
+			std::vector<double> vec;
+			DM::DMFeature::GetDoubleList(r, "data", vec);
+			std::string type = r->GetFieldAsString("type");
+			int station_id = r->GetFieldAsInteger("station_id");
+			if (type == "rainfall intensity")
+				rainfalls[station_id] = vec;
+			if (type == "evapotranspiration")
+				evaotranspirations[station_id] = vec;
+			station_ids.insert(station_id);
+
+		}
 	}
 	return true;
 }
