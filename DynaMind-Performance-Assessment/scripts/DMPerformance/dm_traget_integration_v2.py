@@ -216,15 +216,15 @@ class TargetInegrationv2(Module):
         cols, rows = self.write_input_file(landuse_file)
         self.write_climate_file(climate_file)
         self.write_config(config_file, output_uuid, climate_file, landuse_file, cols, rows)
-        # self.run_target(config_file)
-        # self.read_output_file(str("/tmp/"+str(output_uuid)+str(".nc")))
-        self.read_output_file("/tmp/7b483265-795b-4ccf-af30-a0a5a73b23c6.nc")
+        self.run_target(config_file)
+        self.read_output_file(str("/tmp/"+str(output_uuid)+str(".nc")))
+        # self.read_output_file("/tmp/7b483265-795b-4ccf-af30-a0a5a73b23c6.nc")
         self.city.finalise()
 
-        # os.remove(str("/tmp/"+str(output_uuid)+str(".nc")))
-        # os.remove(landuse_file)
-        # os.remove(climate_file)
-        # os.remove(config_file)
+        os.remove(str("/tmp/"+str(output_uuid)+str(".nc")))
+        os.remove(landuse_file)
+        os.remove(climate_file)
+        os.remove(config_file)
 
     def run_target(self, config_file):
         subprocess.call("javac -cp ../../netcdfAll-4.6.11.jar:../../slf4j-jdk14-1.7.14.jar:. *.java HTC/*.java -encoding UTF-8",
