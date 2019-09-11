@@ -121,8 +121,9 @@ class TargetInegrationv2(Module):
         self.timeseries.reset_reading()
 
         for t in self.timeseries:
-            temperatures = dm_get_double_list(t, "data")
-
+            if t.GetFieldAsInteger("temperature_station_id") == station_id:
+                temperatures = dm_get_double_list(t, "data")
+        # print(temperatures)
         self.timeseries.finalise()
         self.temperature_station.finalise()
 
@@ -137,6 +138,8 @@ class TargetInegrationv2(Module):
             f.write("datetime,Ta,RH,WS,P,Kd,Ld\n")
 
             for idx, temperature in enumerate(t):
+                if idx > 143:
+                    break
                 f.write(d.strftime("%d/%m/%Y %H:%M"))
                 f.write(",")
                 f.write(str(temperature))
