@@ -572,8 +572,8 @@ Node *WaterDemandModel::createConsumer(int persons)
     double toilet = d_toilet * l_d_to_m_s;
     double shower_bath = d_shower_bath * l_d_to_m_s;
 
-	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other  + taps ) ));
-	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet + washing_machine + shower_bath));
+	consumption->setParameter("const_flow_potable",createConstFlow( (leak_other  + taps + shower_bath) ));
+	consumption->setParameter("const_flow_nonpotable",createConstFlow(toilet + washing_machine));
 
 	consumption->setParameter("const_flow_greywater",createConstFlow(washing_machine + shower_bath));
 	consumption->setParameter("const_flow_sewer",createConstFlow( taps + toilet));
