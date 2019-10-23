@@ -42,8 +42,8 @@ class LoadDAnCEStations(Module):
             self.node_station.addAttribute("name", Attribute.STRING, WRITE)
             self.node_station.addAttribute("description", Attribute.STRING, WRITE)
             self.node_station.addAttribute("short_description", Attribute.STRING, WRITE)
-            self.node_station.addAttribute("start_date", Attribute.DATE, WRITE)
-            self.node_station.addAttribute("end_date", Attribute.DATE, WRITE)
+            self.node_station.addAttribute("start_date", Attribute.STRING, WRITE)
+            self.node_station.addAttribute("end_date", Attribute.STRING, WRITE)
             viewvector.append(self.node_station)
             if self.append:
                 self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
@@ -88,8 +88,8 @@ class LoadDAnCEStations(Module):
                 station.SetField("description", r[2])
                 station.SetField("short_description", r[3])
 
-                station.SetField("start_date", r[8])
-                station.SetField("end_date", r[9])
+                station.SetField("start_date", str(r[8]))
+                station.SetField("end_date", str(r[9]))
                 print(r)
                 pt = ogr.Geometry(ogr.wkbPoint)
                 pt.SetPoint_2D(0, r[4], r[5])
