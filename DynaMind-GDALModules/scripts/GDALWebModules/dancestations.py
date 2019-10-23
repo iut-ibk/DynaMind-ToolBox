@@ -88,8 +88,8 @@ class LoadDAnCEStations(Module):
                 station.SetField("description", r[2])
                 station.SetField("short_description", r[3])
 
-                station.SetField("start_date", str(r[8]))
-                station.SetField("end_date", str(r[9]))
+                station.SetField("start_date", r[8].strftime("%m-%d-%Y %H:%M:%S"))
+                station.SetField("end_date", r[9].strftime("%m-%d-%Y %H:%M:%S"))
                 print(r)
                 pt = ogr.Geometry(ogr.wkbPoint)
                 pt.SetPoint_2D(0, r[4], r[5])
