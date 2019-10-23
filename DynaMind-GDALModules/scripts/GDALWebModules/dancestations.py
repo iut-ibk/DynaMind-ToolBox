@@ -39,6 +39,11 @@ class LoadDAnCEStations(Module):
             viewvector = []
             self.node_station = ViewContainer(self.view_name, NODE, WRITE)
             self.node_station.addAttribute("dance_station_id", Attribute.INT, WRITE)
+            self.node_station.addAttribute("name", Attribute.STRING, WRITE)
+            self.node_station.addAttribute("description", Attribute.STRING, WRITE)
+            self.node_station.addAttribute("short_description", Attribute.STRING, WRITE)
+            self.node_station.addAttribute("start_date", Attribute.DATE, WRITE)
+            self.node_station.addAttribute("end_date", Attribute.DATE, WRITE)
             viewvector.append(self.node_station)
             if self.append:
                 self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
@@ -50,7 +55,7 @@ class LoadDAnCEStations(Module):
             try:
                 conn = psycopg2.connect("dbname=" + str(self.database) + " user='" + str(self.username) + "' host='" + str(self.host) + "' password='" + str(self.password) + "'")
             except:
-                print "I am unable to connect to the database"
+                print("I am unable to connect to the database")
 
 
             source_osr = osr.SpatialReference()
@@ -78,7 +83,14 @@ class LoadDAnCEStations(Module):
                 station = self.node_station.create_feature()
 
                 station.SetField("dance_station_id", r[0])
-                print r
+                station.SetField("name", r[1])
+
+                station.SetField("description", r[2])
+                station.SetField("short_description", r[3])
+
+                station.SetField("start_date", r[8])
+                station.SetField("end_date", r[9])
+                print(r)
                 pt = ogr.Geometry(ogr.wkbPoint)
                 pt.SetPoint_2D(0, r[4], r[5])
                 pt.Transform(transformation)
