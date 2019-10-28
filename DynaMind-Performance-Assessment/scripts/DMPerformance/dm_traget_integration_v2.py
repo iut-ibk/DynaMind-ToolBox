@@ -34,8 +34,6 @@ class TargetInegrationv2(Module):
         self.air_temperature_data = ViewContainer("micro_climate_grid", DM.FACE, DM.READ)
         self.air_temperature_data.addAttribute("time_stamp", DM.Attribute.STRING, DM.WRITE)
 
-
-
         self.micro_climate_grid = ViewContainer("micro_climate_grid", DM.COMPONENT, DM.READ)
         self.micro_climate_grid.addAttribute("roof_fraction", DM.Attribute.DOUBLE, DM.READ)
         self.micro_climate_grid.addAttribute("road_fraction", DM.Attribute.DOUBLE, DM.READ)
@@ -50,6 +48,8 @@ class TargetInegrationv2(Module):
         self.micro_climate_grid.addAttribute("taf_period", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.micro_climate_grid.addAttribute("ts", DM.Attribute.DOUBLE, DM.WRITE)
         self.micro_climate_grid.addAttribute("ucan", DM.Attribute.DOUBLE, DM.WRITE)
+        self.micro_climate_grid.addAttribute("utci_period", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.micro_climate_grid.addAttribute("utci", DM.Attribute.DOUBLE, DM.WRITE)
 
         self.createParameter("target_path", STRING)
         #/Users/christianurich/Downloads/mothlight-target_java-fbfddc596fdc/src
@@ -165,23 +165,23 @@ class TargetInegrationv2(Module):
         for c in self.city:
             min_lat = c.GetFieldAsDouble("min_lat")
             min_long = c.GetFieldAsDouble("min_long")
-            # height = c.GetFieldAsDouble("max_lat") - c.GetFieldAsDouble("min_lat")
-            # length = c.GetFieldAsDouble("max_long") - c.GetFieldAsDouble("min_long")
         self.micro_climate_grid.reset_reading()
         data = dataset.variables['TEMP_AIR'][:]
+        data_utci = dataset.variables['UTCI'][:]
         for (idx, m) in enumerate(self.micro_climate_grid):
             element_y = int(round((self.fixNulls(m.GetFieldAsDouble("lat_cart")) - min_lat)/self.internal_grid_size))
             element_x = int(round((self.fixNulls(m.GetFieldAsDouble("long_cart")) - min_long)/self.internal_grid_size))
-            # new_pos = element_y * round(length / self.internal_grid_size + 1) + element_x
             at = []
+            utci = []
             for t in range(143):
                 air_temperature = data[t]
+                utc = data_utci[t]
                 at.append(air_temperature[element_y][element_x])
+                utci.append(utc[element_y][element_x])
             m.SetField("taf", np.array(at).max())
-            if m.GetFID() == 1869:
-                print(m.GetFID(), at)
+            m.SetField("utci", np.array(utci).max())
             dm_set_double_list(m, "taf_period", at)
-
+            dm_set_double_list(m, "utci_period", utci)
         self.micro_climate_grid.finalise()
 
 
