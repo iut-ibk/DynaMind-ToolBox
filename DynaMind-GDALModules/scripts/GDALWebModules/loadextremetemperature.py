@@ -60,8 +60,17 @@ class LoadExtremeTemperature(Module):
             self.timeseries.addAttribute("timestep", Attribute.INT, WRITE)
             self.timeseries.addAttribute("type", Attribute.STRING, WRITE)
 
+            self.heatwave = ViewContainer("heatwave", COMPONENT, WRITE)
+            self.heatwave.addAttribute(self.view_name + str("_id"), Attribute.LINK, WRITE)
+            self.heatwave.addAttribute("start", Attribute.STRING, WRITE)
+            self.heatwave.addAttribute("end", Attribute.STRING, WRITE)
+            self.heatwave.addAttribute("min_temp", Attribute.DOUBLE, WRITE)
+            self.heatwave.addAttribute("max_temp", Attribute.DOUBLE, WRITE)
+            self.heatwave.addAttribute("avg_temp", Attribute.DOUBLE, WRITE)
+
             datastream.append(self.node_station)
             datastream.append(self.timeseries)
+            datastream.append(self.heatwave)
 
             if self.isViewInStream("city", "temperature_timeseries"):
                 self.temperature_time_series = ViewContainer("temperature_timeseries", DM.COMPONENT, DM.READ)
@@ -79,12 +88,16 @@ class LoadExtremeTemperature(Module):
                 measurment_types.append((r[0], r[1]))
             return measurment_types
 
-        def get_extreme_date(self, cur, station_id):
-            cur.execute("Select  *, avg(at) over(rows 2 preceding) as rolling_avg  from (SELECT  date_trunc('day', date) AS d, avg(value) as at,max(value) as mt, min(value) as mint, count(value) from measurment where station_id = " + str(station_id) + " and value < 9999 and measurment_type_id = 6 GROUP BY d order by d) temp order by rolling_avg DESC LIMIT 1")
+        def get_extreme_date(self, cur, station_id, number_of_events=10):
+            log("Select  *, avg(at) over(rows 2 preceding) as rolling_avg  from (SELECT  date_trunc('day', date) AS d, avg(value) as at,max(value) as mt, min(value) as mint, count(value) from measurment where station_id = " + str(station_id) + " and value < 9999 and measurment_type_id = 6 GROUP BY d order by d) temp order by rolling_avg DESC LIMIT " + str(number_of_events), Standard)
+            cur.execute("Select  *, avg(at) over(rows 2 preceding) as rolling_avg  from (SELECT  date_trunc('day', date) AS d, avg(value) as at,max(value) as mt, min(value) as mint, count(value) from measurment where station_id = " + str(station_id) + " and value < 9999 and measurment_type_id = 6 GROUP BY d order by d) temp order by rolling_avg DESC LIMIT " + str(number_of_events))
             rows = cur.fetchall()
+            events = []
             for r in rows:
-                print r[0]
-                return r[0]
+                # print(r[0])
+                # return start date, min, max, rolling average
+                events.append([r[0], r[2], r[3], r[5]])
+            return events
 
         def run(self):
             try:
@@ -106,6 +119,7 @@ class LoadExtremeTemperature(Module):
 
             # for id, name in self.measurement_types(cur):
             self.createTimeseries(cur, start_date)
+            self.node_station.finalise()
 
             if self.temperature_time_series:
                 self.temperature_time_series.finalise()
@@ -121,8 +135,23 @@ class LoadExtremeTemperature(Module):
 
             for station in self.node_station:
                 station_id = station.GetFieldAsInteger("dance_station_id")
+
+                for event in self.get_extreme_date(cur, station_id):
+                    ed = event[0]
+                    sd = ed - datetime.timedelta(days=3)
+
+                    e = self.heatwave.create_feature()
+                    e.SetField(self.view_name + str("_id"), station.GetFID())
+                    e.SetField("start", str(sd))
+                    e.SetField("end", str(ed))
+                    e.SetField("max_temp",  event[1])
+                    e.SetField("min_temp",  event[2])
+                    e.SetField("avg_temp",  event[3])
+
+
+
                 if not start_date:
-                    end_date = self.get_extreme_date(cur, station_id)
+                    end_date = self.get_extreme_date(cur, station_id)[0][0]
                     start_date = end_date - datetime.timedelta(days=3)
                 else:
                     end_date = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S") + datetime.timedelta(days=3)
