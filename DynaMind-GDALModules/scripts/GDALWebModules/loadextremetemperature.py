@@ -138,7 +138,7 @@ class LoadExtremeTemperature(Module):
             for station in self.node_station:
                 station_id = station.GetFieldAsInteger("dance_station_id")
 
-                for event, idx in enumerate(get_extreme_date(cur, station_id)):
+                for idx, event in enumerate(self.get_extreme_date(cur, station_id)):
                     ed = event[0]
                     sd = ed - datetime.timedelta(days=3)
 
@@ -147,8 +147,8 @@ class LoadExtremeTemperature(Module):
                     e.SetField("rank", idx+1)
                     e.SetField("start", str(sd))
                     e.SetField("end", str(ed))
-                    e.SetField("max_temp",  event[1])
-                    e.SetField("min_temp",  event[2])
+                    e.SetField("min_temp",  event[1])
+                    e.SetField("max_temp",  event[2])
                     e.SetField("avg_temp",  event[3])
 
                 if not start_date:
