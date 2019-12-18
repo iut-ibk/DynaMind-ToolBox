@@ -23,7 +23,7 @@ int ImperviousRunoff::f(ptime time, int dt) {
     out_sw[0] = area * rain_in[0] / 1000.;
 
 	for (int i = 0; i < loadings.size(); i++){
-		out_sw[i+1] = loadings[i];
+		out_sw[i+1] = loadings[i] * out_sw[0] / 1000.;
 	}
 	run_off.push_back(out_sw[0]);
 

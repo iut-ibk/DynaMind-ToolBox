@@ -23,30 +23,40 @@ class Polder(Module):
         self.createParameter("end_date", DM.STRING)
         self.end_date = "2006-Jan-01 00:00:00"
 
+        self.createParameter("polder_name", DM.STRING)
+        self.polder_name = "polder"
+
+
         self.cd3 = None
         self.flow_probes = dict()
 
     def init(self):
+
+        print("polder")
         self.timeseries = ViewContainer("timeseries", DM.COMPONENT, DM.READ)
         self.timeseries.addAttribute("data", DM.Attribute.DOUBLEVECTOR, DM.READ)
 
-        self.polder = ViewContainer("polder", DM.COMPONENT, DM.READ)
+        self.polder = ViewContainer(self.polder_name, DM.COMPONENT, DM.READ)
         self.polder.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.polder.addAttribute("surface_water_area", DM.Attribute.DOUBLE, DM.READ)
         self.polder.addAttribute("impervious_fraction", DM.Attribute.DOUBLE, DM.READ)
+        self.polder.addAttribute("treated_area", DM.Attribute.DOUBLE, DM.READ)
+        self.polder.addAttribute("treatment_capacity", DM.Attribute.DOUBLE, DM.READ)
+
         self.polder.addAttribute("storage_level", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("total_pollution", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("overflow_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
-        self.polder.addAttribute("run_off", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("run_off_concentration", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.polder.addAttribute("run_off_treated", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.polder.addAttribute("provided_water", DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.reticulation = ViewContainer("reticulation", DM.COMPONENT, DM.READ)
         self.reticulation.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
         self.reticulation.addAttribute("removal_capacity", DM.Attribute.DOUBLE, DM.READ)
         self.reticulation.addAttribute("removed_pollution", DM.Attribute.DOUBLE, DM.WRITE)
+        self.reticulation.addAttribute(self.polder_name+"_id", DM.Attribute.LINK, DM.READ)
 
 
         self.pump = ViewContainer("polder_pump", DM.COMPONENT, DM.READ)
@@ -54,7 +64,6 @@ class Polder(Module):
         self.pump.addAttribute("pumping_rate", DM.Attribute.DOUBLE, DM.READ)
         self.pump.addAttribute("trigger_volume", DM.Attribute.DOUBLE, DM.READ)
 
-        # view_register = [self.view_polder, self.timeseries]
         view_register = [
             self.timeseries,
             self.polder,
@@ -63,8 +72,10 @@ class Polder(Module):
 
         self.registerViewContainers(view_register)
         self.treatments = []
+        self.biofilters = []
 
     def init_citydrain(self):
+        print("polder 2")
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
         # print flow
         self.cd3 = cd3.CityDrain3(
@@ -73,20 +84,57 @@ class Polder(Module):
             "86400",
             flow
         )
+        print("polder 4")
 
         # Register Modules
         self.cd3.register_native_plugin(
             self.getSimulationConfig().getDefaultLibraryPath() + "/libcd3core")
         self.cd3.register_native_plugin(
             self.getSimulationConfig().getDefaultLibraryPath() + "/CD3Modules/libdance4water-nodes")
+        print("polder 3")
+
+    def add_biofilters(self, polder, node, port):
+        # Get biofilter area
+        treated_area = polder.GetFieldAsDouble("treated_area")
+
+        # Don't add node if no treatment capacity in catchment
+        if treated_area < 0.0001:
+            return [node, "out"]
+
+        treatment_capacity = polder.GetFieldAsDouble("treatment_capacity")
+
+        impervious_fraction_treated = treated_area / (polder.GetFieldAsDouble("area") * polder.GetFieldAsDouble("impervious_fraction"))
+
+        if impervious_fraction_treated > 1:
+            impervious_fraction_treated = 1
+
+        treatment = self.cd3.add_node("SimpleTreatment")
+
+        treatment.setDoubleParameter("removal_fraction", impervious_fraction_treated * treatment_capacity)
+        self.biofilters.append(treatment)
+
+        # Measure Biofilter Runoff
+        flow_probe = self.cd3.add_node("FlowProbe")
+
+        flow_probe_n = self.cd3.add_node("FlowProbe")
+        flow_probe_n.setIntParameter("element", 1)
+
+        self.cd3.add_connection(node, port, treatment, "in")
+        self.cd3.add_connection(treatment, "out", flow_probe, "in")
+
+        self.cd3.add_connection(flow_probe, "out", flow_probe_n, "in")
+
+        self.flow_probes["biofilter"] = flow_probe
+        self.flow_probes["biofilter_n"] = flow_probe_n
+
+        return [flow_probe_n, "out"]
+
 
     def setup_catchment(self, polder):
         """
         Creates initial CD3 model. Including rainfall import -> impervious runoff -> flow probe (Q and TN)
-
+        Rain -> Catchment -> Bio filter (optional) -> Polder
         """
-        # rain = self.cd3.add_node("IxxRainRead_v2")
-        # rain.setStringParameter("rain_file", "/tmp/rainfall_clean.ixx")
 
         self.timeseries.reset_reading()
         self.timeseries.set_attribute_filter("type = 'rainfall intensity'")
@@ -115,7 +163,9 @@ class Polder(Module):
         self.flow_probes["catchment"] = flow_probe
         self.flow_probes["catchment_n"] = flow_probe_n
 
-        return [flow_probe_n, "out"]
+        return self.add_biofilters(polder, flow_probe_n, "out")
+
+        # return [flow_probe_n, "out"]
 
     def setup_polder(self, mixer, pump_volumes, surface_water_area):
         """
@@ -194,7 +244,7 @@ class Polder(Module):
         for p in pump_volumes:
             if p[2]:
                 ports += 1
-        print "number of ports ", ports
+        print("number of ports ", ports)
 
         # Number of inputs depends on number of connected pumps
         mixer.setIntParameter("num_inputs", ports)
@@ -205,6 +255,7 @@ class Polder(Module):
         self.cd3.add_connection(catchment[0], catchment[1], mixer[0], "in_0")
 
     def run(self):
+        print("polder 1")
         # Calculate pump volumes
         pump_volumes = []
         for p in self.pump:
@@ -283,7 +334,13 @@ class Polder(Module):
             dm_set_double_list(polder, "run_off_concentration", self.flow_probes["catchment_n"]
                                .get_state_value_as_double_vector("Flow"))
 
-            # print sum(overflow), sum(water_supply)
+            if "biofilter_n" in self.flow_probes:
+                dm_set_double_list(polder, "run_off_treated", self.flow_probes["biofilter_n"]
+                                   .get_state_value_as_double_vector("Flow"))
+
+                # print(self.flow_probes["biofilter_n"].get_state_value_as_double_vector("Flow"))
+                # print(self.flow_probes["catchment_n"].get_state_value_as_double_vector("Flow"))
+            print(sum(overflow), sum(water_supply))
 
             for idx, r in enumerate(reticulations):
                 r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])
@@ -292,3 +349,4 @@ class Polder(Module):
         self.timeseries.finalise()
         self.polder.finalise()
         self.pump.finalise()
+
