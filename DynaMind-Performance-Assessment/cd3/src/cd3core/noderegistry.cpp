@@ -20,6 +20,7 @@
 #ifndef PYTHON_DISABLED
 #define SWIG_PYTHON_THREADS
 #include <Python.h>
+#include <cstdio>
 #include <swigruntime.h>
 #include <pythonexception.h>
 #endif
@@ -90,13 +91,13 @@ void NodeRegistry::addNativePlugin(const std::string &plugin_path) {
 
 #ifndef PYTHON_DISABLED
 extern "C" {
-void init_pycd3(void);
+void PyInit__pycd3(void);
 }
 
 void NodeRegistry::addPythonPlugin(const std::string &script) {
     if (!Py_IsInitialized()) {
         Py_Initialize();
-        init_pycd3();
+		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
         main_namespace = PyModule_GetDict(main);
         Py_INCREF(main_namespace);
@@ -132,7 +133,7 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 
     if(!main_namespace) {
         SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-        init_pycd3();
+		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
         main_namespace = PyModule_GetDict(main);
         Py_DECREF(main);
@@ -162,8 +163,8 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
         }
 	}
 	
-	PyObject* PyFileObject = PyFile_FromString((char *) script.c_str(), "r");
-	PyRun_File(PyFile_AsFile(PyFileObject), script.c_str(), Py_file_input, main_namespace, 0);
+	FILE* PyFileObject = fopen((char *) script.c_str(), "r");
+	PyRun_File(PyFileObject, script.c_str(), Py_file_input, main_namespace, 0);
 
 	if (PyErr_Occurred()) {
 		Logger(Error) << "error loading python script" << script;

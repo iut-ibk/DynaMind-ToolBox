@@ -291,7 +291,7 @@ public:
 			return Py_None;
 		}
 		length = Flow::size();
-		PySlice_GetIndices((PySliceObject*)slice, length, &start, &stop, &step);
+		PySlice_GetIndices(slice, length, &start, &stop, &step);
 		PyObject *list = PyList_New(0);
 		for (int i = start; i < stop; i+= step) {
 			PyObject *number = PyFloat_FromDouble((*self)[i]);

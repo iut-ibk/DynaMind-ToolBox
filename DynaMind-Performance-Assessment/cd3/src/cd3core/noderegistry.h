@@ -34,7 +34,10 @@ class Node;
 #ifndef PYTHON_DISABLED
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
-#include <Python.h>
+#pragma push_macro("slots")
+#undef slots
+#include "Python.h"
+#pragma pop_macro("slots")
 #endif
 
 typedef std::map<std::string, INodeFactory *> reg_node_type;

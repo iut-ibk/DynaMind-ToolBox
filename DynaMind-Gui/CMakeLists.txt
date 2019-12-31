@@ -115,7 +115,7 @@ ELSE()
     SET(EXECUTABLE_OUTPUT_PATH ${dynamind-gui_BINARY_DIR})
 ENDIF()
 
-OPTION(WITH_VIEWER "if with Viewer plugin" ON)
+OPTION(WITH_VIEWER "if with Viewer plugin" OFF)
 
 if(WITH_VIEWER)
 	add_definitions( -DVIEWER )
