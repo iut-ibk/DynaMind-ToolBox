@@ -68,7 +68,7 @@ class logNormDist:
 
             except ValueError:              # if they arent numbers and a Error is returned:
                 Xvals.append(x)                         # append Xvals but dont convert to float. Will be in e.g '0-2' format
-                Xvals_dummy = range(1,len(Xvals)+1,1)   # create a dummy Xvals array that contains numbers and can be used the following methods to create a logNormDist. range(start,stop,step)
+                Xvals_dummy = list(range(1,len(Xvals)+1,1))   # create a dummy Xvals array that contains numbers and can be used the following methods to create a logNormDist. range(start,stop,step)
 
         return Xvals, Yvals, Xvals_dummy
 
@@ -276,7 +276,7 @@ if __name__ == "__main__":
 
     # Dist.createLogNormDist("C:\Users\jbreman\Dropbox\PhD_Docs\junk.csv")
 
-    Dist.generatePlot("C:\Users\jbreman\Dropbox\PhD_Docs\ShowerFlowRate.csv")
+    Dist.generatePlot("C:\\Users\jbreman\Dropbox\PhD_Docs\ShowerFlowRate.csv")
 
     # Dist.randomlySample("C:\Users\jbreman\Dropbox\PhD_Docs\ShowerFlowRate.csv")
 

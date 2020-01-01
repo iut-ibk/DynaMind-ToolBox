@@ -254,6 +254,39 @@ public:
 };
 %}
 
+%extend WrappedDouble {
+//	float __floordiv__(float value) {
+//			return $self->value / value;
+//	}
+	float __truediv__(float value) {
+			return $self->value / value;
+	}
+	float __rtruediv__(float value) {
+			return $self->value / value;
+	}
+	float __mul__(float value) {
+			return $self->value * value;
+	}
+	float __mul__(WrappedDouble * value) {
+			return (float) $self->value * value->value;
+	}
+}
+
+%extend WrappedInteger {
+		int __floordiv__(int value) {
+				return (int) $self->value / value;
+		}
+		int __rfloordiv__(int value) {
+				return (int) $self->value / value;
+		}
+//		int __truediv__(int value) {
+//				return (int) $self->value / value;
+//		}
+		int __mul__(int value) {
+				return (int) $self->value * value;
+		}
+}
+
 class Flow {
 public:
 	enum CalculationUnit {

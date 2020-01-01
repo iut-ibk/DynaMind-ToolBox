@@ -106,18 +106,18 @@ class Buildinglevel:
             self.demandmodel_building_evapcooler = ''
             self.gardenwatering = ''
             for m in range(4):
-                exec 'self.catchment_raintank += string'+str(m+1)
-                exec 'self.catchment_building += string'+str(m+5)
-                exec 'self.building_raintank += string'+str(m+9)
-                exec 'self.demandmodel_building_bathtub += string'+str(m+13)
-                exec 'self.demandmodel_building_kitchen_tap += string'+str(m+17)
-                exec 'self.demandmodel_building_handbasin_tap += string'+str(m+37)
-                exec 'self.demandmodel_building_toilet += string'+str(m+21)
-                exec 'self.demandmodel_building_shower += string'+str(m+25)
-                exec 'self.demandmodel_building_washing_machine += string'+str(m+29)
-                exec 'self.demandmodel_building_dishwasher += string'+str(m+33)
-                exec 'self.demandmodel_building_evapcooler += string'+str(m+41)
-                exec 'self.gardenwatering += string'+str(m+45)
+                exec('self.catchment_raintank += string'+str(m+1))
+                exec('self.catchment_building += string'+str(m+5))
+                exec('self.building_raintank += string'+str(m+9))
+                exec('self.demandmodel_building_bathtub += string'+str(m+13))
+                exec('self.demandmodel_building_kitchen_tap += string'+str(m+17))
+                exec('self.demandmodel_building_handbasin_tap += string'+str(m+37))
+                exec('self.demandmodel_building_toilet += string'+str(m+21))
+                exec('self.demandmodel_building_shower += string'+str(m+25))
+                exec('self.demandmodel_building_washing_machine += string'+str(m+29))
+                exec('self.demandmodel_building_dishwasher += string'+str(m+33))
+                exec('self.demandmodel_building_evapcooler += string'+str(m+41))
+                exec('self.gardenwatering += string'+str(m+45))
             #writes string in list  
             self.Buildinglevel_connection_list.append(self.demandmodel_building_bathtub)
             self.Buildinglevel_connection_list.append(self.demandmodel_building_kitchen_tap)
@@ -151,8 +151,8 @@ class Buildinglevel:
                 self.raintank_greywatertank = ''
                 self.building_greywatertank = ''
                 for n in range(4):    
-                    exec 'self.raintank_greywatertank += string'+str(n+37)
-                    exec 'self.building_greywatertank += string'+str(n+41)
+                    exec('self.raintank_greywatertank += string'+str(n+37))
+                    exec('self.building_greywatertank += string'+str(n+41))
                 
                 #writes string in list
                 self.Buildinglevel_connection_list.append(self.raintank_greywatertank)

@@ -102,8 +102,8 @@ class SamplingDatabase:
         location = where the demand is being generated e.g. house, commercial building
         data = data required e.g. diurnal pattern, shower frequency etc for that particular location
         """
-        if not self.__database.has_key(data):
-            print "error - this database does not exist"
+        if data not in self.__database:
+            print("error - this database does not exist")
             return []
 
         return self.__database[data]
@@ -116,8 +116,8 @@ class SamplingDatabase:
         location = where the demand is being generated e.g. house, commercial building
         data = data required e.g. diurnal pattern, shower frequency etc for that particular location
         """
-        if not self.__database.has_key(location):
-            print "error - this database does not exist"
+        if location not in self.__database:
+            print("error - this database does not exist")
             return []
         return self.__database[location][data]
 

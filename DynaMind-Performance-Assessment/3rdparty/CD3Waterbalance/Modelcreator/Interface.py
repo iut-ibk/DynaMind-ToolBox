@@ -6,7 +6,7 @@ Created on Mon Jan 19 13:13:13 2015
 """
 
 import sys
-sys.path.append('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\Modelcreator')
+sys.path.append('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\Modelcreator')
 from Global_counters import Global_counters
 from XML_Creator import XML_Creator
 from To_XML_Creator_modified_Simulator import TheHoleLot
@@ -81,11 +81,11 @@ Simulator()
 '''
 Deleter - method delets all .txt - files is the City Drain output folder
 Input: Deleter( - path to City Drain output folder - )
-Example: Deleter('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles')
+Example: Deleter('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles')
 
 runcd3 - method runs City Drain 
 Input: runcd3( - path to CityDrain.exe (cd3.exe), path to XML - file that contains model - )
-Example: runcd3('C:\Program Files (x86)\CityDrain3\\bin\cd3.exe', C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles\Test.xml)
+Example: runcd3('C:\Program Files (x86)\CityDrain3\\bin\cd3.exe', C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles\Test.xml)
 Attention \b in the program path has to be written \\b
 
 Fractioncalculator - method calculates the total area of all Cachtments and the average perv, imperv to stormwaterdrain and imperv to storage area
@@ -94,11 +94,11 @@ Example: Fractioncalculator([[1,1.9,800,0.4,0.2,0.4,0.6,0.21,1.5,0.4,0.5,400,500
 
 getoutputdata - method imports all data from the output .txt - files created by City Drain
 Input: getoutputdata( - path to City Drain output folder - )
-Example: getoutputdata('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles')
+Example: getoutputdata('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles')
 
 getinputdata - method imports rain and evapotranspiration .ixx - files used for the City Drain simulation
 Input: getoutputdata( - path to City Drain input folder - )
-Example: getoutputdata('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\inputfiles')
+Example: getoutputdata('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\inputfiles')
 
 Balance - method checks the models mass balance by comparing input and output data
 Input: Balance( - list of all storage output file names, list of filereader/pattern implemeter output file names, list of other neccessary output file names - )

@@ -83,7 +83,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.additionaldemand_coll_strings.append(self.additionaldemandcollstrings)
                         self.additionaldemand_from_gwr_coll_list_already_connected.append(Cluster.additionaldemand_from_gwr_coll_list[m])
                 
@@ -103,7 +103,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.additionaldemand_coll_strings.append(self.additionaldemandcollstrings)
                 if counter_1==0 and counter_2==0:
                     pass
@@ -131,7 +131,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.gwrinflowstring = ''
                         for o in range(5)[1:]:
-                            exec 'self.gwrinflowstring += string'+str(o)
+                            exec('self.gwrinflowstring += string'+str(o))
                         self.gwr_inflow_strings.append(self.gwrinflowstring)
                         self.greywater_to_reservoir_coll_list_already_connected.append(Cluster.greywater_to_reservoir_coll_list[m])
                     
@@ -143,9 +143,9 @@ class ReservoirlevelOne:
                     Global_counters.number_of_collectors += 1
                     
                 if self.additionaldemand_from_gw_coll_list==[] or self.gw_inflow_coll_list==[]:
-                    print "There's no Greywater flowing into the Reservoir OR the treated Water is not being used"
+                    print("There's no Greywater flowing into the Reservoir OR the treated Water is not being used")
                 elif self.additionaldemand_from_gw_coll_list==[] and self.gw_inflow_coll_list==[]:
-                    print "The Greywater Reservoir is not being used"
+                    print("The Greywater Reservoir is not being used")
                 else:
                     #adds Greywaterreservoir 
                     self.gwr_in_strings = []
@@ -164,8 +164,8 @@ class ReservoirlevelOne:
                     self.gwrinstring = ''
                     self.gwroutstring = ''
                     for o in range(5)[1:]:
-                        exec 'self.gwrinstring += string'+str(o+4)
-                        exec 'self.gwroutstring += string'+str(o)
+                        exec('self.gwrinstring += string'+str(o+4))
+                        exec('self.gwroutstring += string'+str(o))
                     self.gwr_in_strings.append(self.gwrinstring)
                     self.gwr_out_strings.append(self.gwroutstring)
                     self.numbers_of_large_gwr_level1.append(Global_counters.number_of_greywaterreservoirs)
@@ -194,7 +194,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.swrinflowcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.swrinflowcollstrings += string'+str(o)
+                            exec('self.swrinflowcollstrings += string'+str(o))
                         self.swr_inflow_coll_strings.append(self.swrinflowcollstrings)
                         self.runoff_overflow_coll_list_to_swr_already_connected.append(Cluster.runoff_overflow_coll_list_to_swr[n])
                 else:
@@ -222,7 +222,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.swroutflowcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.swroutflowcollstrings += string'+str(o)
+                            exec('self.swroutflowcollstrings += string'+str(o))
                         self.swr_outflow_coll_strings.append(self.swroutflowcollstrings)
                         self.additionaldemand_from_swr_coll_list_already_connected.append(Cluster.additionaldemand_from_swr_coll_list[m])
                 else:
@@ -244,7 +244,7 @@ class ReservoirlevelOne:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.swr_outflow_coll_strings.append(self.additionaldemandcollstrings)        
                 
                 if counter_1 == 0 and counter_2 == 0:
@@ -259,7 +259,7 @@ class ReservoirlevelOne:
                     Global_counters.number_of_collectors += 1
                 
                 if self.swr_outflow_coll_list == []:
-                    print "There's no outflow of the Stormwater Reservoir! Probably the CLusterattribute Vector isn't set properly! ([...,...,0]) - The Cluster is not connected to the Stormw. Res.!"
+                    print("There's no outflow of the Stormwater Reservoir! Probably the CLusterattribute Vector isn't set properly! ([...,...,0]) - The Cluster is not connected to the Stormw. Res.!")
                 else:
                     #adds Stormwaterreservoir
                     self.swr_in_strings = []
@@ -278,8 +278,8 @@ class ReservoirlevelOne:
                     self.swrinstring = ''
                     self.swroutstring = ''
                     for o in range(5)[1:]:
-                        exec 'self.swrinstring += string'+str(o+4)
-                        exec 'self.swroutstring += string'+str(o)
+                        exec('self.swrinstring += string'+str(o+4))
+                        exec('self.swroutstring += string'+str(o))
                     self.swr_in_strings.append(self.swrinstring)
                     self.swr_out_strings.append(self.swroutstring)
                     self.numbers_of_large_swr_level1.append(Global_counters.number_of_stormwaterreservoirs)

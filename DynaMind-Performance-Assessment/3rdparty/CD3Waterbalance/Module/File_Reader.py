@@ -249,8 +249,8 @@ class File_Reader (pycd3.Node):
         #if wrong letter is typed in and timestep is differs from input files message will occur and output will be set zero        
         else:
             
-            print 'Error: The input file has to be a time - height - series (H) [DD.MM.YYYY HH:MM:SS mm] or a time - flow - series (F) [DD.MM.YYYY HH:MM:SS l/h]'
-            print 'The default setting is height (H)'
+            print('Error: The input file has to be a time - height - series (H) [DD.MM.YYYY HH:MM:SS mm] or a time - flow - series (F) [DD.MM.YYYY HH:MM:SS l/h]')
+            print('The default setting is height (H)')
             self.out[0] = 0.0       
                     
         return dt

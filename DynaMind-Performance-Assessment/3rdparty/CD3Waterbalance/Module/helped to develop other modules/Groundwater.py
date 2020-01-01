@@ -12,21 +12,21 @@ class NodeFactory(pycd3.INodeFactory):
     def __init__(self, node):
         pycd3.INodeFactory.__init__(self)
         self.node = node
-        print "NodeFactory.__init__"
+        print("NodeFactory.__init__")
         
     def getNodeName(self):
-        print "NodeFactory.getName"
+        print("NodeFactory.getName")
         return self.node.__name__
         
     def createNode(self):
-        print "NodeFactory.createNode"
+        print("NodeFactory.createNode")
         n = self.node()
         n.__disown__()
-        print "NodeFactory.disowned"
+        print("NodeFactory.disowned")
         return n
         
     def getSource(self):
-        print "NodeFactory.getSource"
+        print("NodeFactory.getSource")
         return "Practice.py"
 
 class Groundwater(pycd3.Node):
@@ -38,7 +38,7 @@ class Groundwater(pycd3.Node):
         #self.pF_Value = pycd3.Double()
         self.check_storage = pycd3.Flow()
         #dir (self.inf)
-        print "init node"
+        print("init node")
         self.addInPort("groundw_in", self.groundw_in)
         #self.addInPort("groundw_evapo", self.groundw_evapo)
         #self.addOutPort("pF-Value", self.pF_Value)
@@ -64,9 +64,9 @@ class Groundwater(pycd3.Node):
         #self.addInPort("in", self.inf)
         
     def init(self, start, stop, dt):
-        print start
-        print stop
-        print dt
+        print(start)
+        print(stop)
+        print(dt)
         return True
         
     def f(self, current, dt):

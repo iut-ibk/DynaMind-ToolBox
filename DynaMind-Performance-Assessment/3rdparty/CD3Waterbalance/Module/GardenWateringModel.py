@@ -87,7 +87,7 @@ class GardenWateringModel(pycd3.Node):
         elif self.watering_method == "Normal_Watering":
             pass
         else:
-            print "Non valid Watering Method!"        
+            print("Non valid Watering Method!")        
         
         self.time = date2num(datetime.strptime(str(start.to_datetime()),"%Y-%m-%d %H:%M:%S")) - floor(date2num(datetime.strptime(str(start.to_datetime()),"%Y-%m-%d %H:%M:%S")))
         self.watering_volume_per_dt = self.tap_flow_rate/1000/60*dt 
@@ -110,7 +110,7 @@ class GardenWateringModel(pycd3.Node):
             elif self.watering_method == "Normal_Watering":
                 pass
             else:
-                print "Non valid Watering Method!"
+                print("Non valid Watering Method!")
             self.switch = 1
         else:
             pass

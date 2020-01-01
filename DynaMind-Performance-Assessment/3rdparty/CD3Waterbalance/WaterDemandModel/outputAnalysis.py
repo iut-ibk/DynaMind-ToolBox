@@ -40,7 +40,7 @@ def sumVolumes():
     volumes = demand_data               # grab the volumes
 
     "sum the volume separately for each appliance and for the whole unit:"
-    for u in volumes.keys():            # for each unit
+    for u in list(volumes.keys()):            # for each unit
         unit_name =u[0]                       # as key in volumes is R1, R2, C1, C2 etc. Needs to just be R and C to match key in output array
 
         # add water use volumes to the relevant hour:
@@ -65,25 +65,25 @@ def sumVolumes():
 
 results = sumVolumes()
 
-print "Residential:"
-print "tap", results["R"]["tap"]
-print "toilet", results["R"]["toilet"]
-print "shower", results["R"]["shower"]
-print "washing machine", results["R"]["washing_machine"]
-print "bath", results["R"]["bath"]
-print "dish washer", results["R"]["dish_washer"]
-print "sum", results["R"]["unit_sum"]
-print "actors", results["R"]["actors"]
+print("Residential:")
+print(("tap", results["R"]["tap"]))
+print(("toilet", results["R"]["toilet"]))
+print(("shower", results["R"]["shower"]))
+print(("washing machine", results["R"]["washing_machine"]))
+print(("bath", results["R"]["bath"]))
+print(("dish washer", results["R"]["dish_washer"]))
+print(("sum", results["R"]["unit_sum"]))
+print(("actors", results["R"]["actors"]))
 # #
-print
+print()
 #
-print "Commercial:"
-print "tap", results["C"]["tap"]
-print "toilet", results["C"]["toilet"]
-print "shower", results["C"]["shower"]
-print "dish washer", results["C"]["dish_washer"]
-print "sum", results["C"]["unit_sum"]
-print "actors", results["C"]["actors"]
+print("Commercial:")
+print(("tap", results["C"]["tap"]))
+print(("toilet", results["C"]["toilet"]))
+print(("shower", results["C"]["shower"]))
+print(("dish washer", results["C"]["dish_washer"]))
+print(("sum", results["C"]["unit_sum"]))
+print(("actors", results["C"]["actors"]))
 
 
 # plot(time,toilet_volume, label = "toilet")                                       # plot time vs volume

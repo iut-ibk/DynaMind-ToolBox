@@ -20,7 +20,7 @@ Indoorvector=[]
 area_fractions1=[]
 total_area = 0.0
 #killing the cd3 process (if necessary) and deleting old ouput .txt files
-def Deleter(location_files1='C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles'):
+def Deleter(location_files1='C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles'):
     os.system("taskkill /cd3.exe")
     todelete = [ f for f in os.listdir(location_files1) if f.endswith(".txt") ]
     for i in range(len(todelete)):
@@ -95,12 +95,12 @@ def getoutputdata(location_files1, totalarea=total_area):
     #checks whether all values have been inserted
     for i in range(len(Outputvector)):
         if 'error' in Outputvector[i]:
-            print 'A problem has occured, please check getoutputdata() function'
-            print 'The problem has occured in line '+str(i)+' of the Outputvector'
+            print('A problem has occured, please check getoutputdata() function')
+            print(('The problem has occured in line '+str(i)+' of the Outputvector'))
         else:
             pass
     Outputvector=np.asarray(Outputvector)
-    print 'Outputvector has been created'      
+    print('Outputvector has been created')      
     return
 
 def getinputdata(location_files2, numberhh , totalarea=total_area, lenindoor=9000):
@@ -160,7 +160,7 @@ def getinputdata(location_files2, numberhh , totalarea=total_area, lenindoor=900
         Indoorvector[0][i]=namesindoor[i-1][:(len(namesindoor[i-1])-4)]
     Rainevapovector = np.asarray(Rainevapovector)   
     Indoorvector = np.asarray(Indoorvector) 
-    print 'Indoorvector and RainEvapovector have been created'
+    print('Indoorvector and RainEvapovector have been created')
     return 
     
     
@@ -187,7 +187,7 @@ def Bilanz(Data, tocheck, wettingloss = 0.4, depressionloss=1.5, totalarea = tot
                         for m in range(len(Data[i][:,n]))[1:]:            
                             evapomodel += float(Data[i][:,n][m])
             ErrorFRPI=(1 - evapomodel/evapoinput) * 100
-            print 'The difference of given and produced Evapotranspiraten calculated by the Pattern Implementer and Filereader due to rounding errors is '+ colorred.format(str(ErrorFRPI))+' %'
+            print(('The difference of given and produced Evapotranspiraten calculated by the Pattern Implementer and Filereader due to rounding errors is '+ colorred.format(str(ErrorFRPI))+' %'))
         #rain check    
         elif tocheck[i] == 'Rain':
             rainmodel = 0.0
@@ -201,7 +201,7 @@ def Bilanz(Data, tocheck, wettingloss = 0.4, depressionloss=1.5, totalarea = tot
                         for m in range(len(Data[i][:,n]))[1:]:            
                             rainmodel += float(Data[i][:,n][m])
             ErrorFR=(1 - rainmodel/raininput) * 100
-            print 'The difference of given and produced Rain calculated by the Filereader due to rounding errors is '+ colorred.format(str(ErrorFR))+' %'
+            print(('The difference of given and produced Rain calculated by the Filereader due to rounding errors is '+ colorred.format(str(ErrorFR))+' %'))
         #total system
         #Lists have to be in alphabetical order
         elif tocheck[i] == 'System': 
@@ -306,21 +306,21 @@ def Bilanz(Data, tocheck, wettingloss = 0.4, depressionloss=1.5, totalarea = tot
                     onlyevapo += float(inputER[1][i])
 
             
-            print 'Fraktion of Pervious Area: '+str(area_fractions[0])
-            print 'Fraktion of Impervious Area to Reservoir: '+str(area_fractions[1])
-            print 'Fraktion of Impervious Area to Stormdrain: '+str(area_fractions[2])
-            print 'Wetting Loss: '+str( wettingloss)+' mm'
-            print 'Depression Loss: '+str(depressionloss)+' mm'
-            print 'Total Rain: '+str(onlyrain) + ' = '+str(onlyevapo+rainminusevapo)+' m^3'
-            print 'Evaporated Rain: '+str(onlyevapo)+' m^3'
-            print 'Inital Losses only: '+str(rainminusevapo-rainminusevapolosses)+' m^3'
-            print 'Potable_Water_Demand: '+str(PWRonly)+' m^3'
-            print 'Outdoor_Demand: '+str(OutdoorD)+' m^3'
-            print 'Rain minus all Losses: '+str(rainminusevapolosses)+' m^3'
-            print 'SewerStormwInfiltr: '+str(-1*SewerStormwInfiltr)+' m^3'
-            print 'Still stored in tanks: ' +str(totalstoragescalar)+' m^3'
-            print 'Absolut Error of entire balance: '+str(PWRonly-OutdoorD-totalstoragescalar+rainminusevapolosses+SewerStormwInfiltr)+' m^3'
-            print 'Realtive Error of entire balance: '+str(100*(PWRonly-OutdoorD+rainminusevapolosses+SewerStormwInfiltr-totalstoragescalar)*2/(PWRonly+totalstoragescalar+OutdoorD+onlyrain+onlyevapo+(rainminusevapo-rainminusevapolosses)-SewerStormwInfiltr))+' %'
+            print(('Fraktion of Pervious Area: '+str(area_fractions[0])))
+            print(('Fraktion of Impervious Area to Reservoir: '+str(area_fractions[1])))
+            print(('Fraktion of Impervious Area to Stormdrain: '+str(area_fractions[2])))
+            print(('Wetting Loss: '+str( wettingloss)+' mm'))
+            print(('Depression Loss: '+str(depressionloss)+' mm'))
+            print(('Total Rain: '+str(onlyrain) + ' = '+str(onlyevapo+rainminusevapo)+' m^3'))
+            print(('Evaporated Rain: '+str(onlyevapo)+' m^3'))
+            print(('Inital Losses only: '+str(rainminusevapo-rainminusevapolosses)+' m^3'))
+            print(('Potable_Water_Demand: '+str(PWRonly)+' m^3'))
+            print(('Outdoor_Demand: '+str(OutdoorD)+' m^3'))
+            print(('Rain minus all Losses: '+str(rainminusevapolosses)+' m^3'))
+            print(('SewerStormwInfiltr: '+str(-1*SewerStormwInfiltr)+' m^3'))
+            print(('Still stored in tanks: ' +str(totalstoragescalar)+' m^3'))
+            print(('Absolut Error of entire balance: '+str(PWRonly-OutdoorD-totalstoragescalar+rainminusevapolosses+SewerStormwInfiltr)+' m^3'))
+            print(('Realtive Error of entire balance: '+str(100*(PWRonly-OutdoorD+rainminusevapolosses+SewerStormwInfiltr-totalstoragescalar)*2/(PWRonly+totalstoragescalar+OutdoorD+onlyrain+onlyevapo+(rainminusevapo-rainminusevapolosses)-SewerStormwInfiltr))+' %'))
     return
 
 
@@ -355,7 +355,7 @@ def plotter(Vector1, Vector2, Vector3,limx=[0,365], limy=[0,1], toplot=['rain_mo
                 a=2
             else:
                 a=3
-            exec 'variable=Vector'+str(a)
+            exec('variable=Vector'+str(a))
             storageOD=asarray([0.0 for m in range(len(variable))])
             for i in range(len(variable[0])):
                 if repr(variable[0][i])[1:15] == 'Outdoor_Demand':
@@ -382,7 +382,7 @@ def plotter(Vector1, Vector2, Vector3,limx=[0,365], limy=[0,1], toplot=['rain_mo
                     dailyoutdoordemand.append(outdoordemandsum)
                     outdoordemandsum=0.0
                     dailyoutdoordemand_per_sm=mean(dailyoutdoordemand)/(area_fractions1[0]*total_area)
-            print 'The average Outdoordemand per square meter for the simulated time frame is: '+str(dailyoutdoordemand_per_sm)+' m³/(m²d)'
+            print(('The average Outdoordemand per square meter for the simulated time frame is: '+str(dailyoutdoordemand_per_sm)+' m³/(m²d)'))
 
         elif toplot[i] == 'Indoor_Demand':
             allheaders=Vector1.tolist()[0]+Vector2.tolist()[0]+Vector3.tolist()[0]
@@ -395,7 +395,7 @@ def plotter(Vector1, Vector2, Vector3,limx=[0,365], limy=[0,1], toplot=['rain_mo
                 a=2
             else:
                 a=3
-            exec 'variable=Vector'+str(a)
+            exec('variable=Vector'+str(a))
             storageID=asarray([0.0 for m in range(len(variable))])
             for i in range(len(variable[0]))[1:]:
                 for n in range(len(variable))[1:]:
@@ -421,7 +421,7 @@ def plotter(Vector1, Vector2, Vector3,limx=[0,365], limy=[0,1], toplot=['rain_mo
                 listtoplot.append([Vector3[:,0], effective_rain])
                     
         else:
-            print 'Error: Wrong input name!'
+            print('Error: Wrong input name!')
     #LEGENDE!!!save pic if wanted
     pl.figure(figsize=(12, 6), dpi=80)
     pl.xlim(float(Vector1[1][0])+float(limx[0]), float(Vector1[1][0]) + float(limx[1]))
@@ -429,21 +429,21 @@ def plotter(Vector1, Vector2, Vector3,limx=[0,365], limy=[0,1], toplot=['rain_mo
     lines = ["-","--","-.",":"]
     linecycler = cycle(lines)
     for i in range(len(listtoplot)):
-        exec 'pl.plot(asarray(listtoplot['+str(i)+'])[0][1:],asarray(listtoplot['+str(i)+'])[1][1:], linewidth=2.5, linestyle = next(linecycler), label=listtoplot['+str(i)+'][1][0])'
+        exec('pl.plot(asarray(listtoplot['+str(i)+'])[0][1:],asarray(listtoplot['+str(i)+'])[1][1:], linewidth=2.5, linestyle = next(linecycler), label=listtoplot['+str(i)+'][1][0])')
     pl.legend(loc='best')
     pl.title('Model In - and Output', fontsize=20)
     pl.xlabel('Time [d]')
     pl.ylabel('Volume [m^3]')
     pl.grid(True)
     pl.show()
-    print 't=0: '+str(float(Vector1[1][0]))
-    print 'The time range plotted: '+str([num2date(float(Vector1[1][0]) + float(limx[0])).strftime("%d.%m.%Y %H:%M:%S"), 
-                                             num2date(float(Vector1[1][0]) + float(limx[1])).strftime("%d.%m.%Y %H:%M:%S")])
+    print(('t=0: '+str(float(Vector1[1][0]))))
+    print(('The time range plotted: '+str([num2date(float(Vector1[1][0]) + float(limx[0])).strftime("%d.%m.%Y %H:%M:%S"), 
+                                             num2date(float(Vector1[1][0]) + float(limx[1])).strftime("%d.%m.%Y %H:%M:%S")])))
     return
 
 
 #[[485.1, 0.18, 0.63, 0.19], [855.9, 0.28, 0.43, 0.29], [800, 0.1, 0.3, 0.6], [960, 0.46, 0.45, 0.09], [1200, 0, 0, 1]]
-def theholelot(outputfiles='C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles', inputfiles='C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\inputfiles', 
+def theholelot(outputfiles='C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles', inputfiles='C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\inputfiles', 
                numberhh=1., wettingloss = 0.4, depressionloss=1.5):    
     #Deleter(outputfiles)
     #runcd3('simple_system_CwR_RT.xml')
@@ -453,7 +453,7 @@ def theholelot(outputfiles='C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simul
     getinputdata(inputfiles, numberhh, total_area)
     Bilanz([Rainevapovector, Outputvector, Indoorvector], ['Evapo', 'Rain', 'System'], wettingloss, depressionloss, total_area, area_fractions1)
     plotter(Indoorvector, Rainevapovector, Outputvector,[0,365],[0,1], ['rain_model', 'Stormwater', 'evapo_model', 'effective_rain','Outdoor_Demand'])
-    print 'done'
+    print('done')
     return
 
 

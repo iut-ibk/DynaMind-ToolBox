@@ -27,8 +27,8 @@ class WaterDemandModel():
         self.__commercial_units = commercial_units
         self.__unit_type = str
         self.__demand_output = {}
-        print residential_units
-        print self.__residential_units
+        print(residential_units)
+        print((self.__residential_units))
         self.__timeseries = WaterDemandModel.getInitialisedTimeseries(self)
 
         #initialise methods:
@@ -59,7 +59,7 @@ class WaterDemandModel():
             elif u_type == "COMMERCIAL":
                 appliances = Appliance.commercial_appliance_types
             else:
-                print "error: the unit type does not exist"
+                print("error: the unit type does not exist")
 
             # create an array of zero's for each appliance in the unit:
 
@@ -116,7 +116,7 @@ class WaterDemandModel():
 
         res_name_counter = 1        # used to create a name for each unit e.g. R1, R2
         res_actor_counter = 0       # represents the index of the res_unit array --> so the relevant number of people can be returned
-        print self.__residential_units
+        print((self.__residential_units))
         for i in range(len(self.__residential_units)):        # for the number of res units specified:
 
             # create a res unit ID R1 --> Rn
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     run = WaterDemandModel(res_units,com_units)
 
     a = run.getDemands()
-    print  run.getDemands()
+    print((run.getDemands()))
 
 
 

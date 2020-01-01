@@ -96,6 +96,7 @@ void PyInit__pycd3(void);
 
 void NodeRegistry::addPythonPlugin(const std::string &script) {
     if (!Py_IsInitialized()) {
+
         Py_Initialize();
 		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
@@ -107,21 +108,25 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 
         PyObject *pycd3_module = PyImport_ImportModule("pycd3");
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
             return;
         }
         PyObject *pycd3_dict = PyModule_GetDict(pycd3_module);
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
         }
         Py_XDECREF(pycd3_module);
         PyObject *callback = PyDict_GetItemString(pycd3_dict, "install_redirector");
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
         }
         PyObject *res = PyObject_Call(callback, Py_None, Py_None);
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
             return;
         }
         Py_XDECREF(res);
@@ -135,7 +140,7 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
         SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
-        main_namespace = PyModule_GetDict(main);
+		main_namespace = PyModule_GetDict(main);
         Py_DECREF(main);
     }
 
@@ -182,7 +187,9 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 		//load pycd3 module an get 'registerAllCallback'
 		PyObject *pycd3_module = PyImport_ImportModule("pycd3");
 		if (PyErr_Occurred()) {
-			Logger(Error) << "error importint pycd3 module";
+			Logger(Error) << "error import int pycd3 module";
+
+
 			throw PythonException();
 			return;
 		}

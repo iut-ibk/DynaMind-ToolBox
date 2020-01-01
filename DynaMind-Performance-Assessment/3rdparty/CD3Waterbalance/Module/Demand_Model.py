@@ -128,7 +128,7 @@ class Demand_Model (pycd3.Node):
             
         else:
             
-            print "Model selected not valid!"
+            print("Model selected not valid!")
             
         
         return True
@@ -747,11 +747,11 @@ class Demand_Model (pycd3.Node):
                 
             elif dt > 3600*24:
                 
-                print "Error: The Time step of simulation can't be greater than one day!!"
+                print("Error: The Time step of simulation can't be greater than one day!!")
                 
             else:
                 
-                print "Error: The Time step of simulation must be in full hours when greater one hour and smaller one day!!"
+                print("Error: The Time step of simulation must be in full hours when greater one hour and smaller one day!!")
                 
                 
         elif self.model_selected == "Simple_Model":
@@ -794,7 +794,7 @@ class Demand_Model (pycd3.Node):
            # print [self.CheckBathtub[0]+ self.CheckShower[0] +  self.CheckToilet[0]+self.CheckKitchen_Tap[0]+ self.CheckHandbasin_Tap[0]+ self.CheckWashing_Machine[0]+ self.CheckDishwasher[0] +  self.CheckEvap_Cooler[0]]
         else:
             
-            print "Model selected not valid!"
+            print("Model selected not valid!")
         return dt
     
     def getClassName(self):
