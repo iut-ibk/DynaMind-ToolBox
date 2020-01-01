@@ -105,7 +105,7 @@ class DM_ImportSWMM(Module):
             try:
                 self.sftp.get(file_name,  self.real_file_name)
             except Exception as e:
-                print e
+                print(e)
                 self.real_file_name = ""
                 return False
             self.downloaded_file = self.generate_downloaded_file_name()
@@ -241,7 +241,7 @@ class DM_ImportSWMM(Module):
                 container.append(c)
             ress = results[currentContainer]
             if "WEIR" in content[0]:
-                print content[0], currentContainer
+                print(content[0], currentContainer)
             ress[content[0]] = container
             results[currentContainer] = ress
         f.close()
@@ -377,7 +377,7 @@ class DM_ImportSWMM(Module):
         ress = results["[CONDUITS]"]
         counter = 0
         c_weirs = results["[WEIRS]"]
-        print c_weirs
+        print(c_weirs)
         for c in ress:
             counter += 1
             vals = ress[c]

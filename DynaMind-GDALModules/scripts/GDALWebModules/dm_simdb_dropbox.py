@@ -49,7 +49,7 @@ class DM_SIM_DB_DropBox(Module):
                 dbx.files_upload(data, file_name, autorename=True)
 
 
-            except Exception, e:
+            except Exception as e:
                 log(str(e), Error)
                 return
 

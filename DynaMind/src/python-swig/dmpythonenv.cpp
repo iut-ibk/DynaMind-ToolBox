@@ -181,6 +181,7 @@ bool PythonEnv::addOverWriteStdCout() {
 }
 
 void PythonEnv::addPythonPath(std::string path) {
+	DM::Logger(DM::Standard) << "Add Python Path " << path;
 	ostringstream script;
 
 	script << "import sys\n";
@@ -199,6 +200,7 @@ void PythonEnv::addPythonPath(std::string path) {
 
 bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 {
+	DM::Logger(DM::Standard) << "Register " << module;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyObject *pydynamind_module = PyImport_ImportModule("pydynamind");
 	if (PyErr_Occurred()) {
@@ -216,14 +218,14 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	}
 
 	QSettings settings;
-	QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
+//	QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
 
-	if(PathtoUrbanSim.size())
-	{
-		if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
-			PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
-		}
-	}
+//	if(PathtoUrbanSim.size())
+//	{
+//		if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
+//			PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
+//		}
+//	}
 
 	ostringstream script;
 	script << "import reimport\n";
@@ -232,10 +234,10 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	script << "import pydynamind\n";
 	script << "import site\n";
 	script << "import inspect\n";
-	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
-	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
-	script << "os.environ['PYTHONPATH']  = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
-	script << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+//	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
+//	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
+//	script << "os.environ['PYTHONPATH']  = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+//	script << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
 
 	std::string f = QDir::currentPath().toStdString();
 	script << "site.addsitedir(\""<< QDir::currentPath().toStdString() << "\") \n";

@@ -48,7 +48,7 @@ class MikeWhisperer(Module):
             log("check " + str(datetime.datetime.now()) + " " + str(folder), Standard)
             try:
                 for e in expected:
-                    print e
+                    print(e)
                     self.sftp.listdir(folder + "/" + e)
                 log("all done", Standard)
                 self.close()
@@ -62,7 +62,7 @@ class MikeWhisperer(Module):
             self.connect()
             for e in expected:
                 folder_name = folder + "/" + e
-                print folder_name
+                print(folder_name)
                 files = self.sftp.listdir(folder_name)
                 if not os.path.exists(outputfolder + "/" + e):
                     os.makedirs(outputfolder + "/" + e)
@@ -98,7 +98,7 @@ class MikeWhisperer(Module):
 
         def run(self):
             log("try to connect", Standard)
-            print self.get_group_counter()
+            print(self.get_group_counter())
             if self.get_group_counter() != -1 and (self.get_group_counter() -  1) % self.step != 0:
                 return
 

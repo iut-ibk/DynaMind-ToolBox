@@ -77,7 +77,7 @@ class DM_Fill(Module):
         try:
             self.sftp.get(file_name, self.real_file_name)
         except Exception as e:
-            print e
+            print(e)
             self.real_file_name = ""
             return False
         self.downloaded_file = self.generate_downloaded_file_name()
@@ -138,7 +138,7 @@ class DM_Fill(Module):
                 miny -= 50
                 maxx += 50
                 maxy += 50
-                print str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny
+                print(str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny)
                 log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
 
                 values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
@@ -189,6 +189,6 @@ class DM_Fill(Module):
 
             if min_val:
                 node.SetField("elevation", float(min_val))
-        print "syncronise"
+        print("syncronise")
         self.node_view.finalise()
         self.city.finalise()

@@ -80,7 +80,7 @@ class DM_Hoststart_SFTP(Module):
             ds = gdal.OpenEx(self.real_file_name, gdal.OF_VECTOR)
 
             if ds is None:
-                print "Open failed.\n"
+                print("Open failed.\n")
                 return
 
             lyr = ds.GetLayerByName("dynamind_table_definitions")
@@ -96,20 +96,20 @@ class DM_Hoststart_SFTP(Module):
                 if attribute_name == "DEFINITION":
                     view_type[view_name] = datatype
                     continue
-                if view_name not in views.keys():
+                if view_name not in list(views.keys()):
                     views[view_name] = {}
 
                 views[view_name][attribute_name] = datatype
 
             self.view_containers = []
-            for view in view_type.keys():
+            for view in list(view_type.keys()):
                 v = ViewContainer(view, self.StringToDMDataType(view_type[view]), WRITE)
                 self.view_containers.append(v)
 
-                if  view not in views.keys():
+                if  view not in list(views.keys()):
                     continue
 
-                for attribute in views[view].keys():
+                for attribute in list(views[view].keys()):
                     v.addAttribute(attribute, self.StringToDMDataType(views[view][attribute]), WRITE )
 
 

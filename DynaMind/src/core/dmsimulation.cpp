@@ -184,7 +184,10 @@ bool Simulation::registerModule(const std::string& filepath)
 	{
 #ifndef PYTHON_EMBEDDING_DISABLED
 		QFileInfo fi = qfilepath;
+		std::stringstream ss;
+		ss << fi.absolutePath().toStdString() <<  "/" <<  fi.fileName().remove(".py").toStdString();
 		DM::PythonEnv::getInstance()->addPythonPath(fi.absolutePath().toStdString());
+		DM::PythonEnv::getInstance()->addPythonPath(ss.str());
 		bool success = true;
 
 		try

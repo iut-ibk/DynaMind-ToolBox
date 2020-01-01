@@ -431,7 +431,7 @@ def test():
 
         def test_getint(self):
             # Test a single int by first converting to and then from
-            func = OutFile.getint.im_func
+            func = OutFile.getint.__func__
             tests = [(267, 0, -80), 3]
             for test in tests:
                 tup = test if isinstance(test, tuple) else (test,)
@@ -441,7 +441,7 @@ def test():
 
         def test_getfloat(self):
             # Test a single float by first converting to and then from
-            func = OutFile.getfloat.im_func
+            func = OutFile.getfloat.__func__
             tests = [(267.217343254356, 0.000000009, -80.), 3.2]
             for test in tests:
                 tup = test if isinstance(test, tuple) else (test,)
@@ -451,7 +451,7 @@ def test():
 
         def test_getdouble(self):
             # Test a single float by first converting to and then from
-            func = OutFile.getdouble.im_func
+            func = OutFile.getdouble.__func__
             tests = [(267.2143465, 0.000000009, -80.), 3.2, 5.23789e809]
             for test in tests:
                 tup = test if isinstance(test, tuple) else (test,)
@@ -474,10 +474,10 @@ def test():
 if __name__ == '__main__':
     test()
     f = open('test.out')
-    print(f.count_cats, f.count_nodes, f.count_links)
-    print(f.start, f.timestep)
-    print(f.get_values('subcatchments'))
-    print(f.get_values('nodes'))
-    print(f.get_values('links'))
-    print(f.get_values('system'))
+    print((f.count_cats, f.count_nodes, f.count_links))
+    print((f.start, f.timestep))
+    print((f.get_values('subcatchments')))
+    print((f.get_values('nodes')))
+    print((f.get_values('links')))
+    print((f.get_values('system')))
 

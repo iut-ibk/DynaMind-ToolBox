@@ -3,7 +3,7 @@
 
 __author__ = 'christianurich'
 
-import swmmread
+from DMPerformance import swmmread
 import numpy as np
 import math
 from ctypes import *
@@ -72,12 +72,12 @@ class DMSEI(Module):
 
         swmm = cdll.LoadLibrary(self.getSWMMLib())
         if swmm.swmm_run("/tmp/" + filename + ".inp", "/tmp/" + filename + ".rep", "/tmp/" + filename + ".out") != 0:
-            print "something went wrong"
+            print("something went wrong")
             return -1
 
         f = swmmread.open("/tmp/" + filename + ".out")
         natural_peaks = {}
-        for c in catchment.keys():
+        for c in list(catchment.keys()):
             timeseries = f.get_values('subcatchments', c)
             a = np.array([row[1][4] for row in timeseries])
             natural_peaks[c] = a.max()
@@ -117,11 +117,11 @@ class DMSEI(Module):
         swmm = cdll.LoadLibrary(self.getSWMMLib())
         e_code = swmm.swmm_run("/tmp/" + filename + ".inp", "/tmp/" + filename + ".rep", "/tmp/" + filename + ".out")
         if e_code != 0:
-            print e_code, "something went wrong"
+            print(e_code, "something went wrong")
             return -1
         f = swmmread.open("/tmp/" + filename + ".out")
         SEIs = {}
-        for c in catchment.keys():
+        for c in list(catchment.keys()):
             timeseries = f.get_values('subcatchments', c)
             sum = 0
             threshold = thresholds[c] / 2.0
@@ -217,7 +217,7 @@ class DMSEI(Module):
             ';;Name           Raingage         Outlet           Area     Imperv   Width    Slope    Length   Pack\n')
         out_file.write(
             ';;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- --------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '               RG1              ' + 'o'+c + '                ' + str(
                 sub_satchment[c]["area"]) + '        ' + str(sub_satchment[c]["imp"]) + '       ' + str(
                 math.sqrt(sub_satchment[c]["area"]) * 100) + '      0.5      0\n')
@@ -227,21 +227,21 @@ class DMSEI(Module):
         out_file.write(';;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted\n')
         out_file.write(
             ';;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '                0.01       0.2        2.0       15       25         OUTLET\n')
         out_file.write('\n')
         out_file.write('[INFILTRATION]\n')
         out_file.write(';;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil\n')
         out_file.write(';;-------------- ---------- ---------- ---------- ---------- ----------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '                 3.0        0.5        4          7          0\n')
         out_file.write('\n')
         out_file.write('[JUNCTIONS]\n')
         out_file.write(';;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded\n')
         out_file.write(';;-------------- ---------- ---------- ---------- ---------- ---------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write('o' + c + '                 0        0       0          0          0\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write('n' + c + '                 0        0       0          0          0\n')
 
         out_file.write('\n')
@@ -262,7 +262,7 @@ class DMSEI(Module):
         out_file.write('[LID_USAGE]\n')
         out_file.write(';;Subcatchment   LID Process      Number  Area       Width      InitSat    FromImp    ToPerv     RptFile                  DrainTo    \n')
         out_file.write(';;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '                barrel           '+ str(sub_satchment[c]["rwht"]["number"]) +'   1          0.5        0          ' +str(sub_satchment[c]["rwht"]["connected_imp_fraction"] * 100) + '        0          *                        n' + c + '     \n')
             out_file.write(c + '                bc           '+ str(sub_satchment[c]["bc"]["number"]) +'   25          1        0          ' +str(sub_satchment[c]["bc"]["connected_imp_fraction"] * 100) + '        0          *                        o' + c + '     \n')   
 
@@ -344,7 +344,7 @@ class DMSEI(Module):
             #
             SEIs = self.SEI({"1": {"id": 1, "area": area, "imp": imp, "rwht" :  {"number": rwht_total_volume, "connected_imp_fraction" : rwht_connected_imp_fraction}, "bc" :  {"number": math.ceil(bc_total_m/5.), "connected_imp_fraction" : bc_connected_imp_fraction}}}, peak_flows)
             stream_index = 0
-            for i in SEIs.keys():
+            for i in list(SEIs.keys()):
                 try:
                     stream_index = SEIs[i] / SEIs_0[i]
                 except ZeroDivisionError:

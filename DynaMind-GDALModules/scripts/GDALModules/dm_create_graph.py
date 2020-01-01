@@ -65,7 +65,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
             for n in self.neigh:
                 start_id = n.GetFieldAsInteger(str(self.view_name) + "_id1")
                 end_id = n.GetFieldAsInteger(str(self.view_name) + "_id2")
-                if not connections.has_key(start_id):
+                if start_id not in connections:
                     connections[start_id] = []
                 con_vec = connections[start_id]
                 con_vec.append(end_id)
@@ -82,7 +82,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
                 log(str(",".join( str(v) for v in ids)) , Standard)
                 corrected = 0
                 ids = []
-                for n_id in node_weights.keys():
+                for n_id in list(node_weights.keys()):
 
                     try:
                         neigh = connections[n_id]
@@ -123,7 +123,7 @@ class DM_CreateNeighbourhoodNetwork(Module):
                     ids.append(node_weights[n_id])
 
             # Create the graph
-            for n_id in node_weights.keys():
+            for n_id in list(node_weights.keys()):
 
                 try:
                     neigh = connections[n_id]

@@ -250,7 +250,7 @@ class TargetInegrationv2(Module):
             if self.grid_size_from_city:
                 self.internal_grid_size = c.GetFieldAsDouble("grid_size")
 
-            print(self.internal_grid_size)
+            print((self.internal_grid_size))
 
         current_pos = -1
         

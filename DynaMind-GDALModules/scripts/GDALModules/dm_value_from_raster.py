@@ -74,7 +74,7 @@ class DM_ValueFromRaster(Module):
                     miny -= 5
                     maxx += 5
                     maxy += 5
-                    print str(minx) + "/" + str(miny)+ "/" + str(maxx)+ "/" + str(maxy), maxx-minx, maxy-miny
+                    print(str(minx) + "/" + str(miny)+ "/" + str(maxx)+ "/" + str(maxy), maxx-minx, maxy-miny)
                     log(str(minx) + "/" + str(miny)+ "/" + str(maxx)+ "/" + str(maxy), Standard)
 
                     values = band.ReadAsArray(minx, miny, maxx-minx, maxy-miny)

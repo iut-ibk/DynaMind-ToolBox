@@ -62,7 +62,7 @@ class SimplifyABSEducation(Module):
 
             self.__b40b = ViewContainer("b40b", NODE, READ)
 
-            for k in self.translation_table.keys():
+            for k in list(self.translation_table.keys()):
                 self.__b40b.addAttribute(k, Attribute.INT, READ)
 
             # self.__b01 = ViewContainer("b01", NODE, READ)
@@ -104,7 +104,7 @@ class SimplifyABSEducation(Module):
 
 
 
-                for k in self.translation_table.keys():
+                for k in list(self.translation_table.keys()):
                     values[self.translation_table[k]] = b40.GetFieldAsInteger(k)
 
                 id = b40.GetFID()
@@ -121,7 +121,7 @@ class SimplifyABSEducation(Module):
                 f.SetGeometry(b40.GetGeometryRef())
 
                 sum = 0.0
-                for vk in values.keys():
+                for vk in list(values.keys()):
                     sum += float(values[vk])
                     f.SetField(vk, int(values[vk]))
 

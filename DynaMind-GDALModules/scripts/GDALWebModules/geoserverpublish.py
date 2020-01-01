@@ -57,7 +57,7 @@ class GeoserverHelper:
         helper.insertShapeIntoPostGis('/home/c815/gsTest/test.shp','crc','testingHelper2')'''
 
         if not os.path.isfile(shapeFile):
-            print "Shape file not found"
+            print("Shape file not found")
             return -1
             cmds = "PGPASSWORD={pgPW} ./createWSFTFromSHP.sh -s {shapeFileF} -d {databaseNameF} -t {tableNameF} -u {postgreUsername} -i {postgreIP}".format(pgPW=self.postgrePW,
                 shapeFileF=shapeFile,databaseNameF=databaseName, tableNameF=tableName, postgreUsername=self.postgreUserName, postgreIP=self.postgreIP)
