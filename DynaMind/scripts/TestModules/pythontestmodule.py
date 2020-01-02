@@ -24,30 +24,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from pydynamind import *
 from numpy import *
-from os import  *
+from os import *
+
 
 class PythonTestModule(Module):
-        def __init__(self):
-            Module.__init__(self)
-            self.createParameter("Height",LONG,"Sample Description")
-            self.createParameter("Width",LONG,"Sample Description")
-            self.createParameter("CellSize",DOUBLE,"Sample Description")
-            self.Height = 200
-            self.Width = 200
-            self.CellSize = 20
+    def __init__(self):
+        Module.__init__(self)
+        self.createParameter("Height", LONG, "Sample Description")
+        self.createParameter("Width", LONG, "Sample Description")
+        self.createParameter("CellSize", DOUBLE, "Sample Description")
+        self.Height = 200
+        self.Width = 200
+        self.CellSize = 20
 
-            views = []
-            self.n = View("OUT", NODE, WRITE)
-            views.append(self.n)
-            self.addData("OUT", views)
+        views = []
+        self.n = View("OUT", NODE, WRITE)
+        views.append(self.n)
+        self.addData("OUT", views)
 
-    
-        def run(self):
-            sys = self.getData("OUT")
-	    for i in range(1000):
-	    	sys.addNode(0.0,0.1,0.2)
-
-
-            
-
-
+    def run(self):
+        sys = self.getData("OUT")
+        for i in range(1000):
+            sys.addNode(0.0, 0.1, 0.2)

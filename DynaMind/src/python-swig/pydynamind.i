@@ -693,7 +693,7 @@ class DM::ViewContainer {
 		self.__features.append(feature)
 		return feature
 
-	def next(self):
+	def __next__(self):
 		"""
 
         Iterator to iterate over the features in the :class:`~pydynamind.ViewContainer` under consideration of the
@@ -1306,7 +1306,7 @@ def dm_set_double_list(feature, field_name, data):
 			if len(data) == 0:
 				return
 			buff = struct.pack('%sd' % len(data),  *data)
-			feature.SetFieldBinaryFromHexString(field_name, binascii.hexlify(buff))
+			feature.SetFieldBinaryFromHexString(field_name, binascii.hexlify(buff).decode("utf-8"))
 
 def dm_get_double_list(feature, field_name):
 			buffer = feature.GetFieldAsBinary(field_name)
