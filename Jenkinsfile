@@ -17,6 +17,7 @@ set -e'''
         junit 'test*.xml'
       }
     }
+  }
   //   stage('Deploy') {
   //           when {
   //           expression { tag "v*" && (currentBuild.result == null || currentBuild.result == 'SUCCESS' )}
