@@ -77,6 +77,6 @@ RUN	make -j 4
 ENV  PYTHONPATH {$PYTHONPATH}:/usr/local/lib
 
 WORKDIR /home/node/DynaMind-ToolBox/build/output
-RUN ./unit-test
-# RUN ./unit-test_WaterBalance
-# RUN ./unit-test_gdalmodules
+RUN ./unit-test --gtest_output="xml:/tmp/test_general.xml"
+RUN ./unit-test_WaterBalance --gtest_output="xml:/tmp/test_wb.xml"
+#RUN ./unit-test_gdalmodules --gtest_output="xml:/tmp/modules_test.xml"
