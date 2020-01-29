@@ -43,8 +43,9 @@ double GeometricAttributeWorker::percentageFilled(OGRPolygon * ogr_poly) {
         char* geo;
 
         ogr_poly->exportToWkt(&geo);
-        std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+		std::unique_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
         OGRFree(geo);
+
         SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
 
         if (!poly.toPolygon_2(false).is_simple()) {
@@ -87,7 +88,7 @@ double GeometricAttributeWorker::aspectRationBB(OGRPolygon * ogr_poly) {
         char* geo;
 
         ogr_poly->exportToWkt(&geo);
-        std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+		std::unique_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
         OGRFree(geo);
         SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
         if (!poly.toPolygon_2(false).is_simple()) {

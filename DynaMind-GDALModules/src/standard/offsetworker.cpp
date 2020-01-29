@@ -17,7 +17,7 @@ OffsetWorker::OffsetWorker(GDALOffset * module, char * wkt_poly, double offset) 
 
 void OffsetWorker::run()
 {
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(wkt_poly));
+	std::unique_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(wkt_poly));
 	OGRFree(wkt_poly); //Not needed after here
 	switch ( g->geometryTypeId() ) {
 	case SFCGAL::TYPE_POLYGON:

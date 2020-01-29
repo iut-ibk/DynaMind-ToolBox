@@ -22,7 +22,7 @@ OGRGeometry* GDALCreateBuilding::createBuilding(OGRPolygon *ogr_poly)
 	double width = this->width;
 	double height = this->height;
 
-	std::auto_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
+	std::unique_ptr<  SFCGAL::Geometry > g( SFCGAL::io::readWkt(geo));
 	OGRFree(geo); //Not needed after here
 
 	SFCGAL::Polygon poly = g->as<SFCGAL::Polygon>();
