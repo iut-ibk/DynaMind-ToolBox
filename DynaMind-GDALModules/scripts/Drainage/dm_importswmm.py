@@ -376,8 +376,6 @@ class DM_ImportSWMM(Module):
 
         ress = results["[CONDUITS]"]
         counter = 0
-        c_weirs = results["[WEIRS]"]
-        print c_weirs
         for c in ress:
             counter += 1
             vals = ress[c]
