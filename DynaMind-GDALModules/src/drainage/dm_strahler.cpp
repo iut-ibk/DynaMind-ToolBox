@@ -57,20 +57,25 @@ void DM_Strahler::getNext(long node_id, long current_strahler, std::set<long> & 
 		long next = e.first;
 		if (change_next) {
 			if (strahler_id[edge] == current_strahler) {
-				// DM::Logger(DM::Error) << "increase strahler " << current_strahler << " " << strahler_id[edge] << " " << edge << " " << node_id;
+				DM::Logger(DM::Debug) << "increase strahler " << current_strahler << " " << strahler_id[edge] << " " << edge << " " << node_id;
 				current_strahler++;
 			} else if(strahler_id[edge] > current_strahler){
-				// DM::Logger(DM::Error) << "use strahler " << current_strahler << " " << strahler_id[edge] << " " << edge << " " << node_id;
+				DM::Logger(DM::Debug) << "use strahler " << current_strahler << " " << strahler_id[edge] << " " << edge << " " << node_id;
 				current_strahler = strahler_id[edge];
 			}
 		}
+
+//		if (strahler_id[edge] > current_strahler){
+//			current_strahler = strahler_id[edge];
+//			change_next = true;
+//		}
+
 		strahler_id[edge] = current_strahler;
 		if (g_counter > 1 && !change_next) {
-			//DM::Logger(DM::Error) << "Break";
-			continue;
+			//continue;
 		}
 		if (visted.find(edge) != visted.end()) {
-			DM::Logger(DM::Error) << "Break Loop";
+			DM::Logger(DM::Debug) << "Break Loop";
 			continue;
 		}
 		visted.insert(edge);
