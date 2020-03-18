@@ -1,10 +1,11 @@
 import pycd3 as cd3
 
 class Lot:
-    def __init__(self, name, cd3_instance: cd3.CityDrain3, lot_detail: {}, rainfall: []):
+    def __init__(self, name, cd3_instance: cd3.CityDrain3, lot_detail: {}, standard_values: {} ):
+
         self._id = name
         self._cd3 = cd3_instance
-        self._rainfall = rainfall
+        self._standard_values = standard_values
         self._potable_demand = None
         self._non_potable_demand = None
         self._roof_runoff = None
@@ -21,8 +22,9 @@ class Lot:
 
         self._total_demand = None
         self._total_non_potable_demand = None
-
-
+        self._total_outdoor_demand = None
+        self._total_evapotranspiration = None
+        self._total_infiltration = None
 
         # Assume I'll be able to get all parameters for database
         self._create_lot(lot_detail)
@@ -30,6 +32,10 @@ class Lot:
     @property
     def potable_demand(self) -> ():
         return self._total_potable_demand
+
+    @property
+    def outdoor_demand(self) -> ():
+        return self._total_outdoor_demand
 
     @property
     def non_potable_demand(self) -> ():
@@ -47,6 +53,14 @@ class Lot:
     def grey_water(self) -> ():
         return self._total_grey_water
 
+    @property
+    def infiltration(self) -> ():
+        return self._total_infiltration
+
+    @property
+    def evapotranspiration(self) -> ():
+        return self._total_evapotranspiration
+
     def _create_lot(self, lot: {}):
         """
         What happens in the lot stays in the lot
@@ -63,8 +77,11 @@ class Lot:
         """
         self._create_demand_node(lot["persons"])
 
-        self._create_roof_runoff(lot["roof_area"])
-        self._create_impervious_runoff(lot["impervious_area"])
+        self._roof_runoff = self._create_stream("roof_runoff", lot["roof_area"])
+        self._impervious_runoff = self._create_stream("surface_runoff", lot["impervious_area"])
+        self._outdoor_demand = self._create_stream("outdoor_demand", lot["irrigated_garden_area"])
+        self._evapotranspiration = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])
+        self._infiltration = self._create_stream("actual_infiltration", lot["irrigated_garden_area"])
 
         # This and reconnected
         if "storages" in lot:
@@ -77,11 +94,19 @@ class Lot:
 
         self._total_sewerage = self._sum_streams([getattr(self, s) for s in lot["sewerage"]])
 
+        self._total_evapotranspiration = self._sum_streams([self._evapotranspiration])
+        #
+        self._total_infiltration = self._sum_streams([self._infiltration])
+
         if "grey_water" in lot:
             self._total_grey_water = self._sum_streams([getattr(self, s) for s in lot["grey_water"]])
 
         if "non_potable_demand" in lot:
             self._total_non_potable_demand = self._sum_streams([getattr(self, s) for s in lot["non_potable_demand"]])
+
+        if "outdoor_demand" in lot:
+            self._total_outdoor_demand = self._sum_streams(
+                [getattr(self, s) for s in lot["outdoor_demand"]])
 
     def _create_const_flow(self, value: float) -> cd3.Flow:
         f = cd3.Flow()
@@ -127,17 +152,11 @@ class Lot:
         self._grey_water = list((consumer, "out_g"))
         self._black_water = list((consumer, "out_s"))
 
-    def _create_roof_runoff(self, area):
-        roof_runoff = self._cd3.add_node("SourceVector")
-        roof_runoff.setDoubleVectorParameter("source", self._rainfall)
-        roof_runoff.setDoubleParameter("factor", area)
-        self._roof_runoff = list((roof_runoff, "out"))
-
-    def _create_impervious_runoff(self, area):
-        impervious_runoff = self._cd3.add_node("SourceVector")
-        impervious_runoff.setDoubleVectorParameter("source", self._rainfall)
-        impervious_runoff.setDoubleParameter("factor", area)
-        self._impervious_runoff = list((impervious_runoff, "out"))
+    def _create_stream(self, stream, area):
+        source_vector = self._cd3.add_node("SourceVector")
+        source_vector.setDoubleVectorParameter("source", self._standard_values[stream])
+        source_vector.setDoubleParameter("factor", area)
+        return list((source_vector, "out"))
 
     def _sum_streams(self, streams: []) -> list:
         mixer = self._cd3.add_node("Mixer")
