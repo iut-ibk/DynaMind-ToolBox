@@ -13,6 +13,7 @@ public:
 	int f(ptime time, int dt);
 private:
 	int counter;
+	double factor;
 	Flow out;
 	std::vector<double> source;
 };

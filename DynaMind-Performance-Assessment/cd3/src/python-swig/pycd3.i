@@ -597,6 +597,7 @@ public:
 
 	void addNativePlugin(const std::string &plugin_path);
 	void addPythonPlugin(const std::string &script);
+	void addToPythonPath(const std::string &p);
 
 
 };
@@ -817,6 +818,14 @@ class CityDrain3:
 		:return: None
 		"""
 		self.node_registry.addPythonPlugin(file_name)
+
+	def register_python_path(self, path):
+		"""
+		:type start_time: str
+		:param file_name: file name
+		:return: None
+		"""
+		self.node_registry.addToPythonPath(path)
 
 	def set_simulation_parameter(self, start_time, end_time, delta_t):
 		"""

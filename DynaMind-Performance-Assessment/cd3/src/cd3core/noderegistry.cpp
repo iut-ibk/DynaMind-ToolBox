@@ -39,7 +39,7 @@ using namespace boost;
 #ifndef PYTHON_DISABLED
 std::vector<std::string> NodeRegistry::python_paths = std::vector<std::string>();
 PyObject *NodeRegistry::main_namespace = 0;
-void NodeRegistry::addToPythonPath(std::string p) {
+void NodeRegistry::addToPythonPath(const std::string &p) {
 	NodeRegistry::python_paths.push_back(p);
 }
 #endif
