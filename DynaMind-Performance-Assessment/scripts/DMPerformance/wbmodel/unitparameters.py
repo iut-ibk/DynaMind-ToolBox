@@ -2,7 +2,7 @@ import logging
 import pycd3 as cd3
 
 class UnitParameters:
-    def __init__(self, start_date, end_date):
+    def __init__(self, start_date, end_date, library_path):
         """
         Calculate standard values for per m2
         This includes
@@ -23,6 +23,7 @@ class UnitParameters:
 
         self._rain_data = self._load_rainfall()
         self._evapotranspiration = self._load_eta()
+        self._library_path = library_path
 
         lot_area = 500
         perv_area_fra = 0.2
@@ -121,8 +122,9 @@ class UnitParameters:
         return self._standard_values
 
     def get_default_folder(self):
+        return self._library_path
         #self.getSimulationConfig().getDefaultLibraryPath()
-        return "/Users/christianurich/Documents/dynamind/build/output/"
+        # return "/Users/christianurich/Documents/dynamind/build/output/"
 
     def _load_rainfall(self):
         with open('/Users/christianurich/Documents/dynamind/DynaMind-ToolBox/Data/Raindata/melb_rain_24.ixx') as f:

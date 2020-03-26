@@ -1,21 +1,23 @@
 import pycd3 as cd3
 import logging
 
-from . import Lot, TransferNode, UnitParameters
+from . import Lot, TransferNode, UnitParameters, Streams
 
 class WaterCycleModel():
-    def __init__(self, nodes):
+    def __init__(self, lots: {}, library_path = None):
         self._standard_values = {}
         self._flow_probes = {}
-        self.number_of_nodes = nodes
         self.start_date = "2001-Jan-01 00:00:00"
         self.end_date = "2002-Jan-01 00:00:00"
+        self._library_path = library_path
+        self._nodes = {}
 
         self._standard_values = UnitParameters(self.start_date,
-                                               self.end_date).unit_values
-        self.water_balance_model(nodes)
+                                               self.end_date, self._library_path).unit_values
+        self._lots = lots
+        self.water_balance_model()
 
-    def water_balance_model(self, nodes):
+    def water_balance_model(self):
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
 
         self._cd3 = cd3.CityDrain3(
@@ -30,47 +32,28 @@ class WaterCycleModel():
         self._cd3.register_native_plugin(
             self.get_default_folder() + "/CD3Modules/libdance4water-nodes")
 
-        self._lots = []
-        for i in range(nodes):
-            self._lots.append(self._create_lot(i))
+
         self._networks = {}
-        self._networks["potable_demand"] = self._create_catchment_network("potable_demand", "p1", "p1_total",
-                                                                          "p1_total")
 
-        self._networks["non_potable_demand"] = self._create_catchment_network("non_potable_demand", "np1", "np1_total",
-                                                                              "np1_total")
+        for s in Streams:
+            self._networks[s] = self._create_catchment_network(s, str(s), str(s) + "_total",
+                                                                          str(s) + "_total")
 
-        self._networks["grey_water"] = self._create_catchment_network("grey_water", "gw1", "gw1_total", "gw1_total")
-        self._networks["sewerage"] = self._create_catchment_network("sewerage", "sewerage1", "sewerage1_total",
-                                                                    "sewerage1_total")
-
-        self._networks["outdoor_demand"] = self._create_catchment_network("outdoor_demand", "od1", "od1_total",
-                                                                              "od1_total")
-
-        self._networks["storm_water_runoff"] = self._create_catchment_network("storm_water_runoff", "sw1", "sw1_total",
-                                                                              "sw1_total")
-
-        self._networks["evapotranspiration"] = self._create_catchment_network("evapotranspiration", "e1", "e1_total",
-                                                                              "e1_total")
-
-        self._networks["infiltration"] = self._create_catchment_network("infiltration", "if1", "if1_total",
-                                                                              "if1_total")
         self._storages = [
-            {
-                "id": "stormwater_recycling",
-                "demand": "od1",
-                "inflow": "sw1",
-                "volume": 10.
-            },
-            {
-                "id": "stormwater_recycling",
-                "demand": "od1",
-                "inflow": "gw1",
-                "volume": 10.
-            }
+            # {
+            #     "id": "stormwater_recycling",
+            #     "demand": "od1",
+            #     "inflow": "sw1",
+            #     "volume": 10.
+            # },
+            # {
+            #     "id": "stormwater_recycling",
+            #     "demand": "od1",
+            #     "inflow": "gw1",
+            #     "volume": 10.
+            # }
         ]
         # Needs unique ID
-        self._nodes = {}
         self._build_network()
         self._cd3.init_nodes()
         self._cd3.start(self.start_date)
@@ -85,37 +68,22 @@ class WaterCycleModel():
                 logging.info(
                     f"{key} {[format(v, '.2f') for v in self._flow_probes[key].get_state_value_as_double_vector('Flow')]}")
 
-    def _create_lot(self, id):
-        return {
-            "id": id,
-            "persons": 5,
-            "roof_area": 200,
-            "impervious_area": 200,
-            "irrigated_garden_area": 600,
-            "potable_demand":[ "_potable_demand"],
-            "non_potable_demand": ["_non_potable_demand"],
-            "outdoor_demand": ["_outdoor_demand"],
-            "sewerage": ["_black_water"],
-            "grey_water": ["_grey_water"],
-            "storages": [{"inflow": "_roof_runoff", "demand": "_outdoor_demand", "volume": 5},
-                         {"inflow": "_grey_water", "demand": "_outdoor_demand", "volume": 0.5}]
-        }
 
     def _create_catchment_network(self, stream, catchment_id, outfall_id, reporting_node):
         edges = []
-        for l in self._lots:
-            edges.append((l["id"], catchment_id))
+        for id, lot in self._lots.items():
+            edges.append((id, catchment_id))
         edges.append((catchment_id, outfall_id))
         return {
-        "stream": stream,
-        "edges": edges,
-        "reporting_node": reporting_node,
+            "stream": stream,
+            "edges": edges,
+            "reporting_node": reporting_node,
         }
 
     def _build_network(self):
 
-        for l in self._lots:
-            self._nodes[l["id"]] = Lot(str(l["id"]), self._cd3, l, self._standard_values)
+        for lot_id, lot in self._lots.items():
+            self._nodes[lot_id] = Lot(str(lot_id), self._cd3, lot, self._standard_values)
 
         for name, network in self._networks.items():
             self._create_nodes(network)
@@ -152,7 +120,7 @@ class WaterCycleModel():
             if type(n_start) is TransferNode:
                 outflow = getattr(n_start, "out_port")
             else:
-                outflow = getattr(n_start, stream)
+                outflow = n_start.get_stream(stream)
             #Careful only call once because it increments the ports
             inflow = n_end.in_port
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
@@ -160,6 +128,6 @@ class WaterCycleModel():
         self._flow_probes[stream] = self._nodes[network["reporting_node"]].add_flow_probe()
 
     def get_default_folder(self):
-        #self.getSimulationConfig().getDefaultLibraryPath()
-        return "/Users/christianurich/Documents/dynamind/build/output/"
+        return self._library_path
+
 
