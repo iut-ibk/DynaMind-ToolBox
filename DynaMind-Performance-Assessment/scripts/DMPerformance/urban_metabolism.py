@@ -19,6 +19,7 @@ class UrbanMetabolismModel(Module):
 
     def __init__(self):
         Module.__init__(self)
+        self._templates = {}
         self.setIsGDALModule(True)
 
     def init(self):
@@ -28,9 +29,12 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("impervious_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("irrigated_garden_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
-        self.lot.addAttribute("wb_template_id", DM.Attribute.INT, DM.READ)
+        self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
 
-        view_register = [self.lot]
+        self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
+        self.wb_lot_template.addAttribute("potable_demand_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
+
+        view_register = [self.lot,self.wb_lot_template]
 
         self.registerViewContainers(view_register)
 
@@ -42,6 +46,12 @@ class UrbanMetabolismModel(Module):
     def run(self):
         lots = {}
         # collect all lot data
+        self._templates = {}
+        for template in self.wb_lot_template:
+            template : ogr.Feature
+            potable_demand = dm_get_double_list(template, "potable_demand_stream" )
+
+            self._templates[template.GetFID()] = { "streams": {Streams.potable_demand: [ LotStream(s) for s in potable_demand ]}}
         for l in self.lot:
             l : ogr.Feature
             lot = {
@@ -49,11 +59,17 @@ class UrbanMetabolismModel(Module):
                 "roof_area": l.GetFieldAsDouble("roof_area"),
                 "impervious_area": l.GetFieldAsDouble("impervious_area"),
                 "irrigated_garden_area": l.GetFieldAsDouble("irrigated_garden_area"),
-                "potable_demand": [ "_potable_demand"],
-                "non_potable_demand": ["_non_potable_demand"],
-                "outdoor_demand": ["_outdoor_demand"],
-                "sewerage": ["_black_water"],
-                "grey_water": ["_grey_water"]
+                "streams":
+                    self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"]
+                    # Streams.potable_demand: [LotStream.potable_demand],
+                    # Streams.non_potable_demand: [LotStream.non_potable_demand],
+                    # Streams.outdoor_demand: [LotStream.outdoor_demand],
+                    # Streams.sewerage: [LotStream.black_water],
+                    # Streams.grey_water: [LotStream.grey_water],
+                    # Streams.stormwater_runoff: [LotStream.roof_runoff, LotStream.impervious_runoff],
+                    # Streams.infiltration: [LotStream.infiltration],
+                    # Streams.evapotranspiration: [LotStream.evapotranspiration]
+
             }
 
             lots[l.GetFID()] = lot
@@ -77,16 +93,16 @@ def _create_lot(id):
             "irrigated_garden_area": 200,
             "streams": {
                 Streams.potable_demand: [LotStream.potable_demand],
-                Streams.non_potable_demand: [LotStream.non_potable_demand],
-                Streams.outdoor_demand: [LotStream.outdoor_demand],
-                Streams.sewerage: [LotStream.black_water],
-                Streams.grey_water: [LotStream.grey_water],
-                Streams.stormwater_runoff: [LotStream.roof_runoff, LotStream.impervious_runoff],
-                Streams.infiltration: [LotStream.infiltration],
-                Streams.evapotranspiration: [LotStream.evapotranspiration]
-        },
-            "storages": [{"inflow": LotStream.roof_runoff, "demand": LotStream.outdoor_demand, "volume": 5},
-                         {"inflow": LotStream.grey_water, "demand": LotStream.non_potable_demand, "volume": 0.5}]
+                # Streams.non_potable_demand: [LotStream.non_potable_demand],
+                # Streams.outdoor_demand: [LotStream.outdoor_demand],
+                # Streams.sewerage: [LotStream.black_water],
+                # Streams.grey_water: [LotStream.grey_water],
+                # Streams.stormwater_runoff: [LotStream.roof_runoff, LotStream.impervious_runoff],
+                # Streams.infiltration: [LotStream.infiltration],
+                # Streams.evapotranspiration: [LotStream.evapotranspiration]
+        }
+            # "storages": [{"inflow": LotStream.roof_runoff, "demand": LotStream.outdoor_demand, "volume": 5},
+            #              {"inflow": LotStream.grey_water, "demand": LotStream.non_potable_demand, "volume": 0.5}]
         }
 
 

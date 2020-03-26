@@ -61,12 +61,15 @@ class WaterCycleModel():
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
-            logging.info(
-                f"{key} {format(sum(self._flow_probes[key].get_state_value_as_double_vector('Flow')), '.2f')}")
-
-            if timeseries:
+            try:
                 logging.info(
-                    f"{key} {[format(v, '.2f') for v in self._flow_probes[key].get_state_value_as_double_vector('Flow')]}")
+                    f"{key} {format(sum(self._flow_probes[key].get_state_value_as_double_vector('Flow')), '.2f')}")
+
+                if timeseries:
+                    logging.info(
+                        f"{key} {[format(v, '.2f') for v in self._flow_probes[key].get_state_value_as_double_vector('Flow')]}")
+            except:
+                pass
 
 
     def _create_catchment_network(self, stream, catchment_id, outfall_id, reporting_node):
@@ -121,6 +124,8 @@ class WaterCycleModel():
                 outflow = getattr(n_start, "out_port")
             else:
                 outflow = n_start.get_stream(stream)
+            if not outflow:
+                return
             #Careful only call once because it increments the ports
             inflow = n_end.in_port
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
