@@ -1312,7 +1312,7 @@ def dm_get_double_list(feature, field_name):
 			buffer = feature.GetFieldAsBinary(field_name)
 			if not buffer:
 				return []
-			floats = struct.unpack('%sd' % (len(buffer) / 8) , buffer)
+			floats = struct.unpack('%sd' % int(len(buffer) / 8) , buffer)
 			return floats
 
 %}
