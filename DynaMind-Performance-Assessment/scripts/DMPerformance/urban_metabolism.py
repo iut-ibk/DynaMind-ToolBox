@@ -20,6 +20,7 @@ class UrbanMetabolismModel(Module):
     def __init__(self):
         Module.__init__(self)
         self._templates = {}
+        self._storages = {}
         self.setIsGDALModule(True)
 
     def init(self):
@@ -33,15 +34,20 @@ class UrbanMetabolismModel(Module):
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
         self.wb_lot_template.addAttribute("potable_demand_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
+        self.wb_lot_template.addAttribute("stormwater_runoff_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
 
-        view_register = [self.lot,self.wb_lot_template]
+        self.wb_storages = ViewContainer('wb_storages', DM.COMPONENT, DM.READ)
+        self.wb_storages.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
+        self.wb_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
+        self.wb_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
+        # self.wb_storages.addAttribute("type", DM.Attribute.STRING, DM.READ)
+        self.wb_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
+
+
+
+        view_register = [self.lot, self.wb_lot_template, self.wb_storages]
 
         self.registerViewContainers(view_register)
-
-    # should lotscale be considered as part of the templates?
-
-    # Lot template
-
 
     def run(self):
         lots = {}
@@ -49,28 +55,44 @@ class UrbanMetabolismModel(Module):
         self._templates = {}
         for template in self.wb_lot_template:
             template : ogr.Feature
-            potable_demand = dm_get_double_list(template, "potable_demand_stream" )
+            potable_demand = dm_get_double_list(template, "potable_demand_stream")
+            stormwater_runoff = dm_get_double_list(template, "stormwater_runoff_stream")
+            self._templates[template.GetFID()] = { "streams": {Streams.potable_demand: [ LotStream(s) for s in potable_demand ],
+                                                               Streams.stormwater_runoff:  [ LotStream(s) for s in stormwater_runoff ]}}
 
-            self._templates[template.GetFID()] = { "streams": {Streams.potable_demand: [ LotStream(s) for s in potable_demand ]}}
+        self.wb_lot_template.finalise()
+
+        for s in self.wb_storages:
+            s : ogr.Feature
+            template_id = s.GetFieldAsInteger("wb_lot_template_id")
+
+            if s not in self._storages:
+                self._storages[template_id] = []
+
+            storage = {"inflow" : LotStream(s.GetFieldAsInteger("inflow_stream_id")),
+                       "demand" : LotStream(s.GetFieldAsInteger("demand_stream_id")),
+                       "volume" : s.GetFieldAsInteger("volume")}
+
+            storages = self._storages[template_id]
+            storages.append(storage)
+        print(self._storages)
         for l in self.lot:
             l : ogr.Feature
+
+            if l.GetFieldAsInteger("wb_lot_template_id") not in self._storages:
+                self._storages[l.GetFieldAsInteger("wb_lot_template_id")] = []
+
             lot = {
                 "persons": l.GetFieldAsDouble("persons"),
                 "roof_area": l.GetFieldAsDouble("roof_area"),
                 "impervious_area": l.GetFieldAsDouble("impervious_area"),
                 "irrigated_garden_area": l.GetFieldAsDouble("irrigated_garden_area"),
                 "streams":
-                    self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"]
-                    # Streams.potable_demand: [LotStream.potable_demand],
-                    # Streams.non_potable_demand: [LotStream.non_potable_demand],
-                    # Streams.outdoor_demand: [LotStream.outdoor_demand],
-                    # Streams.sewerage: [LotStream.black_water],
-                    # Streams.grey_water: [LotStream.grey_water],
-                    # Streams.stormwater_runoff: [LotStream.roof_runoff, LotStream.impervious_runoff],
-                    # Streams.infiltration: [LotStream.infiltration],
-                    # Streams.evapotranspiration: [LotStream.evapotranspiration]
+                    self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
+                "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
 
             }
+
 
             lots[l.GetFID()] = lot
 

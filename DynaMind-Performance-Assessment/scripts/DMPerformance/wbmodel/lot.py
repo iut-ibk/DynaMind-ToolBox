@@ -77,16 +77,18 @@ class Lot:
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])
         self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", lot["irrigated_garden_area"])
 
-        # Setup Streams
-        for stream_id in self._external_streams:
-            if stream_id in lot["streams"]:
-                self._external_streams[stream_id] = self._sum_streams(
-                    [self._internal_streams[s] for s in lot["streams"][stream_id]])
+
 
         # This and reconnected
         if "storages" in lot:
             for s in lot["storages"]:
                 self._add_storage(s)
+
+        # Setup Streams
+        for stream_id in self._external_streams:
+            if stream_id in lot["streams"]:
+                self._external_streams[stream_id] = self._sum_streams(
+                    [self._internal_streams[s] for s in lot["streams"][stream_id]])
 
     def _create_const_flow(self, value: float) -> cd3.Flow:
         f = cd3.Flow()
