@@ -2,7 +2,6 @@ import sys
 import logging
 import time
 
-# sys.path.insert(0, "/Users/christianurich/Documents/dynamind/build/output/")
 
 from pydynamind import *
 # from osgeo import ogr
@@ -31,6 +30,7 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("irrigated_garden_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
+        self.lot.addAttribute("wb_sub_catchment_id", DM.Attribute.INT, DM.READ)
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
         self.wb_lot_template.addAttribute("potable_demand_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
@@ -40,13 +40,37 @@ class UrbanMetabolismModel(Module):
         self.wb_storages.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
-        # self.wb_storages.addAttribute("type", DM.Attribute.STRING, DM.READ)
         self.wb_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
 
+        self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
+        self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
+
+        self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
+        self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
+
+        self.wb_sub_storages = ViewContainer('wb_sub_storages', DM.COMPONENT, DM.READ)
+        self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
+        self.wb_sub_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
+        self.wb_sub_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
+
+        self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
+        self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
+        self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
 
 
-        view_register = [self.lot, self.wb_lot_template, self.wb_storages]
 
+        # need multiple streams per lot
+        # lot can be part of multiple sub catchment (1 for each stream)
+        # key = (sub_catchment, stream)
+
+
+        view_register = [self.lot,
+                         self.wb_lot_template,
+                         self.wb_storages,
+                         self.wb_sub_storages,
+                         self.wb_sub_catchments,
+                         self.wb_lot_to_sub_catchments]
+        #
         self.registerViewContainers(view_register)
 
     def run(self):
@@ -62,6 +86,23 @@ class UrbanMetabolismModel(Module):
 
         self.wb_lot_template.finalise()
 
+        sub_catchments = {}
+        sub_catchments_lots = {}
+
+        for s in self.wb_sub_catchments:
+            s: ogr.Feature
+            sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
+            sub_catchments_lots[s.GetFID()] = []
+        self.wb_sub_catchments.finalise()
+
+        for lot_sub_catchments in self.wb_lot_to_sub_catchments:
+            lot_sub_catchments: ogr.Feature
+            parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
+            wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
+
+            sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
+        self.wb_lot_to_sub_catchments.finalise()
+
         for s in self.wb_storages:
             s : ogr.Feature
             template_id = s.GetFieldAsInteger("wb_lot_template_id")
@@ -75,7 +116,17 @@ class UrbanMetabolismModel(Module):
 
             storages = self._storages[template_id]
             storages.append(storage)
-        print(self._storages)
+        self.wb_storages.finalise()
+
+        wb_sub_storages = {}
+        for s in self.wb_sub_storages:
+            s: ogr.Feature
+            storage = {"inflow" : "sub_" + str(s.GetFieldAsInteger("inflow_stream_id")),
+                       "demand" : "sub_" + str(s.GetFieldAsInteger("demand_stream_id")),
+                       "volume" : s.GetFieldAsInteger("volume")}
+            wb_sub_storages[s.GetFID()] = storage
+        self.wb_sub_storages.finalise()
+
         for l in self.lot:
             l : ogr.Feature
 
@@ -91,12 +142,12 @@ class UrbanMetabolismModel(Module):
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
                 "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
 
-            }
 
+            }
 
             lots[l.GetFID()] = lot
 
-        wb = WaterCycleModel(lots=lots, library_path=self.getSimulationConfig().getDefaultLibraryPath())
+        wb = WaterCycleModel(lots=lots, sub_catchments=sub_catchments, wb_lot_to_sub_catchments=sub_catchments_lots, wb_sub_storages=wb_sub_storages, library_path=self.getSimulationConfig().getDefaultLibraryPath())
 
         self.lot.finalise()
 
@@ -129,13 +180,14 @@ def _create_lot(id):
 
 
 if __name__ == '__main__':
+    sys.path.insert(0, "/Users/christianurich/Documents/dynamind/build/output/")
+
     for s in [10, 100]:
         start = time.time()
         lots = {}
         for i in range(s):
             lots[i] = (_create_lot(i))
         WaterCycleModel(lots=lots, library_path="/Users/christianurich/Documents/dynamind/build/output/")
-
         print(s, time.time() - start)
 
 
