@@ -46,13 +46,12 @@ class WaterCycleModel():
         # lot ->
         for sub_id, stream in self._sub_catchments.items():
             sub_networks["sub_" + str(sub_id)] = self._create_sub_catchment_network(sub_id, stream,  "sub_" + str(sub_id) + "_" + str(stream) + "_total")
-            # self._networks[]
-        # print(sub_networks)
+
         self._networks = sub_networks
         # for s in Streams:
         #     self._networks[s] = self._create_catchment_network(s, str(s), str(s) + "_total",
         #                                                                   str(s) + "_total")
-        print(self._networks)
+        # print(self._networks)
         # self._storages = [
         #     # {
         #     #     "id": "stormwater_recycling",
@@ -69,7 +68,6 @@ class WaterCycleModel():
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
-            print(key)
             try:
                 logging.info(
                     f"{key} {format(sum(self._flow_probes[key].get_state_value_as_double_vector('Flow')), '.2f')}")
@@ -79,6 +77,9 @@ class WaterCycleModel():
                         f"{key} {[format(v, '.2f') for v in self._flow_probes[key].get_state_value_as_double_vector('Flow')]}")
             except:
                 pass
+
+    def get_sub_daily_flow(self, sub_id):
+        return self._flow_probes["sub_" + str(sub_id)].get_state_value_as_double_vector('Flow')
 
     def _create_sub_catchment_network(self, sub_id, stream, reporting_node):
         edges = []
@@ -120,7 +121,6 @@ class WaterCycleModel():
         for name, network in self._networks.items():
             self._create_network(name, network)
 
-
     def _create_storage(self, storage):
         demand_port = self._nodes[storage["inflow"]].add_storage(storage)
         self._nodes[storage["demand"]].link_storage(demand_port)
@@ -154,7 +154,7 @@ class WaterCycleModel():
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
 
         self._flow_probes[name] = self._nodes[network["reporting_node"]].add_flow_probe()
-        print(self._flow_probes)
+        # print(self._flow_probes)
 
     def get_default_folder(self):
         return self._library_path

@@ -4,7 +4,7 @@ import time
 
 
 from pydynamind import *
-# from osgeo import ogr
+from osgeo import ogr
 
 logging.basicConfig(level=logging.INFO)
 from wbmodel import WaterCycleModel, Streams, LotStream
@@ -33,8 +33,11 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("wb_sub_catchment_id", DM.Attribute.INT, DM.READ)
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
-        self.wb_lot_template.addAttribute("potable_demand_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
-        self.wb_lot_template.addAttribute("stormwater_runoff_stream", DM.Attribute.DOUBLEVECTOR, DM.READ)
+
+        self.wb_lot_streams = ViewContainer('wb_lot_streams', DM.COMPONENT, DM.READ)
+        self.wb_lot_streams.addAttribute('wb_lot_template_id', DM.Attribute.INT, DM.READ)
+        self.wb_lot_streams.addAttribute('outflow_stream_id', DM.Attribute.INT, DM.READ)
+        self.wb_lot_streams.addAttribute('lot_stream_id', DM.Attribute.INT, DM.READ)
 
         self.wb_storages = ViewContainer('wb_storages', DM.COMPONENT, DM.READ)
         self.wb_storages.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
@@ -47,6 +50,8 @@ class UrbanMetabolismModel(Module):
 
         self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
         self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
+        self.wb_sub_catchments.addAttribute('annual_flow', DM.Attribute.DOUBLE, DM.WRITE)
+        self.wb_sub_catchments.addAttribute('daily_flow', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.wb_sub_storages = ViewContainer('wb_sub_storages', DM.COMPONENT, DM.READ)
         self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
@@ -69,20 +74,37 @@ class UrbanMetabolismModel(Module):
                          self.wb_storages,
                          self.wb_sub_storages,
                          self.wb_sub_catchments,
-                         self.wb_lot_to_sub_catchments]
+                         self.wb_lot_to_sub_catchments,
+                         self.wb_lot_streams]
         #
         self.registerViewContainers(view_register)
 
     def run(self):
         lots = {}
         # collect all lot data
+        lot_streams = {}
+
+        for s in self.wb_lot_streams:
+            s: ogr.Feature
+
+            wb_template_id = s.GetFieldAsInteger("wb_lot_template_id")
+            out_stream = Streams(s.GetFieldAsInteger("outflow_stream_id"))
+            lot_stream = LotStream(s.GetFieldAsInteger("lot_stream_id"))
+
+            if s.GetFieldAsInteger("wb_lot_template_id") not in lot_streams:
+                lot_streams[wb_template_id] = {}
+
+            if out_stream not in lot_streams[wb_template_id]:
+                lot_streams[wb_template_id][out_stream] = []
+            lot_streams[wb_template_id][out_stream].append(lot_stream)
+        self.wb_lot_streams.finalise()
+
+        # print(lot_streams)
+
         self._templates = {}
         for template in self.wb_lot_template:
             template : ogr.Feature
-            potable_demand = dm_get_double_list(template, "potable_demand_stream")
-            stormwater_runoff = dm_get_double_list(template, "stormwater_runoff_stream")
-            self._templates[template.GetFID()] = { "streams": {Streams.potable_demand: [ LotStream(s) for s in potable_demand ],
-                                                               Streams.stormwater_runoff:  [ LotStream(s) for s in stormwater_runoff ]}}
+            self._templates[template.GetFID()] = { "streams":lot_streams[template.GetFID()]}
 
         self.wb_lot_template.finalise()
 
@@ -116,7 +138,7 @@ class UrbanMetabolismModel(Module):
 
             storages = self._storages[template_id]
             storages.append(storage)
-        self.wb_storages.finalise()
+        # self.wb_storages.finalise()
 
         wb_sub_storages = {}
         for s in self.wb_sub_storages:
@@ -141,16 +163,28 @@ class UrbanMetabolismModel(Module):
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
                 "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
-
-
             }
 
             lots[l.GetFID()] = lot
-
-        wb = WaterCycleModel(lots=lots, sub_catchments=sub_catchments, wb_lot_to_sub_catchments=sub_catchments_lots, wb_sub_storages=wb_sub_storages, library_path=self.getSimulationConfig().getDefaultLibraryPath())
-
         self.lot.finalise()
 
+        wb = WaterCycleModel(lots=lots,
+                             sub_catchments=sub_catchments,
+                             wb_lot_to_sub_catchments=sub_catchments_lots,
+                             wb_sub_storages=wb_sub_storages,
+                             library_path=self.getSimulationConfig().getDefaultLibraryPath())
+
+        self.wb_sub_catchments.reset_reading()
+        for s in self.wb_sub_catchments:
+            daily_flow = wb.get_sub_daily_flow(s.GetFID())
+
+            # self.wb_sub_catchments.addAttribute('annual_flow', DM.Attribute.DOUBLE, DM.WRITE)
+            # self.wb_sub_catchments.addAttribute('daily_flow', DM.Attribute.DOUBLE, DM.WRITE)
+
+            s.SetField("annual_flow", sum(daily_flow))
+            dm_set_double_list(s, 'daily_flow', daily_flow)
+
+        self.wb_sub_catchments.finalise()
 
 def _create_lot(id):
         """
