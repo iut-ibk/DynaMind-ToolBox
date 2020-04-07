@@ -105,7 +105,7 @@ class UnitParameters:
         catchment_model.init_nodes()
         catchment_model.start(self.start_date)
         for key, probe in flow_probe.items():
-            scaling = 1 / reporting[key]["factor"]
+            scaling = 1. / reporting[key]["factor"]
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
 
         self._standard_values["rainfall"] = [v / 1000. for v in self._rain_data]
@@ -135,4 +135,4 @@ class UnitParameters:
     def _load_eta(self):
         with open(self.get_default_folder() + '/Data/Raindata/melb_eva_24.ixx') as f:
             rainfall = f.read()
-        return[float(r.split("\t")[1]) for r in rainfall.splitlines()]
+        return[float(r.split("\t")[1])/1000. for r in rainfall.splitlines()]

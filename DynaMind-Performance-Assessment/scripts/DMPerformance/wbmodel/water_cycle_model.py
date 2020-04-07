@@ -64,7 +64,7 @@ class WaterCycleModel():
         self._build_network()
         self._cd3.init_nodes()
         self._cd3.start(self.start_date)
-        self._reporting()
+        #self._reporting()
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
@@ -139,6 +139,7 @@ class WaterCycleModel():
 
     def _create_network(self, name, network):
         stream = network["stream"]
+
         for e in network["edges"]:
             n_start = self._nodes[e[0]]
             n_end = self._nodes[e[1]]

@@ -77,8 +77,6 @@ class Lot:
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])
         self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", lot["irrigated_garden_area"])
 
-
-
         # This and reconnected
         if "storages" in lot:
             for s in lot["storages"]:
@@ -126,7 +124,7 @@ class Lot:
         consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
 
         consumer.setParameter("const_flow_greywater", self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
-        consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet + taps) * l_d_to_m_s * residents))
+        consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
 
         self._internal_streams[LotStream.potable_demand] = list((consumer, "out_p"))
         self._internal_streams[LotStream.non_potable_demand] = list((consumer, "out_np"))

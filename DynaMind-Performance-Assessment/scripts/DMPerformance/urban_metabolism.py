@@ -30,7 +30,6 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("irrigated_garden_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
-        self.lot.addAttribute("wb_sub_catchment_id", DM.Attribute.INT, DM.READ)
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
 
@@ -44,9 +43,6 @@ class UrbanMetabolismModel(Module):
         self.wb_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
-
-        self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
-        self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
 
         self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
         self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
@@ -116,12 +112,11 @@ class UrbanMetabolismModel(Module):
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
         self.wb_sub_catchments.finalise()
-
+        print(sub_catchments_lots)
         for lot_sub_catchments in self.wb_lot_to_sub_catchments:
             lot_sub_catchments: ogr.Feature
             parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
             wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
-
             sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
         self.wb_lot_to_sub_catchments.finalise()
 
@@ -180,6 +175,9 @@ class UrbanMetabolismModel(Module):
 
             # self.wb_sub_catchments.addAttribute('annual_flow', DM.Attribute.DOUBLE, DM.WRITE)
             # self.wb_sub_catchments.addAttribute('daily_flow', DM.Attribute.DOUBLE, DM.WRITE)
+
+            logging.info(
+                f"{s.GetFID()} {str(Streams(s.GetFieldAsInteger('stream')))} {format(sum(daily_flow), '.2f')}")
 
             s.SetField("annual_flow", sum(daily_flow))
             dm_set_double_list(s, 'daily_flow', daily_flow)
