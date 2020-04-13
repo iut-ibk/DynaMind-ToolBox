@@ -1,6 +1,6 @@
 import pycd3 as cd3
 import logging
-
+from pydynamind import *
 from . import Lot, TransferNode, UnitParameters, Streams
 
 class WaterCycleModel():
@@ -50,18 +50,7 @@ class WaterCycleModel():
             sub_networks["sub_" + str(sub_id)] = self._create_sub_catchment_network(sub_id, stream,  "sub_" + str(sub_id) + "_" + str(stream) + "_total")
 
         self._networks = sub_networks
-        # for s in Streams:
-        #     self._networks[s] = self._create_catchment_network(s, str(s), str(s) + "_total",
-        #                                                                   str(s) + "_total")
-        # print(self._networks)
-        # self._storages = [
-        #     # {
-        #     #     "id": "stormwater_recycling",
-        #     #     "demand": "sub_1",
-        #     #     "inflow": "sub_2",
-        #     #     "volume": 10.
-        #     # }
-        # ]
+
         # Needs unique ID
         self._build_network()
         self._cd3.init_nodes()
@@ -96,6 +85,9 @@ class WaterCycleModel():
                 pass
 
     def get_sub_daily_flow(self, sub_id):
+        if "sub_" + str(sub_id) not in self._flow_probes:
+            log(f"Node not found sub_{str(sub_id)}", Warning)
+            return None
         return self._flow_probes["sub_" + str(sub_id)].get_state_value_as_double_vector('Flow')
 
     def _create_sub_catchment_network(self, sub_id, stream, reporting_node):
@@ -144,8 +136,10 @@ class WaterCycleModel():
 
     def _create_network(self, name, network):
         stream = network["stream"]
-
         for e in network["edges"]:
+            if e[0] not in self._nodes:
+                log(f"Node not found {str(e[0])}", Warning)
+                return
             n_start = self._nodes[e[0]]
             n_end = self._nodes[e[1]]
             outflow = ()

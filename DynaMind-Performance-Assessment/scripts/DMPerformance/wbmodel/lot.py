@@ -38,7 +38,6 @@ class Lot:
                  lot_detail: {},
                  standard_values: {},
                  lot_storage_reporting : {} ):
-
         self._id = id
         self._cd3 = cd3_instance
 
@@ -84,6 +83,7 @@ class Lot:
         self._create_demand_node(lot["persons"])
 
         self._internal_streams[LotStream.roof_runoff] = self._create_stream("roof_runoff", lot["roof_area"])
+        self._internal_streams[LotStream.pervious_runoff] = self._create_stream("roof_runoff", 0)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream("surface_runoff", lot["impervious_area"])
         self._internal_streams[LotStream.outdoor_demand] = self._create_stream("outdoor_demand", lot["irrigated_garden_area"])
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])

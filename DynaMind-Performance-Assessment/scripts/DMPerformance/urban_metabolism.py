@@ -176,8 +176,9 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_catchments.reset_reading()
         for s in self.wb_sub_catchments:
             daily_flow = wb.get_sub_daily_flow(s.GetFID())
-
-
+            if not daily_flow:
+                log(f"Node not found sub_{str(s.GetFID())}", Warning)
+                continue
 
             logging.info(
                 f"{s.GetFID()} {str(Streams(s.GetFieldAsInteger('stream')))} {format(sum(daily_flow), '.2f')}")
