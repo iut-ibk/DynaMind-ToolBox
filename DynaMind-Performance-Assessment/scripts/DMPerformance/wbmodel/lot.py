@@ -32,9 +32,14 @@ class Streams(Enum):
     #              {"inflow": "_grey_water", "demand": "_outdoor_demand", "volume": 0.5}]
 
 class Lot:
-    def __init__(self, name, cd3_instance: cd3.CityDrain3, lot_detail: {}, standard_values: {} ):
+    def __init__(self,
+                 id,
+                 cd3_instance: cd3.CityDrain3,
+                 lot_detail: {},
+                 standard_values: {},
+                 lot_storage_reporting : {} ):
 
-        self._id = name
+        self._id = id
         self._cd3 = cd3_instance
 
         self._standard_values = standard_values
@@ -42,14 +47,21 @@ class Lot:
         self._internal_streams = {}
         self._external_streams = {}
 
+        self._lot_storage_reporting = lot_storage_reporting
+
         for e in LotStream:
             self._internal_streams[e] = None
 
         for e in Streams:
             self._external_streams[e] = None
 
+        # Reporting stream
+        self._lot_storage_reporting[id] = {}
+
         # Assume I'll be able to get all parameters for database
         self._create_lot(lot_detail)
+
+
 
     def get_stream(self, stream):
         return self._external_streams[stream]
@@ -77,9 +89,10 @@ class Lot:
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])
         self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", lot["irrigated_garden_area"])
 
+
         # This and reconnected
         if "storages" in lot:
-            for s in lot["storages"]:
+            for idx, s in enumerate(lot["storages"]):
                 self._add_storage(s)
 
         # Setup Streams
@@ -97,6 +110,8 @@ class Lot:
 
         s = self._cd3.add_node("RWHT")
         s.setDoubleParameter("storage_volume", storage["volume"])
+
+        self._lot_storage_reporting[self._id][storage["id"]] = s
 
         demand_stream = self._internal_streams[storage["demand"]]
         inflow_stream = self._internal_streams[storage["inflow"]]

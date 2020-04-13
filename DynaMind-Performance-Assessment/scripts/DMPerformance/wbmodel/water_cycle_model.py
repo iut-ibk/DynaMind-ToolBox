@@ -18,6 +18,8 @@ class WaterCycleModel():
         self._standard_values = UnitParameters(self.start_date,
                                                self.end_date, self._library_path).unit_values
         self._lots = lots
+        self._lot_storage_reporting = {}
+        self._storage_reporting = {}
         self.water_balance_model()
 
     def water_balance_model(self):
@@ -66,6 +68,21 @@ class WaterCycleModel():
         self._cd3.start(self.start_date)
         #self._reporting()
 
+        # for key, storage in self._lot_storage_reporting.items():
+        #     for id, s in storage.items():
+        #         print(key, id, s,  sum(s.get_state_value_as_double_vector('provided_volume')))
+
+    def get_internal_storage_volumes(self, storage_id):
+        total_provided = 0
+        for key, storage in self._lot_storage_reporting.items():
+            for id, s in storage.items():
+                if id == storage_id:
+                    total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+        return total_provided
+
+    def get_storage_volumes(self, storage_id):
+        return sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
+
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
             try:
@@ -93,24 +110,11 @@ class WaterCycleModel():
             "reporting_node": reporting_node,
         }
 
-
-    def _create_catchment_network(self, stream, catchment_id, outfall_id, reporting_node):
-        edges = []
-        for id, lot in self._lots.items():
-            edges.append((id, catchment_id))
-        edges.append((catchment_id, outfall_id))
-        return {
-            "stream": stream,
-            "edges": edges,
-            "reporting_node": reporting_node,
-        }
-
     def _build_network(self):
 
         # Create lots
         for lot_id, lot in self._lots.items():
-            self._nodes[lot_id] = Lot(str(lot_id), self._cd3, lot, self._standard_values)
-
+            self._nodes[lot_id] = Lot(str(lot_id), self._cd3, lot, self._standard_values, self._lot_storage_reporting)
 
         for name, network in self._networks.items():
             self._create_nodes(network)
@@ -123,6 +127,7 @@ class WaterCycleModel():
 
     def _create_storage(self, storage):
         demand_port = self._nodes[storage["inflow"]].add_storage(storage)
+        self._storage_reporting[storage["id"]] = demand_port[0]
         self._nodes[storage["demand"]].link_storage(demand_port)
 
     def _create_nodes(self, network):
@@ -155,7 +160,6 @@ class WaterCycleModel():
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
 
         self._flow_probes[name] = self._nodes[network["reporting_node"]].add_flow_probe()
-        # print(self._flow_probes)
 
     def get_default_folder(self):
         return self._library_path

@@ -43,6 +43,7 @@ class UrbanMetabolismModel(Module):
         self.wb_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
+        self.wb_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
 
         self.wb_sub_catchments = ViewContainer('wb_sub_catchment', DM.COMPONENT, DM.READ)
         self.wb_sub_catchments.addAttribute('stream', DM.Attribute.INT, DM.READ)
@@ -53,6 +54,7 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
+        self.wb_sub_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
 
         self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
         self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
@@ -100,7 +102,7 @@ class UrbanMetabolismModel(Module):
         self._templates = {}
         for template in self.wb_lot_template:
             template : ogr.Feature
-            self._templates[template.GetFID()] = { "streams":lot_streams[template.GetFID()]}
+            self._templates[template.GetFID()] = { "streams": lot_streams[template.GetFID()]}
 
         self.wb_lot_template.finalise()
 
@@ -112,7 +114,7 @@ class UrbanMetabolismModel(Module):
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
         self.wb_sub_catchments.finalise()
-        print(sub_catchments_lots)
+
         for lot_sub_catchments in self.wb_lot_to_sub_catchments:
             lot_sub_catchments: ogr.Feature
             parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
@@ -124,25 +126,27 @@ class UrbanMetabolismModel(Module):
             s : ogr.Feature
             template_id = s.GetFieldAsInteger("wb_lot_template_id")
 
-            if s not in self._storages:
+            if template_id not in self._storages:
                 self._storages[template_id] = []
 
             storage = {"inflow" : LotStream(s.GetFieldAsInteger("inflow_stream_id")),
                        "demand" : LotStream(s.GetFieldAsInteger("demand_stream_id")),
-                       "volume" : s.GetFieldAsInteger("volume")}
+                       "volume" : s.GetFieldAsInteger("volume"),
+                       "id": s.GetFID()}
 
             storages = self._storages[template_id]
             storages.append(storage)
-        # self.wb_storages.finalise()
+
 
         wb_sub_storages = {}
         for s in self.wb_sub_storages:
             s: ogr.Feature
             storage = {"inflow" : "sub_" + str(s.GetFieldAsInteger("inflow_stream_id")),
                        "demand" : "sub_" + str(s.GetFieldAsInteger("demand_stream_id")),
-                       "volume" : s.GetFieldAsInteger("volume")}
+                       "volume" : s.GetFieldAsInteger("volume"),
+                       "id" : s.GetFID()}
             wb_sub_storages[s.GetFID()] = storage
-        self.wb_sub_storages.finalise()
+
 
         for l in self.lot:
             l : ogr.Feature
@@ -173,16 +177,28 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_sub_catchments:
             daily_flow = wb.get_sub_daily_flow(s.GetFID())
 
-            # self.wb_sub_catchments.addAttribute('annual_flow', DM.Attribute.DOUBLE, DM.WRITE)
-            # self.wb_sub_catchments.addAttribute('daily_flow', DM.Attribute.DOUBLE, DM.WRITE)
+
 
             logging.info(
                 f"{s.GetFID()} {str(Streams(s.GetFieldAsInteger('stream')))} {format(sum(daily_flow), '.2f')}")
 
             s.SetField("annual_flow", sum(daily_flow))
             dm_set_double_list(s, 'daily_flow', daily_flow)
-
         self.wb_sub_catchments.finalise()
+
+        # Write lot storages
+        self.wb_storages.reset_reading()
+        for s in self.wb_storages:
+            s : ogr.Feature
+            s.SetField("provided_volume", wb.get_internal_storage_volumes(s.GetFID()))
+
+        self.wb_storages.finalise()
+
+        self.wb_sub_storages.reset_reading()
+        for s in self.wb_sub_storages:
+            s : ogr.Feature
+            s.SetField("provided_volume", wb.get_storage_volumes(s.GetFID()))
+        self.wb_sub_storages.finalise()
 
 def _create_lot(id):
         """
