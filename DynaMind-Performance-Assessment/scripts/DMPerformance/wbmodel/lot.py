@@ -22,6 +22,7 @@ class Streams(Enum):
     stormwater_runoff = 6
     evapotranspiration = 7
     infiltration = 8
+    rainfall = 9
 
     # "potable_demand": ["_potable_demand"],
     # "non_potable_demand": ["_non_potable_demand"],
