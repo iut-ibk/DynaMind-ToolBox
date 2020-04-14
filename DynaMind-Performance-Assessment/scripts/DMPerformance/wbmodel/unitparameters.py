@@ -53,7 +53,7 @@ class UnitParameters:
         reporting = {}
         reporting["roof_runoff"] = {"port": "Collected_Water", "factor" : (lot_area * (1 - perv_area_fra ) * roof_imp_fra)}
         reporting["surface_runoff"] = {"port": "Runoff", "factor" : (lot_area * (1 - perv_area_fra ) * (1-roof_imp_fra))}
-        reporting["outdoor_demand"] = {"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
+        reporting["outdoor_demand"] = {"port": "effective_evapotranspiration", "factor" : (lot_area * ( perv_area_fra ))} #{"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["possible_infiltration"] = {"port": "Possible_Infiltration", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["actual_infiltration"] = {"port": "Actual_Infiltration", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["groundwater_infiltration"] = {"port": "groundwater_infiltration", "factor" : (lot_area * ( perv_area_fra ))}
@@ -112,11 +112,11 @@ class UnitParameters:
         self._standard_values["evapotranspiration"] = [v / 1000. for v in self._evapotranspiration]
 
         for key, values in self._standard_values.items():
-            logging.debug(
+            logging.warning(
                 f"{key} {format(sum(values), '.2f')}")
 
-            logging.debug(
-                f"{key} {[format(v, '.2f') for v in values]}")
+            # logging.warning(
+            #     f"{key} {[format(v, '.2f') for v in values]}")
 
     @property
     def unit_values(self) -> {}:
