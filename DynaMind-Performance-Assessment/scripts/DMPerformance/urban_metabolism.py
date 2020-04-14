@@ -159,6 +159,7 @@ class UrbanMetabolismModel(Module):
                 "roof_area": l.GetFieldAsDouble("roof_area"),
                 "impervious_area": l.GetFieldAsDouble("impervious_area"),
                 "irrigated_garden_area": l.GetFieldAsDouble("irrigated_garden_area"),
+                "area": l.GetFieldAsDouble("area"),
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
                 "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]

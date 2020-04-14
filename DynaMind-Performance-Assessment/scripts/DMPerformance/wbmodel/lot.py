@@ -82,13 +82,13 @@ class Lot:
         :return:
         """
         self._create_demand_node(lot["persons"])
-
+        pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
         self._internal_streams[LotStream.roof_runoff] = self._create_stream("roof_runoff", lot["roof_area"])
         self._internal_streams[LotStream.pervious_runoff] = self._create_stream("roof_runoff", 0)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream("surface_runoff", lot["impervious_area"])
         self._internal_streams[LotStream.outdoor_demand] = self._create_stream("outdoor_demand", lot["irrigated_garden_area"])
-        self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", lot["irrigated_garden_area"])
-        self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", lot["irrigated_garden_area"])
+        self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", pervious_area)
+        self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", pervious_area)
 
 
         # This and reconnected
