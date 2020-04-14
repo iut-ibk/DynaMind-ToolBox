@@ -87,7 +87,7 @@ class Lot:
         self._internal_streams[LotStream.pervious_runoff] = self._create_stream("roof_runoff", 0)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream("surface_runoff", lot["impervious_area"])
         self._internal_streams[LotStream.outdoor_demand] = self._create_stream("outdoor_demand", lot["irrigated_garden_area"])
-        self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", pervious_area)
+        self._internal_streams[LotStream.evapotranspiration] = self._create_stream("effective_evapotranspiration", pervious_area + lot["irrigated_garden_area"])
         self._internal_streams[LotStream.infiltration] = self._create_stream("actual_infiltration", pervious_area)
 
 
