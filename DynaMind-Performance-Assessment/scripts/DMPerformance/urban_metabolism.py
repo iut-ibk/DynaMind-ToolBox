@@ -25,9 +25,10 @@ class UrbanMetabolismModel(Module):
     def init(self):
         self.lot = ViewContainer('parcel', DM.COMPONENT, DM.READ)
         self.lot.addAttribute("persons", DM.Attribute.DOUBLE, DM.READ)
+        self.lot.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
-        self.lot.addAttribute("impervious_area", DM.Attribute.DOUBLE, DM.READ)
-        self.lot.addAttribute("irrigated_garden_area", DM.Attribute.DOUBLE, DM.READ)
+        self.lot.addAttribute("outdoor_imp", DM.Attribute.DOUBLE, DM.READ)
+        self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
 
@@ -97,7 +98,7 @@ class UrbanMetabolismModel(Module):
             lot_streams[wb_template_id][out_stream].append(lot_stream)
         self.wb_lot_streams.finalise()
 
-        # print(lot_streams)
+        print(lot_streams)
 
         self._templates = {}
         for template in self.wb_lot_template:
@@ -120,6 +121,7 @@ class UrbanMetabolismModel(Module):
             parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
             wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
             sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
+        print(sub_catchments_lots)
         self.wb_lot_to_sub_catchments.finalise()
 
         for s in self.wb_storages:
@@ -147,18 +149,16 @@ class UrbanMetabolismModel(Module):
                        "id" : s.GetFID()}
             wb_sub_storages[s.GetFID()] = storage
 
-
         for l in self.lot:
             l : ogr.Feature
 
             if l.GetFieldAsInteger("wb_lot_template_id") not in self._storages:
                 self._storages[l.GetFieldAsInteger("wb_lot_template_id")] = []
-
             lot = {
                 "persons": l.GetFieldAsDouble("persons"),
                 "roof_area": l.GetFieldAsDouble("roof_area"),
-                "impervious_area": l.GetFieldAsDouble("impervious_area"),
-                "irrigated_garden_area": l.GetFieldAsDouble("irrigated_garden_area"),
+                "impervious_area": l.GetFieldAsDouble("outdoor_imp"),
+                "irrigated_garden_area": l.GetFieldAsDouble("garden_area"),
                 "area": l.GetFieldAsDouble("area"),
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
@@ -167,6 +167,8 @@ class UrbanMetabolismModel(Module):
 
             lots[l.GetFID()] = lot
         self.lot.finalise()
+
+        # print(lots)
 
         wb = WaterCycleModel(lots=lots,
                              sub_catchments=sub_catchments,
@@ -178,7 +180,7 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_sub_catchments:
             daily_flow = wb.get_sub_daily_flow(s.GetFID())
             if not daily_flow:
-                log(f"Node not found sub_{str(s.GetFID())}", Warning)
+                # log(f"Node not found sub_{str(s.GetFID())}", Warning)
                 continue
 
             logging.info(
