@@ -109,7 +109,7 @@ class UnitParameters:
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
 
         self._standard_values["rainfall"] = [v / 1000. for v in self._rain_data]
-        self._standard_values["evapotranspiration"] = [v / 1000. for v in self._evapotranspiration]
+        self._standard_values["evapotranspiration"] = [v for v in self._evapotranspiration]
 
         for key, values in self._standard_values.items():
             logging.warning(

@@ -12,6 +12,7 @@ class LotStream(Enum):
     pervious_runoff = 8
     evapotranspiration = 9
     infiltration = 10
+    rainfall = 11
 
 class Streams(Enum):
     potable_demand = 1
@@ -83,6 +84,7 @@ class Lot:
         """
         self._create_demand_node(lot["persons"])
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
+        self._internal_streams[LotStream.rainfall] = self._create_stream("rainfall", lot["area"])
         self._internal_streams[LotStream.roof_runoff] = self._create_stream("roof_runoff", lot["roof_area"])
         self._internal_streams[LotStream.pervious_runoff] = self._create_stream("roof_runoff", 0)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream("surface_runoff", lot["impervious_area"])
