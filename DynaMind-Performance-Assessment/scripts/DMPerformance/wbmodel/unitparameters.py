@@ -32,33 +32,34 @@ class UnitParameters:
         horton_initial_cap = 0.09
         horton_final_cap = 0.001
         horton_decay_constant = 0.06
-        perv_soil_storage_capacity = 30
+        perv_soil_storage_capacity = 0.03
         daily_recharge_rate = 0.25
         transpiration_capacity = 7
 
         parameters = {}
         parameters["Catchment_Area_[m^2]"] = lot_area
         parameters["Fraktion_of_Pervious_Area_pA_[-]"] = perv_area_fra
-        parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - roof_imp_fra - perv_area_fra
+        parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - perv_area_fra
         parameters["Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]"] = roof_imp_fra
         parameters["Outdoor_Demand_Weighing_Factor_[-]"] = 1.0
         parameters["Initial_Infiltration_Capacity_[m/h]"] = horton_initial_cap
         parameters["Final_Infiltration_Capacity_[m/h]"] = horton_final_cap
         parameters["Decay_Constant_[1/min]"] = horton_decay_constant
-        parameters["Soil Storage Capacity in mm"] = perv_soil_storage_capacity
+        parameters["Soil Storage Capacity in m"] = perv_soil_storage_capacity
         parameters["Daily Recharge Rate"] = daily_recharge_rate
         parameters["Transpire Capacity"] = transpiration_capacity
 
 
         reporting = {}
-        reporting["roof_runoff"] = {"port": "Collected_Water", "factor" : (lot_area * (1 - perv_area_fra ) * roof_imp_fra)}
-        reporting["surface_runoff"] = {"port": "Runoff", "factor" : (lot_area * (1 - perv_area_fra ) * (1-roof_imp_fra))}
-        reporting["outdoor_demand"] = {"port": "effective_evapotranspiration", "factor" : (lot_area * ( perv_area_fra ))} #{"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
+        reporting["roof_runoff"] = {"port": "Collected_Water", "factor" : (lot_area * roof_imp_fra)}
+        reporting["impervious_runoff"] = {"port": "impervious_runoff", "factor" : (lot_area * (1 - perv_area_fra ))}
+        reporting["outdoor_demand"] = {"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))} #{"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["possible_infiltration"] = {"port": "Possible_Infiltration", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["actual_infiltration"] = {"port": "Actual_Infiltration", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["groundwater_infiltration"] = {"port": "groundwater_infiltration", "factor" : (lot_area * ( perv_area_fra ))}
-        reporting["effective_evapotranspiration"] = {"port": "effective_evapotranspiration", "factor" : (lot_area * ( perv_area_fra ))}
         reporting["previous_storage"] = {"port": "previous_storage", "factor" : (lot_area * ( perv_area_fra ))}
+        reporting["effective_evapotranspiration"] = {"port": "effective_evapotranspiration", "factor": (lot_area * (perv_area_fra))}
+        reporting["pervious_runoff"] = {"port": "pervious_runoff", "factor": (lot_area * (perv_area_fra))}
 
         # print flow
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
@@ -108,8 +109,26 @@ class UnitParameters:
             scaling = 1. / reporting[key]["factor"]
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
 
-        self._standard_values["rainfall"] = [v / 1000. for v in self._rain_data]
+        self._standard_values["rainfall"] = [v for v in self._rain_data]
         self._standard_values["evapotranspiration"] = [v for v in self._evapotranspiration]
+
+        pervious_evapotranspiration_irrigated = []
+        impervious_evapotranspiration = []
+        pervious_evapotranspiration = []
+        print(len(self._standard_values["groundwater_infiltration"]), len(self._standard_values["rainfall"]))
+        for idx, v in enumerate( self._standard_values["groundwater_infiltration"]):
+            pervious_evapotranspiration.append(self._standard_values["rainfall"][idx] - self._standard_values["pervious_runoff"][idx] - self._standard_values["groundwater_infiltration"][idx] )
+            pervious_evapotranspiration_irrigated.append(
+                self._standard_values["rainfall"][idx] - self._standard_values["pervious_runoff"][idx] -
+                self._standard_values["groundwater_infiltration"][idx] +
+                self._standard_values["outdoor_demand"][idx]
+            )
+
+            impervious_evapotranspiration.append(self._standard_values["rainfall"][idx] - self._standard_values["impervious_runoff"][idx])
+
+        self._standard_values["pervious_evapotranspiration"] = pervious_evapotranspiration
+        self._standard_values["pervious_evapotranspiration_irrigated"] = pervious_evapotranspiration_irrigated
+        self._standard_values["impervious_evapotranspiration"] = impervious_evapotranspiration
 
         for key, values in self._standard_values.items():
             logging.warning(
@@ -130,7 +149,7 @@ class UnitParameters:
     def _load_rainfall(self):
         with open(self.get_default_folder() + '/Data/Raindata/melb_rain_24.ixx') as f:
             rainfall = f.read()
-        return[float(r.split("\t")[4]) for r in rainfall.splitlines()]
+        return[float(r.split("\t")[4])/1000. for r in rainfall.splitlines()]
 
     def _load_eta(self):
         with open(self.get_default_folder() + '/Data/Raindata/melb_eva_24.ixx') as f:

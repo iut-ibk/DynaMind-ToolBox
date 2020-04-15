@@ -96,6 +96,7 @@ class WaterCycleModel():
             edges.append((lot_id, "sub_" + str(sub_id)))
         edges.append(("sub_" + str(sub_id), reporting_node))
 
+
         return {
             "stream": stream,
             "edges": edges,
