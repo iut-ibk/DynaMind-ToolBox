@@ -115,7 +115,7 @@ class UnitParameters:
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
         pervious_evapotranspiration = []
-        print(len(self._standard_values["groundwater_infiltration"]), len(self._standard_values["rainfall"]))
+        # print(len(self._standard_values["groundwater_infiltration"]), len(self._standard_values["rainfall"]))
         for idx, v in enumerate( self._standard_values["groundwater_infiltration"]):
             pervious_evapotranspiration.append(self._standard_values["rainfall"][idx] - self._standard_values["pervious_runoff"][idx] - self._standard_values["groundwater_infiltration"][idx] )
             pervious_evapotranspiration_irrigated.append(

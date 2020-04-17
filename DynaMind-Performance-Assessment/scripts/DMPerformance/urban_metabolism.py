@@ -31,6 +31,14 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
+        self.lot.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
+        for s in LotStream:
+            self.lot.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
+
+        self.wb_lot_storages=ViewContainer("wb_lot_storages", DM.COMPONENT, DM.WRITE)
+        self.wb_lot_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
+        self.wb_lot_storages.addAttribute('parcel_id', DM.Attribute.INT, DM.WRITE)
+        self.wb_lot_storages.addAttribute('storage_id', DM.Attribute.INT, DM.WRITE)
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
 
@@ -55,7 +63,7 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
-        self.wb_sub_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
+        self.wb_sub_storages.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
 
         self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
         self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
@@ -74,7 +82,8 @@ class UrbanMetabolismModel(Module):
                          self.wb_sub_storages,
                          self.wb_sub_catchments,
                          self.wb_lot_to_sub_catchments,
-                         self.wb_lot_streams]
+                         self.wb_lot_streams,
+                         self.wb_lot_storages]
         #
         self.registerViewContainers(view_register)
 
@@ -98,8 +107,6 @@ class UrbanMetabolismModel(Module):
             lot_streams[wb_template_id][out_stream].append(lot_stream)
         self.wb_lot_streams.finalise()
 
-        print(lot_streams)
-
         self._templates = {}
         for template in self.wb_lot_template:
             template : ogr.Feature
@@ -121,7 +128,6 @@ class UrbanMetabolismModel(Module):
             parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
             wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
             sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
-        print(sub_catchments_lots)
         self.wb_lot_to_sub_catchments.finalise()
 
         for s in self.wb_storages:
@@ -166,9 +172,6 @@ class UrbanMetabolismModel(Module):
             }
 
             lots[l.GetFID()] = lot
-        self.lot.finalise()
-
-        # print(lots)
 
         wb = WaterCycleModel(lots=lots,
                              sub_catchments=sub_catchments,
@@ -203,6 +206,24 @@ class UrbanMetabolismModel(Module):
             s : ogr.Feature
             s.SetField("provided_volume", wb.get_storage_volumes(s.GetFID()))
         self.wb_sub_storages.finalise()
+        self.lot.reset_reading()
+
+        for l in self.lot:
+            l.SetField("provided_volume", wb.get_internal_storage_volumes_lot(l.GetFID()))
+            l_id = l.GetFID()
+            for key, storage in wb.get_internal_storages(l_id).items():
+                s = self.wb_lot_storages.create_feature()
+                s.SetField('parcel_id', l.GetFID())
+                s.SetField('storage_id', key)
+                s.SetField('provided_volume', sum(storage.get_state_value_as_double_vector('provided_volume')))
+            for stream in LotStream:
+                l.SetField(str(stream).split(".")[1], float(wb.get_parcel_internal_stream_volumes(l.GetFID(), stream)))
+
+
+        self.lot.finalise()
+        self.wb_lot_storages.finalise()
+
+
 
 def _create_lot(id):
         """

@@ -48,8 +48,11 @@ class Lot:
 
         self._internal_streams = {}
         self._external_streams = {}
+        self._internal_report_streams = {}
 
         self._lot_storage_reporting = lot_storage_reporting
+
+        self._reporting_internal_stream = {}
 
         for e in LotStream:
             self._internal_streams[e] = None
@@ -63,11 +66,11 @@ class Lot:
         # Assume I'll be able to get all parameters for database
         self._create_lot(lot_detail)
 
-
-
     def get_stream(self, stream):
         return self._external_streams[stream]
 
+    def get_internal_stream_report(self, stream: LotStream):
+        return self._internal_streams[stream][0]
 
     def _create_lot(self, lot: {}):
         """
@@ -127,11 +130,12 @@ class Lot:
 
         self._cd3.add_connection(demand_stream[0], demand_stream[1], s, "in_np")
         self._cd3.add_connection(inflow_stream[0], inflow_stream[1], s, "in_sw")
-
-        inflow_stream[0] = s
-        inflow_stream[1] = "out_sw"
-        demand_stream[0] = s
-        demand_stream[1] = "out_np"
+        f_inflow_stream = self._add_flow_probe(s, "out_sw")
+        f_demand_stream = self._add_flow_probe(s, "out_np")
+        inflow_stream[0] = f_inflow_stream[0]
+        inflow_stream[1] = f_inflow_stream[1]
+        demand_stream[0] = f_demand_stream[0]
+        demand_stream[1] = f_demand_stream[1]
 
     def _create_demand_node(self, residents: float):
         # Produces non-potable (out_np) and potable demands (out_p)
@@ -150,17 +154,23 @@ class Lot:
         consumer.setParameter("const_flow_greywater", self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
         consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
 
-        self._internal_streams[LotStream.potable_demand] = list((consumer, "out_p"))
-        self._internal_streams[LotStream.non_potable_demand] = list((consumer, "out_np"))
+        self._internal_streams[LotStream.potable_demand] = self._add_flow_probe(consumer, "out_p")
+        self._internal_streams[LotStream.non_potable_demand] = self._add_flow_probe(consumer, "out_np")
 
-        self._internal_streams[LotStream.grey_water] = list((consumer, "out_g"))
-        self._internal_streams[LotStream.black_water] = list((consumer, "out_s"))
+        self._internal_streams[LotStream.grey_water] = self._add_flow_probe(consumer, "out_g")
+        self._internal_streams[LotStream.black_water] =self._add_flow_probe(consumer, "out_s")
+
+    def _add_flow_probe(self, out_port, port_name):
+        flow_probe = self._cd3.add_node("FlowProbe")
+        self._cd3.add_connection(out_port, port_name, flow_probe, "in")
+        return list((flow_probe, "out"))
 
     def _create_stream(self, stream, area):
         source_vector = self._cd3.add_node("SourceVector")
         source_vector.setDoubleVectorParameter("source", stream)
         source_vector.setDoubleParameter("factor", area)
-        return list((source_vector, "out"))
+        flow_probe = self._add_flow_probe(source_vector, "out")
+        return flow_probe
 
     def _sum_streams(self, streams: []) -> list:
         mixer = self._cd3.add_node("Mixer")

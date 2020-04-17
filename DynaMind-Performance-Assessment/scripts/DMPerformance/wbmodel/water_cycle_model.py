@@ -1,7 +1,7 @@
 import pycd3 as cd3
 import logging
 from pydynamind import *
-from . import Lot, TransferNode, UnitParameters, Streams
+from . import Lot, TransferNode, UnitParameters, Streams, LotStream
 
 class WaterCycleModel():
     def __init__(self, lots: {}, sub_catchments: {}, wb_lot_to_sub_catchments: {}, wb_sub_storages: {}, library_path = None):
@@ -61,6 +61,26 @@ class WaterCycleModel():
         #     for id, s in storage.items():
         #         print(key, id, s,  sum(s.get_state_value_as_double_vector('provided_volume')))
 
+    def get_internal_storage_volumes_lot(self, parcel_id):
+        total_provided=0
+        if parcel_id not in self._lot_storage_reporting:
+            return 0
+        for key, s in self._lot_storage_reporting[parcel_id].items():
+            total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+        return total_provided
+
+    def get_internal_storages(self, parcel_id):
+        if parcel_id not in self._lot_storage_reporting:
+            return {}
+        return self._lot_storage_reporting[parcel_id]
+
+    def get_parcel_internal_stream_volumes(self, parcel_id: int, lot_stream_id: LotStream):
+        lot: Lot
+        if parcel_id not in self._nodes:
+            return None
+        lot = self._nodes[parcel_id]
+        return sum(lot.get_internal_stream_report(lot_stream_id).get_state_value_as_double_vector('Flow'))
+
     def get_internal_storage_volumes(self, storage_id):
         total_provided = 0
         for key, storage in self._lot_storage_reporting.items():
@@ -96,7 +116,6 @@ class WaterCycleModel():
             edges.append((lot_id, "sub_" + str(sub_id)))
         edges.append(("sub_" + str(sub_id), reporting_node))
 
-
         return {
             "stream": stream,
             "edges": edges,
@@ -107,7 +126,7 @@ class WaterCycleModel():
 
         # Create lots
         for lot_id, lot in self._lots.items():
-            self._nodes[lot_id] = Lot(str(lot_id), self._cd3, lot, self._standard_values, self._lot_storage_reporting)
+            self._nodes[lot_id] = Lot(lot_id, self._cd3, lot, self._standard_values, self._lot_storage_reporting)
 
         for name, network in self._networks.items():
             self._create_nodes(network)
