@@ -84,14 +84,15 @@ class UrbanMetabolismModel(Module):
 
 
         view_register = [self.lot,
+                         self.wb_soil_parameters,
                          self.wb_lot_template,
                          self.wb_storages,
                          self.wb_sub_storages,
                          self.wb_sub_catchments,
                          self.wb_lot_to_sub_catchments,
                          self.wb_lot_streams,
-                         self.wb_lot_storages,
-                         self.wb_soil_parameters]
+                         self.wb_lot_storages
+                         ]
         #
         self.registerViewContainers(view_register)
 
@@ -124,6 +125,7 @@ class UrbanMetabolismModel(Module):
         self.wb_lot_streams.finalise()
 
         self._templates = {}
+
         for template in self.wb_lot_template:
             template : ogr.Feature
             self._templates[template.GetFID()] = { "streams": lot_streams[template.GetFID()]}
@@ -137,7 +139,7 @@ class UrbanMetabolismModel(Module):
             s: ogr.Feature
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
-        self.wb_sub_catchments.finalise()
+        # self.wb_sub_catchments.finalise()
 
         for lot_sub_catchments in self.wb_lot_to_sub_catchments:
             lot_sub_catchments: ogr.Feature
@@ -197,8 +199,12 @@ class UrbanMetabolismModel(Module):
                              soils=soils,
                              library_path=self.getSimulationConfig().getDefaultLibraryPath())
 
-
-
+        self.wb_soil_parameters.reset_reading()
+        for s in self.wb_soil_parameters:
+            standard = wb.get_standard_values(s.GetFID())
+            for f in UnitFlows:
+                s.SetField(str(f).split(".")[1], float(sum(standard[f])))
+        self.wb_soil_parameters.finalise()
 
         self.wb_sub_catchments.reset_reading()
         for s in self.wb_sub_catchments:
@@ -212,14 +218,6 @@ class UrbanMetabolismModel(Module):
             s.SetField("annual_flow", sum(daily_flow))
             dm_set_double_list(s, 'daily_flow', daily_flow)
         self.wb_sub_catchments.finalise()
-
-        self.wb_soil_parameters.reset_reading()
-        for s in self.wb_soil_parameters:
-            standard = wb.get_standard_values(s.GetFID())
-
-            for f in UnitFlows:
-                print(str(f).split(".")[1], float(sum(standard[f])))
-                s.SetField(str(f).split(".")[1], float(sum(standard[f])))
 
         # Write lot storages
         self.wb_storages.reset_reading()
@@ -250,7 +248,7 @@ class UrbanMetabolismModel(Module):
         self.wb_lot_storages.finalise()
 
 
-        self.wb_soil_parameters.finalise()
+
 
 
 
