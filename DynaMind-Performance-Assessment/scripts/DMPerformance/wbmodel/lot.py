@@ -2,6 +2,8 @@ import pycd3 as cd3
 from enum import Enum
 import numpy as np
 
+from .unitparameters import SoilParameters, UnitFlows
+
 class LotStream(Enum):
     potable_demand = 1
     non_potable_demand = 2
@@ -89,17 +91,17 @@ class Lot:
         self._create_demand_node(lot["persons"])
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
-        evapo = (np.array(self._standard_values["impervious_evapotranspiration"]) * (lot["roof_area"] + lot["impervious_area"]) + \
-                np.array(self._standard_values["pervious_evapotranspiration_irrigated"]) *  lot["irrigated_garden_area"] + \
-                np.array(self._standard_values["pervious_evapotranspiration"]) * (pervious_area - lot["irrigated_garden_area"])).tolist()
+        evapo = (np.array(self._standard_values[UnitFlows.impervious_evapotranspiration]) * (lot["roof_area"] + lot["impervious_area"]) + \
+                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) *  lot["irrigated_garden_area"] + \
+                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration]) * (pervious_area - lot["irrigated_garden_area"])).tolist()
 
-        self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values["rainfall"], lot["area"])
-        self._internal_streams[LotStream.roof_runoff] = self._create_stream(self._standard_values["roof_runoff"], lot["roof_area"])
-        self._internal_streams[LotStream.pervious_runoff] = self._create_stream(self._standard_values["pervious_runoff"], pervious_area)
-        self._internal_streams[LotStream.impervious_runoff] = self._create_stream(self._standard_values["impervious_runoff"], lot["impervious_area"])
-        self._internal_streams[LotStream.outdoor_demand] = self._create_stream(self._standard_values["outdoor_demand"], lot["irrigated_garden_area"])
+        self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall], lot["area"])
+        self._internal_streams[LotStream.roof_runoff] = self._create_stream(self._standard_values[UnitFlows.roof_runoff], lot["roof_area"])
+        self._internal_streams[LotStream.pervious_runoff] = self._create_stream(self._standard_values[UnitFlows.pervious_runoff], pervious_area)
+        self._internal_streams[LotStream.impervious_runoff] = self._create_stream(self._standard_values[UnitFlows.impervious_runoff], lot["impervious_area"])
+        self._internal_streams[LotStream.outdoor_demand] = self._create_stream(self._standard_values[UnitFlows.outdoor_demand], lot["irrigated_garden_area"])
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream(evapo, 1)
-        self._internal_streams[LotStream.infiltration] = self._create_stream(self._standard_values["groundwater_infiltration"], pervious_area)
+        self._internal_streams[LotStream.infiltration] = self._create_stream(self._standard_values[UnitFlows.groundwater_infiltration], pervious_area)
 
 
         # This and reconnected

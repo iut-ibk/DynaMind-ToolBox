@@ -4,7 +4,13 @@ from pydynamind import *
 from . import Lot, TransferNode, UnitParameters, Streams, LotStream
 
 class WaterCycleModel():
-    def __init__(self, lots: {}, sub_catchments: {}, wb_lot_to_sub_catchments: {}, wb_sub_storages: {}, library_path = None):
+    def __init__(self, lots: {},
+                 sub_catchments: {},
+                 wb_lot_to_sub_catchments: {},
+                 wb_sub_storages: {},
+                 soils: {},
+                 library_path=None):
+
         self._standard_values = {}
         self._flow_probes = {}
         self.start_date = "2001-Jan-01 00:00:00"
@@ -15,8 +21,11 @@ class WaterCycleModel():
         self._wb_sub_storages = wb_sub_storages
         self._wb_lot_to_sub_catchments = wb_lot_to_sub_catchments
 
-        self._standard_values = UnitParameters(self.start_date,
-                                               self.end_date, self._library_path).unit_values
+        for key, parameters in soils.items():
+            self._standard_values[key] = UnitParameters(self.start_date,
+                                                   self.end_date,
+                                                   parameters,
+                                                   self._library_path).unit_values
         self._lots = lots
         self._lot_storage_reporting = {}
         self._storage_reporting = {}
@@ -92,6 +101,9 @@ class WaterCycleModel():
     def get_storage_volumes(self, storage_id):
         return sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
 
+    def get_standard_values(self, soil_id):
+        return self._standard_values[soil_id]
+
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
             try:
@@ -126,7 +138,7 @@ class WaterCycleModel():
 
         # Create lots
         for lot_id, lot in self._lots.items():
-            self._nodes[lot_id] = Lot(lot_id, self._cd3, lot, self._standard_values, self._lot_storage_reporting)
+            self._nodes[lot_id] = Lot(lot_id, self._cd3, lot, self._standard_values[lot["soil_id"]], self._lot_storage_reporting)
 
         for name, network in self._networks.items():
             self._create_nodes(network)
