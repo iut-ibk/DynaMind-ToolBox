@@ -91,8 +91,9 @@ class Lot:
         self._create_demand_node(lot["persons"])
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
-        evapo = (np.array(self._standard_values[UnitFlows.impervious_evapotranspiration]) * (lot["roof_area"] + lot["impervious_area"]) + \
-                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) *  lot["irrigated_garden_area"] + \
+        evapo = (np.array(self._standard_values[UnitFlows.impervious_evapotranspiration]) * (lot["impervious_area"]) + \
+                np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (lot["roof_area"]) + \
+                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) * lot["irrigated_garden_area"] + \
                 np.array(self._standard_values[UnitFlows.pervious_evapotranspiration]) * (pervious_area - lot["irrigated_garden_area"])).tolist()
 
         self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall], lot["area"])

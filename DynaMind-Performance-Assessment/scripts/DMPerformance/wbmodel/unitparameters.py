@@ -33,6 +33,7 @@ class UnitFlows(Enum):
     pervious_evapotranspiration = 12
     pervious_evapotranspiration_irrigated = 13
     impervious_evapotranspiration = 14
+    roof_evapotranspiration = 15
 
 class UnitParameters:
     def __init__(self,
@@ -165,6 +166,7 @@ class UnitParameters:
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
+        roof_evapotranspiration = []
         pervious_evapotranspiration = []
 
         for idx, v in enumerate( self._standard_values[UnitFlows.groundwater_infiltration]):
@@ -181,10 +183,13 @@ class UnitParameters:
             )
 
             impervious_evapotranspiration.append(self._standard_values[UnitFlows.rainfall][idx] - self._standard_values[UnitFlows.impervious_runoff][idx])
-
+            roof_evapotranspiration.append(
+                self._standard_values[UnitFlows.rainfall][idx] - self._standard_values[UnitFlows.roof_runoff][
+                    idx])
         self._standard_values[UnitFlows.pervious_evapotranspiration] = pervious_evapotranspiration
         self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated] = pervious_evapotranspiration_irrigated
         self._standard_values[UnitFlows.impervious_evapotranspiration] = impervious_evapotranspiration
+        self._standard_values[UnitFlows.roof_evapotranspiration] = roof_evapotranspiration
 
         for key, values in self._standard_values.items():
             logging.info(
