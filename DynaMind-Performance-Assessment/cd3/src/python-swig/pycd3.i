@@ -518,6 +518,11 @@ protected:
 		return *d;
 	}
 
+	double get_state_value_as_int(std::string state) {
+		int * d = $self->getState<int>(state);
+		return *d;
+	}
+
 	std::vector<double> get_state_value_as_double_vector(std::string state) {
 		std::vector<double> * vd = $self->getState<std::vector<double> >(state);
 		return *vd;
