@@ -4,6 +4,7 @@ import numpy as np
 
 from .unitparameters import SoilParameters, UnitFlows
 
+
 class LotStream(Enum):
     potable_demand = 1
     non_potable_demand = 2
@@ -16,6 +17,7 @@ class LotStream(Enum):
     evapotranspiration = 9
     infiltration = 10
     rainfall = 11
+
 
 class Streams(Enum):
     potable_demand = 1
@@ -36,13 +38,14 @@ class Streams(Enum):
     # "storages": [{"inflow": "_roof_runoff", "demand": "_outdoor_demand", "volume": 5},
     #              {"inflow": "_grey_water", "demand": "_outdoor_demand", "volume": 0.5}]
 
+
 class Lot:
     def __init__(self,
                  id,
                  cd3_instance: cd3.CityDrain3,
                  lot_detail: {},
                  standard_values: {},
-                 lot_storage_reporting : {} ):
+                 lot_storage_reporting: {}):
         self._id = id
         self._cd3 = cd3_instance
 
@@ -92,18 +95,25 @@ class Lot:
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
         evapo = (np.array(self._standard_values[UnitFlows.impervious_evapotranspiration]) * (lot["impervious_area"]) + \
-                np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (lot["roof_area"]) + \
-                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) * lot["irrigated_garden_area"] + \
-                np.array(self._standard_values[UnitFlows.pervious_evapotranspiration]) * (pervious_area - lot["irrigated_garden_area"])).tolist()
+                 np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (lot["roof_area"]) + \
+                 np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) * lot[
+                     "irrigated_garden_area"] + \
+                 np.array(self._standard_values[UnitFlows.pervious_evapotranspiration]) * (
+                             pervious_area - lot["irrigated_garden_area"])).tolist()
 
-        self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall], lot["area"])
-        self._internal_streams[LotStream.roof_runoff] = self._create_stream(self._standard_values[UnitFlows.roof_runoff], lot["roof_area"])
-        self._internal_streams[LotStream.pervious_runoff] = self._create_stream(self._standard_values[UnitFlows.pervious_runoff], pervious_area)
-        self._internal_streams[LotStream.impervious_runoff] = self._create_stream(self._standard_values[UnitFlows.impervious_runoff], lot["impervious_area"])
-        self._internal_streams[LotStream.outdoor_demand] = self._create_stream(self._standard_values[UnitFlows.outdoor_demand], lot["irrigated_garden_area"])
+        self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall],
+                                                                         lot["area"])
+        self._internal_streams[LotStream.roof_runoff] = self._create_stream(
+            self._standard_values[UnitFlows.roof_runoff], lot["roof_area"])
+        self._internal_streams[LotStream.pervious_runoff] = self._create_stream(
+            self._standard_values[UnitFlows.pervious_runoff], pervious_area)
+        self._internal_streams[LotStream.impervious_runoff] = self._create_stream(
+            self._standard_values[UnitFlows.impervious_runoff], lot["impervious_area"])
+        self._internal_streams[LotStream.outdoor_demand] = self._create_stream(
+            self._standard_values[UnitFlows.outdoor_demand], lot["irrigated_garden_area"])
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream(evapo, 1)
-        self._internal_streams[LotStream.infiltration] = self._create_stream(self._standard_values[UnitFlows.groundwater_infiltration], pervious_area)
-
+        self._internal_streams[LotStream.infiltration] = self._create_stream(
+            self._standard_values[UnitFlows.groundwater_infiltration], pervious_area)
 
         # This and reconnected
         if "storages" in lot:
@@ -151,17 +161,19 @@ class Lot:
         toilet = 19.
         shower_bath = 34.
 
-        consumer.setParameter("const_flow_potable", self._create_const_flow((leak_other + washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
+        consumer.setParameter("const_flow_potable", self._create_const_flow(
+            (leak_other + washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
         consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
 
-        consumer.setParameter("const_flow_greywater", self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
+        consumer.setParameter("const_flow_greywater",
+                              self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
         consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
 
         self._internal_streams[LotStream.potable_demand] = self._add_flow_probe(consumer, "out_p")
         self._internal_streams[LotStream.non_potable_demand] = self._add_flow_probe(consumer, "out_np")
 
         self._internal_streams[LotStream.grey_water] = self._add_flow_probe(consumer, "out_g")
-        self._internal_streams[LotStream.black_water] =self._add_flow_probe(consumer, "out_s")
+        self._internal_streams[LotStream.black_water] = self._add_flow_probe(consumer, "out_s")
 
     def _add_flow_probe(self, out_port, port_name):
         flow_probe = self._cd3.add_node("FlowProbe")
