@@ -37,7 +37,10 @@ class UrbanMetabolismModel(Module):
             self.lot.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
 
         self.wb_lot_storages=ViewContainer("wb_lot_storages", DM.COMPONENT, DM.WRITE)
-        self.wb_lot_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
+        self.wb_lot_storages.addAttribute('provided_volume', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.wb_lot_storages.addAttribute('storage_behaviour', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.wb_lot_storages.addAttribute('spills', DM.Attribute.INT, DM.WRITE)
+        self.wb_lot_storages.addAttribute('dry', DM.Attribute.INT, DM.WRITE)
         self.wb_lot_storages.addAttribute('parcel_id', DM.Attribute.INT, DM.WRITE)
         self.wb_lot_storages.addAttribute('storage_id', DM.Attribute.INT, DM.WRITE)
 
@@ -76,7 +79,7 @@ class UrbanMetabolismModel(Module):
             self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
 
         for s in UnitFlows:
-            self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
+            self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         # need multiple streams per lot
         # lot can be part of multiple sub catchment (1 for each stream)
@@ -127,7 +130,7 @@ class UrbanMetabolismModel(Module):
         self._templates = {}
 
         for template in self.wb_lot_template:
-            template : ogr.Feature
+            template : ogr.Featured
             self._templates[template.GetFID()] = { "streams": lot_streams[template.GetFID()]}
 
         self.wb_lot_template.finalise()
@@ -203,7 +206,7 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_soil_parameters:
             standard = wb.get_standard_values(s.GetFID())
             for f in UnitFlows:
-                s.SetField(str(f).split(".")[1], float(sum(standard[f])))
+                dm_set_double_list(s, str(f).split(".")[1], standard[f])
         self.wb_soil_parameters.finalise()
 
         self.wb_sub_catchments.reset_reading()
@@ -241,7 +244,10 @@ class UrbanMetabolismModel(Module):
                 s = self.wb_lot_storages.create_feature()
                 s.SetField('parcel_id', l.GetFID())
                 s.SetField('storage_id', key)
-                s.SetField('provided_volume', sum(storage.get_state_value_as_double_vector('provided_volume')))
+                s.SetField('spills', storage.get_state_value_as_int('spills'))
+                s.SetField('dry', storage.get_state_value_as_int('dry'))
+                dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
+                dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
             for stream in LotStream:
                 l.SetField(str(stream).split(".")[1], float(wb.get_parcel_internal_stream_volumes(l.GetFID(), stream)))
         self.lot.finalise()
