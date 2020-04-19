@@ -13,8 +13,8 @@ class WaterCycleModel():
 
         self._standard_values = {}
         self._flow_probes = {}
-        self.start_date = "2001-Jan-01 00:00:00"
-        self.end_date = "2002-Jan-01 00:00:00"
+        self.start_date = "2000-Jan-01 00:00:00"
+        self.end_date = "2001-Jan-01 00:00:00"
         self._library_path = library_path
         self._nodes = {}
         self._sub_catchments = sub_catchments
