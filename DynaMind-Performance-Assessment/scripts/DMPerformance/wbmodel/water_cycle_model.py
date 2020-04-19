@@ -101,6 +101,9 @@ class WaterCycleModel():
     def get_storage_volumes(self, storage_id):
         return sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
 
+    def get_storage(self, storage_id):
+        return self._storage_reporting[storage_id]
+
     def get_standard_values(self, soil_id):
         return self._standard_values[soil_id]
 

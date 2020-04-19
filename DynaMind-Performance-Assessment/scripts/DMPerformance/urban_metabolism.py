@@ -67,7 +67,10 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
-        self.wb_sub_storages.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
+        self.wb_lot_storages.addAttribute('provided_volume', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.wb_lot_storages.addAttribute('storage_behaviour', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+        self.wb_lot_storages.addAttribute('spills', DM.Attribute.INT, DM.WRITE)
+        self.wb_lot_storages.addAttribute('dry', DM.Attribute.INT, DM.WRITE)
 
         self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
         self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
@@ -233,7 +236,11 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.reset_reading()
         for s in self.wb_sub_storages:
             s : ogr.Feature
-            s.SetField("provided_volume", wb.get_storage_volumes(s.GetFID()))
+            storage = wb.get_storage(s.GetFID())
+            s.SetField('spills', storage.get_state_value_as_int('spills'))
+            s.SetField('dry', storage.get_state_value_as_int('dry'))
+            dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
+            dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
         self.wb_sub_storages.finalise()
         self.lot.reset_reading()
 
