@@ -101,7 +101,7 @@ int MultiUseStorage::f(ptime time, int dt) {
 		}
 
 		total_provided_v+=provided_v;
-		(*v_out_q[i])[0] = provided_v;
+		(*v_out_q[i])[0] = v-provided_v;
 	}
 
 	if (current_volume > storage_volume){
