@@ -86,7 +86,6 @@ int MultiUseStorage::f(ptime time, int dt) {
 	if (current_volume < 0.001)
 		dry+=1;
 
-
 	// reduce current volume
 	double total_provided_v = 0;
 	for (uint i = 0; i < v_in_q.size(); i++){
@@ -96,8 +95,9 @@ int MultiUseStorage::f(ptime time, int dt) {
 		double provided_v =  v;
 
 		if (current_volume < 0) {
-			provided_v = current_volume;
+			provided_v = current_volume + v;
 			current_volume = 0;
+
 		}
 
 		total_provided_v+=provided_v;
