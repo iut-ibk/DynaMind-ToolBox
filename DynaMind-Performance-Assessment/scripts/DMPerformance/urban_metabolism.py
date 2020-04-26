@@ -55,6 +55,8 @@ class UrbanMetabolismModel(Module):
         self.wb_storages.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
+        self.wb_storages.addAttribute("demand_stream_1_id", DM.Attribute.INT, DM.READ)
+        self.wb_storages.addAttribute("demand_stream_2_id", DM.Attribute.INT, DM.READ)
         self.wb_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
         self.wb_storages.addAttribute('provided_volume', DM.Attribute.DOUBLE, DM.WRITE)
 
@@ -154,6 +156,7 @@ class UrbanMetabolismModel(Module):
             sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
         self.wb_lot_to_sub_catchments.finalise()
 
+        # Lot scale storages
         for s in self.wb_storages:
             s : ogr.Feature
             template_id = s.GetFieldAsInteger("wb_lot_template_id")
@@ -165,6 +168,11 @@ class UrbanMetabolismModel(Module):
                        "demand": LotStream(s.GetFieldAsInteger("demand_stream_id")),
                        "volume": s.GetFieldAsInteger("volume"),
                        "id": s.GetFID()}
+
+            if s.GetFieldAsInteger("demand_stream_1_id") > 0:
+                storage["demand_1"] = LotStream(s.GetFieldAsInteger("demand_stream_1_id"))
+            if s.GetFieldAsInteger("demand_stream_2_id") > 0:
+                storage["demand_2"] = LotStream(s.GetFieldAsInteger("demand_stream_2_id"))
 
             storages = self._storages[template_id]
             storages.append(storage)
@@ -255,6 +263,14 @@ class UrbanMetabolismModel(Module):
                 s.SetField('dry', storage.get_state_value_as_int('dry'))
                 dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
                 dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
+                logging.debug(
+                    f"{s.GetFID()} provided_volume: {format(sum(storage.get_state_value_as_double_vector('provided_volume')), '.2f')}")
+                logging.debug(
+                    f"{s.GetFID()} storage_behaviour: {format(sum(storage.get_state_value_as_double_vector('storage_behaviour')), '.2f')}")
+                logging.debug(
+                    f"{s.GetFID()} spills: {format(storage.get_state_value_as_int('spills'), '.2f')}")
+                logging.debug(
+                    f"{s.GetFID()} dry: {format(storage.get_state_value_as_int('dry'), '.2f')}")
             for stream in LotStream:
                 l.SetField(str(stream).split(".")[1], float(wb.get_parcel_internal_stream_volumes(l.GetFID(), stream)))
         self.lot.finalise()

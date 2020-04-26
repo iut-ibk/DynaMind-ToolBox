@@ -9,26 +9,6 @@ import sys
 import pycd3
 import math
 
-#class NodeFactoryCatchmentwithRouting(pycd3.INodeFactory):
-#    def __init__(self, node):
-#        pycd3.INodeFactory.__init__(self)
-#        self.node = node
-#        print "NodeFactory.__init__"
-#        
-#    def getNodeName(self):
-#        print "NodeFactory.getName"
-#        return self.node.__name__
-#        
-#    def createNode(self):
-#        print "NodeFactory.createNode"
-#        n = self.node()
-#        n.__disown__()
-#        print "NodeFactory.disowned"
-#        return n
-#        
-#    def getSource(self):
-#        print "NodeFactory.getSource"
-#        return "Addons.py"
 
 class Catchment_w_Routing(pycd3.Node):
     def __init__(self):
@@ -161,10 +141,7 @@ class Catchment_w_Routing(pycd3.Node):
         self.runoff_perv_raw=0.0
 
     def init(self, start, stop, dt):
-#        print start
-#        print stop
-#        print dt
-#print(self.rain[0], self.evapo[0], self.possible_infiltr[0]/400., self.actual_infiltr[0], self.runoff[0],  self.collected_w[0],self.outdoor_use[0],self.outdoor_use_check[0])
+
         self.total_rain = 0.
         self.total_actual_infiltr = 0.
         self.total_collected_w = 0.
@@ -365,7 +342,7 @@ class Catchment_w_Routing(pycd3.Node):
         self.current_perv_storage_level -= evapo
 
         # Flow to Groundwater
-        groundwater = self.current_perv_storage_level  * self.daily_recharge_rate
+        groundwater = self.current_perv_storage_level * self.daily_recharge_rate
 
         if groundwater > self.current_perv_storage_level:
             groundwater =  self.current_perv_storage_level
