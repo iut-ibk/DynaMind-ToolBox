@@ -180,7 +180,7 @@ class Lot:
         shower_bath = 34.
 
         consumer.setParameter("const_flow_potable", self._create_const_flow(
-            (leak_other + washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
+            (washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
         consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
 
         consumer.setParameter("const_flow_greywater",
