@@ -208,6 +208,36 @@ void GDALCreateBuilding::init()
     this->registerViewContainers(views);
 }
 
+double GDALCreateBuilding::scalePolgon(OGRFeature * feature, OGRPolygon * poly, double scale)
+{
+
+	OGRPoint centroid;
+	poly->Centroid(&centroid);
+
+	double c_x = centroid.getX();
+	double c_y = centroid.getY();
+
+	OGRLinearRing * r = poly->getExteriorRing();
+	OGRPoint p;
+	OGRLinearRing lr;
+
+	for (int i = 0; i < r->getNumPoints(); i++){
+		r->getPoint(i, &p);
+		double x = p.getX();
+		double y = p.getY();
+
+		double dx = x - c_x;
+		double dy = y - c_y;
+		lr.addPoint(c_x + dx*scale, c_y + dy*scale);
+	}
+
+	OGRPolygon poly_scaled;
+	poly_scaled.addRing(&lr);
+	feature->SetGeometry(&poly_scaled);
+	return poly_scaled.get_Area();
+}
+
+
 void GDALCreateBuilding::run()
 {
 
@@ -215,7 +245,7 @@ void GDALCreateBuilding::run()
     OGRFeature *poFeature;
     if (!this->paramter_from_linked_view.empty()) {
         this->linked_view.resetReading();
-        while ( (poFeature = linked_view.getNextFeature()) != NULL ) {
+		while ( (poFeature = linked_view.getNextFeature()) != nullptr ) {
             std::map<std::string, double> params;
             params["residential_units"] = poFeature->GetFieldAsDouble("residential_units");
             params["building_height"] = poFeature->GetFieldAsDouble("building_height");
@@ -254,17 +284,27 @@ void GDALCreateBuilding::run()
 		OGRPolygon * geo = (OGRPolygon *)f->GetGeometryRef();
 		if (!geo)
 			continue;
-        OGRPolygon * building_geo  = (OGRPolygon *) this->createBuilding(geo);
 
-		if (!building_geo)
-			continue;
-		//Create Feature
+		bool rectangular_building = false;
+		bool error_generation = true;
+
 		OGRFeature * b = building.createFeature();
-		b->SetGeometry(building_geo);
+		double area = 0;
+
+		if (site_coverage > 0) {
+			area = scalePolgon(b, geo, site_coverage);
+		} else {
+			OGRPolygon * building_geo  = (OGRPolygon *) this->createBuilding(geo);
+			b->SetGeometry(building_geo);
+			if (!building_geo)
+				error_generation = false;
+			area = building_geo->get_Area();
+			OGRGeometryFactory::destroyGeometry(building_geo);
+		}
 
 		//Cacluate RU
 		if (ru < 0) {
-            double area =  building_geo->get_Area();
+			double area =
             ru = (int) (area * (int) (bh) / 3) / 125;
 
 		}
@@ -272,7 +312,10 @@ void GDALCreateBuilding::run()
 		b->SetField("residential_units", ru);
 		b->SetField("height", bh);
 
-		OGRGeometryFactory::destroyGeometry(building_geo);
+
+
+
+
 	}
 }
 
