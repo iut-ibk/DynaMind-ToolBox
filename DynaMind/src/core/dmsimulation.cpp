@@ -124,14 +124,18 @@ void Simulation::installStatusUpdater(const std::string& path)
 	statusFile.open(path.c_str());
 }
 
-Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit)
+Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit, const std::string uuid)
 {
 	Module *module = this->moduleRegistry->createModule(ModuleName);
+
 	if(!module)
 		return NULL;
-
+	if (!uuid.empty()){
+		module->setUUID(uuid);
+	}
 	module->setOwner(parent);
 	module->setSimulation(this);
+
 
 	if(module->isGroup())
 		dynamic_cast<Group*>(module)->sim = this;
@@ -1288,7 +1292,7 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 			owner = overwrittenOwner;
 
 		// do not init module - we first have to set parameters and links as well as checking the stream!
-		if(DM::Module* m = addModule(me.ClassName.toStdString(), owner, false))
+		if(DM::Module* m = addModule(me.ClassName.toStdString(), owner, false, me.UUID.toStdString()))
 		{
 			modMap[me.UUID.toStdString()] = m;
 			// load parameters

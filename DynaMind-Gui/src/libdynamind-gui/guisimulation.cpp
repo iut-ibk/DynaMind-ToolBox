@@ -60,9 +60,9 @@ void GUISimulation::clearSimulation()
 	clear();
 }
 
-DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent, bool callInit)
+DM::Module* GUISimulation::addModule(std::string moduleName, DM::Module* parent, bool callInit, const string uuid)
 {
-	DM::Module* m = Simulation::addModule(moduleName, parent, callInit);
+	DM::Module* m = Simulation::addModule(moduleName, parent, callInit, uuid);
 	if(!m)
 		return NULL;
 	ModelNode* node = new ModelNode(m, this);
@@ -354,7 +354,7 @@ void GUISimulation::appendGuiInformation(QIODevice* dest, std::list<DM::Module*>
 		ModelNode* m = this->getModelNode(mod);
 
 		out << "\t\t<GUI_Node>\n";
-		out << "\t\t\t<GUI_UUID value=\"" << ADDRESS_TO_INT(mod) << "\"/>\n";
+		out << "\t\t\t<GUI_UUID value=\"" << QString::fromStdString(mod->getUuid()) << "\"/>\n";
 		out << "\t\t\t<GUI_PosX value=\"" << m->scenePos().x() - minx << "\"/>\n";
 		out << "\t\t\t<GUI_PosY value=\"" << m->scenePos().y() - miny << "\"/>\n";
 		out << "\t\t\t<GUI_Minimized value=\"" << false/*m->isMinimized()*/ << "\"/>\n";

@@ -34,6 +34,7 @@
 #include "dmlogger.h"
 #include <dmsimulation.h>
 #include <dmgroup.h>
+#include <QUuid>
 
 using namespace std;
 using namespace DM;
@@ -46,6 +47,7 @@ Module::Module()
 	GDALModule = false;
 	moduleFilter = std::vector<Filter>();
 	SQLExclusive = false;
+	uuid = QUuid::createUuid().toString().toStdString();
 }
 
 void Module::preRun()
@@ -315,6 +317,11 @@ Simulation *Module::getSimulation()
 DM::SimulationConfig Module::getSimulationConfig()
 {
 	return this->sim->getSimulationConfig();
+}
+
+void Module::setUUID(const string &uuid)
+{
+	this->uuid = uuid;
 }
 
 int Module::getGroupCounter()
@@ -621,9 +628,9 @@ std::map<string, View> Module::getViewsOutStdStream() const
 
 std::string Module::getUuid() const
 {
-	std::stringstream ss;
-	ss << this;
-	return ss.str();
+//	std::stringstream ss;
+//	ss << this;
+	return this->uuid;
 
 }
 

@@ -57,15 +57,19 @@ void writeModule(QTextStream &out, Module* m, QDir filePath, bool translateRelat
 	name = name.replace('&',"&amp;");	// first to replace, otherwhise replacements get replaced too
 	name = name.replace('<',"&lt;").replace('>',"&gt;");
 
+	QString owner_uuid = "0";
+	if (owner)
+		owner_uuid = QString::fromStdString(owner->getUuid());
+
 	out  << "\t\t<Node>\n";
 	out << "\t\t"<< "\t<ClassName value=\""
 		<< QString::fromStdString(m->getClassName()) << "\"/>\n";
 	out << "\t\t"<< "\t<UUID value=\""
-		<< ADDRESS_TO_INT(m) << "\"/>\n";
+		<< QString::fromStdString(m->getUuid()) << "\"/>\n";
 	out << "\t\t"<< "\t<Name value=\""
 		<< name << "\"/>\n";
 	out << "\t\t"<< "\t<GroupUUID value=\""
-		<< ADDRESS_TO_INT(owner) << "\"/>\n";
+		<< owner_uuid << "\"/>\n";
 	out << "\t\t"<< "\t<DebugMode value=\""
 		<< QString::number(m->isSuccessorMode()?1:0) << "\"/>\n";
 
@@ -119,13 +123,13 @@ void writeLink(QTextStream &out, Link* l)
 	out << "\t\t<Link>\n";
 	out << "\t\t\t<BackLink value = \"0\"/>\n";
 	out << "\t\t\t<InPort>\n";
-	out << "\t\t\t\t<UUID value = \"" << ADDRESS_TO_INT(l->dest) << "\"/>\n";
+	out << "\t\t\t\t<UUID value = \"" << QString::fromStdString(l->dest->getUuid()) << "\"/>\n";
 	out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->inPort) << "\"/>\n";
 	out << "\t\t\t\t<PortType value = \"0\"/>\n";
 	out << "\t\t\t</InPort>\n";
 
 	out << "\t\t\t<OutPort>\n";
-	out << "\t\t\t\t<UUID value = \"" << ADDRESS_TO_INT(l->src) << "\"/>\n";
+	out << "\t\t\t\t<UUID value = \"" << QString::fromStdString(l->src->getUuid()) << "\"/>\n";
 	out << "\t\t\t\t<PortName value = \"" << QString::fromStdString(l->outPort) << "\"/>\n";
 	out << "\t\t\t\t<PortType value = \"0\"/>\n";
 	out << "\t\t\t</OutPort>\n";
@@ -151,7 +155,7 @@ void SimulationWriter::writeSimulation(QIODevice* dest, QString filePath,
 	out << "\t<Nodes>\n";
 
 	out << "\t\t<RootNode>\n";
-	out << "\t\t\t<UUID value=\"" << ADDRESS_TO_INT(root) << "\"/>\n";
+	out << "\t\t\t<UUID value=\"" << "0" << "\"/>\n";
 	out << "\t\t</RootNode>\n";
 	QDir filedir;
 	bool translateRelative = false;

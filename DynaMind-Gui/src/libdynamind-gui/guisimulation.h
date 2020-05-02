@@ -52,7 +52,7 @@ public:
 	bool removeLink(PortNode* out, PortNode* in);
 
 	// overloaded
-	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true);
+	DM::Module* addModule(std::string moduleName, DM::Module* parent, bool callInit = true, const std::string uuid = "");
 	void removeModule(DM::Module* m);
 
 	SimulationTab* addTab(DM::Group* parentGroup);	// parent = NULL for root tab
