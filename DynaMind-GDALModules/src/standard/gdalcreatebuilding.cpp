@@ -304,7 +304,6 @@ void GDALCreateBuilding::run()
 
 		//Cacluate RU
 		if (ru < 0) {
-			double area =
             ru = (int) (area * (int) (bh) / 3) / 125;
 
 		}
