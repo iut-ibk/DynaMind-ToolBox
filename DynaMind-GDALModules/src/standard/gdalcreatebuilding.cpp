@@ -292,7 +292,7 @@ void GDALCreateBuilding::run()
 		double area = 0;
 
 		if (site_coverage > 0) {
-			area = scalePolgon(b, geo, site_coverage);
+			area = scalePolgon(b, geo, sqrt(site_coverage));
 		} else {
 			OGRPolygon * building_geo  = (OGRPolygon *) this->createBuilding(geo);
 			b->SetGeometry(building_geo);
