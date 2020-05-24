@@ -213,7 +213,7 @@ class UrbanMetabolismModel(Module):
                 "irrigated_garden_area": l.GetFieldAsDouble("garden_area"),
                 "area": l.GetFieldAsDouble("area"),
                 "soil_id": l.GetFieldAsDouble("wb_soil_id"),
-                "wb_demand_profile_id": l.GetFieldAsInteger("wb_lot_template_id"),
+                "wb_demand_profile_id": l.GetFieldAsInteger("wb_demand_profile_id"),
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
                 "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
