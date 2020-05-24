@@ -7,7 +7,7 @@ from pydynamind import *
 from osgeo import ogr
 
 logging.basicConfig(level=logging.INFO)
-from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows
+from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile
 
 
 
@@ -33,6 +33,8 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
+
         for s in LotStream:
             self.lot.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
 
@@ -86,6 +88,10 @@ class UrbanMetabolismModel(Module):
         for s in UnitFlows:
             self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
+        self.wb_demand_profile = ViewContainer('wb_demand_profile', DM.COMPONENT, DM.READ)
+        for s in DemandProfile:
+            self.wb_demand_profile.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
+
         # need multiple streams per lot
         # lot can be part of multiple sub catchment (1 for each stream)
         # key = (sub_catchment, stream)
@@ -99,7 +105,8 @@ class UrbanMetabolismModel(Module):
                          self.wb_sub_catchments,
                          self.wb_lot_to_sub_catchments,
                          self.wb_lot_streams,
-                         self.wb_lot_storages
+                         self.wb_lot_storages,
+                         self.wb_demand_profile
                          ]
         #
         self.registerViewContainers(view_register)
@@ -117,9 +124,16 @@ class UrbanMetabolismModel(Module):
                 soil[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             soils[soil_id] = soil
 
+        demand_profile = {}
+        for s in self.wb_demand_profile:
+            demand_id = s.GetFID()
+            profile = {}
+            for p in DemandProfile:
+                profile[p] = s.GetFieldAsDouble(str(p).split(".")[1])
+            demand_profile[demand_id] = profile
+
         for s in self.wb_lot_streams:
             s: ogr.Feature
-
             wb_template_id = s.GetFieldAsInteger("wb_lot_template_id")
             out_stream = Streams(s.GetFieldAsInteger("outflow_stream_id"))
             lot_stream = LotStream(s.GetFieldAsInteger("lot_stream_id"))
@@ -136,7 +150,7 @@ class UrbanMetabolismModel(Module):
 
         for template in self.wb_lot_template:
             template : ogr.Featured
-            self._templates[template.GetFID()] = { "streams": lot_streams[template.GetFID()]}
+            self._templates[template.GetFID()] = {"streams": lot_streams[template.GetFID()]}
 
         self.wb_lot_template.finalise()
 
@@ -199,9 +213,11 @@ class UrbanMetabolismModel(Module):
                 "irrigated_garden_area": l.GetFieldAsDouble("garden_area"),
                 "area": l.GetFieldAsDouble("area"),
                 "soil_id": l.GetFieldAsDouble("wb_soil_id"),
+                "wb_demand_profile_id": l.GetFieldAsInteger("wb_lot_template_id"),
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
                 "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
+
             }
 
             lots[l.GetFID()] = lot
@@ -210,6 +226,7 @@ class UrbanMetabolismModel(Module):
                              sub_catchments=sub_catchments,
                              wb_lot_to_sub_catchments=sub_catchments_lots,
                              wb_sub_storages=wb_sub_storages,
+                             wb_demand_profile = demand_profile,
                              soils=soils,
                              library_path=self.getSimulationConfig().getDefaultLibraryPath())
 

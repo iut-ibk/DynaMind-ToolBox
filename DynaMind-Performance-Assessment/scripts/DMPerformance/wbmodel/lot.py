@@ -4,6 +4,13 @@ import numpy as np
 
 from .unitparameters import SoilParameters, UnitFlows
 
+class DemandProfile(Enum):
+    potable_demand_per_person = 1
+    non_potable_demand_per_person = 2
+    black_water = 3
+    grey_water = 4
+    crop_factor = 5
+
 
 class LotStream(Enum):
     potable_demand = 1
@@ -45,6 +52,7 @@ class Lot:
                  cd3_instance: cd3.CityDrain3,
                  lot_detail: {},
                  standard_values: {},
+                 demand_profile: {},
                  lot_storage_reporting: {}):
         self._id = id
         self._cd3 = cd3_instance
@@ -54,6 +62,8 @@ class Lot:
         self._internal_streams = {}
         self._external_streams = {}
         self._internal_report_streams = {}
+
+        self._demand_profile = demand_profile
 
         self._lot_storage_reporting = lot_storage_reporting
 
@@ -179,13 +189,25 @@ class Lot:
         toilet = 19.
         shower_bath = 34.
 
+        # consumer.setParameter("const_flow_potable", self._create_const_flow(
+        #     (washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
+        # consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
+        #
+        # consumer.setParameter("const_flow_greywater",
+        #                       self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
+        # consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
+
         consumer.setParameter("const_flow_potable", self._create_const_flow(
-            (washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
-        consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
+            self._demand_profile[DemandProfile.potable_demand_per_person] * l_d_to_m_s * residents))
+        consumer.setParameter("const_flow_nonpotable", self._create_const_flow(
+            self._demand_profile[DemandProfile.non_potable_demand_per_person] * l_d_to_m_s * residents))
 
         consumer.setParameter("const_flow_greywater",
-                              self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
-        consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
+                              self._create_const_flow(
+                                  self._demand_profile[DemandProfile.grey_water] * l_d_to_m_s * residents))
+        consumer.setParameter("const_flow_sewer",
+                              self._create_const_flow(
+                                  self._demand_profile[DemandProfile.black_water] * l_d_to_m_s * residents))
 
         self._internal_streams[LotStream.potable_demand] = self._add_flow_probe(consumer, "out_p")
         self._internal_streams[LotStream.non_potable_demand] = self._add_flow_probe(consumer, "out_np")

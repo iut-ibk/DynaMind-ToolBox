@@ -8,6 +8,7 @@ class WaterCycleModel():
                  sub_catchments: {},
                  wb_lot_to_sub_catchments: {},
                  wb_sub_storages: {},
+                 wb_demand_profile: {},
                  soils: {},
                  library_path=None):
 
@@ -20,6 +21,7 @@ class WaterCycleModel():
         self._sub_catchments = sub_catchments
         self._wb_sub_storages = wb_sub_storages
         self._wb_lot_to_sub_catchments = wb_lot_to_sub_catchments
+        self._wb_demand_profile = wb_demand_profile
 
         for key, parameters in soils.items():
             self._standard_values[key] = UnitParameters(self.start_date,
@@ -141,7 +143,12 @@ class WaterCycleModel():
 
         # Create lots
         for lot_id, lot in self._lots.items():
-            self._nodes[lot_id] = Lot(lot_id, self._cd3, lot, self._standard_values[lot["soil_id"]], self._lot_storage_reporting)
+            self._nodes[lot_id] = Lot(lot_id,
+                                      self._cd3,
+                                      lot,
+                                      self._standard_values[lot["soil_id"]],
+                                      self._wb_demand_profile[lot["wb_demand_profile_id"]],
+                                      self._lot_storage_reporting)
 
         for name, network in self._networks.items():
             self._create_nodes(network)
