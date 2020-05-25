@@ -190,7 +190,7 @@ class WaterCycleModel():
             else:
                 outflow = n_start.get_stream(stream)
             if not outflow:
-                return
+                continue
             #Careful only call once because it increments the ports
             inflow = n_end.in_port
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
