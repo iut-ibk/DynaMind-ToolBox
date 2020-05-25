@@ -132,7 +132,7 @@ void ModelNode::resize()
 	{
 		if(GroupNode* gn = (GroupNode*)getSimulation()->getModelNode(m)->getChild())
 		{
-			gn->resize();
+			//gn->resize();
 		}
 	}
 }
