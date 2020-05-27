@@ -126,12 +126,18 @@ void Simulation::installStatusUpdater(const std::string& path)
 
 Module* Simulation::addModule(const std::string ModuleName, Module* parent, bool callInit, const std::string uuid)
 {
+
+	std::string uuid_new = uuid;
+	foreach (Module * m, modules){
+		if (m->uuid.compare(uuid) == 0)
+			uuid_new = "";
+	}
 	Module *module = this->moduleRegistry->createModule(ModuleName);
 
 	if(!module)
 		return NULL;
-	if (!uuid.empty()){
-		module->setUUID(uuid);
+	if (!uuid_new.empty()){
+		module->setUUID(uuid_new);
 	}
 	module->setOwner(parent);
 	module->setSimulation(this);
@@ -1258,6 +1264,8 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 								std::map<std::string, DM::Module*>& modMap,
 								DM::Module* overwrittenOwner, bool overwriteGroupOwner)
 {
+
+
 	QDir simFileDir = QFileInfo(filepath).absoluteDir();	// for param corr.
 	Logger(Standard) << ">> loading simulation file '" << filepath << "'";
 
@@ -1269,6 +1277,13 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 	QVector<LinkEntry> linkEntries = simreader.getLinks();
 	UpdateVersion(linkEntries, moduleEntries);
 
+	std::set<std::string> uuid_in_loadsim;
+	foreach(ModuleEntry m, moduleEntries) {
+		uuid_in_loadsim.insert(m.UUID.toStdString());
+	}
+
+
+
 	int waitingForGroup = 0;
 	// load modules
 	while(moduleEntries.size() > 0 && moduleEntries.size() >= waitingForGroup)
@@ -1277,7 +1292,8 @@ bool Simulation::loadSimulation(QIODevice* source, QString filepath,
 		moduleEntries.pop_front();
 		DM::Module* owner = modMap[me.GroupUUID.toStdString()];
 
-		if(me.GroupUUID.size() && me.GroupUUID != simreader.getRootGroupUUID())
+
+		if(me.GroupUUID.size() && me.GroupUUID != simreader.getRootGroupUUID() && (uuid_in_loadsim.find(me.GroupUUID.toStdString()) != uuid_in_loadsim.end()))
 		{
 			if(!owner)
 			{
