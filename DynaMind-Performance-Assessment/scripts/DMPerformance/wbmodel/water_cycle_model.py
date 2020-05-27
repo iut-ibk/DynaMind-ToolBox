@@ -146,7 +146,7 @@ class WaterCycleModel():
             self._nodes[lot_id] = Lot(lot_id,
                                       self._cd3,
                                       lot,
-                                      self._standard_values[lot["soil_id"]],
+                                      self._standard_values,
                                       self._wb_demand_profile[lot["wb_demand_profile_id"]],
                                       self._lot_storage_reporting)
 
@@ -177,6 +177,7 @@ class WaterCycleModel():
                 self._nodes[n] = TransferNode(self._cd3, nodes[n])
 
     def _create_network(self, name, network):
+        print(name, network['stream'], len(network['edges']))
         stream = network["stream"]
         for e in network["edges"]:
             if e[0] not in self._nodes:

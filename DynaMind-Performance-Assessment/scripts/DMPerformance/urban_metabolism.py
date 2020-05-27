@@ -33,6 +33,7 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("green_roof_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
 
         for s in LotStream:
@@ -80,6 +81,9 @@ class UrbanMetabolismModel(Module):
         self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
         self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
 
+        self.green_roofs = ViewContainer('green_roof', DM.COMPONENT, DM.READ)
+        self.green_roofs.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
+
         self.wb_soil_parameters = ViewContainer('wb_soil', DM.COMPONENT, DM.READ)
 
         for s in SoilParameters:
@@ -106,7 +110,8 @@ class UrbanMetabolismModel(Module):
                          self.wb_lot_to_sub_catchments,
                          self.wb_lot_streams,
                          self.wb_lot_storages,
-                         self.wb_demand_profile
+                         self.wb_demand_profile,
+                         self.green_roofs
                          ]
         #
         self.registerViewContainers(view_register)
@@ -201,11 +206,21 @@ class UrbanMetabolismModel(Module):
                        "id" : s.GetFID()}
             wb_sub_storages[s.GetFID()] = storage
 
+        green_roofs = {}
+        for s in self.green_roofs:
+            s: ogr.Feature
+            green_roof = {"soil_id": s.GetFieldAsInteger("wb_soil_id")}
+            green_roofs[s.GetFID()] = green_roof
+
         for l in self.lot:
             l : ogr.Feature
 
             if l.GetFieldAsInteger("wb_lot_template_id") not in self._storages:
                 self._storages[l.GetFieldAsInteger("wb_lot_template_id")] = []
+
+            green_roof = None
+            if l.GetFieldAsInteger("green_roof_id") > 0:
+                green_roof = green_roofs[l.GetFieldAsInteger("green_roof_id")]
             lot = {
                 "persons": l.GetFieldAsDouble("persons"),
                 "roof_area": l.GetFieldAsDouble("roof_area"),
@@ -216,8 +231,8 @@ class UrbanMetabolismModel(Module):
                 "wb_demand_profile_id": l.GetFieldAsInteger("wb_demand_profile_id"),
                 "streams":
                     self._templates[l.GetFieldAsInteger("wb_lot_template_id")]["streams"],
-                "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")]
-
+                "storages": self._storages[l.GetFieldAsInteger("wb_lot_template_id")],
+                "green_roof": green_roof
             }
 
             lots[l.GetFID()] = lot

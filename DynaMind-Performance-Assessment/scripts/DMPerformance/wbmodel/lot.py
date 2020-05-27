@@ -53,11 +53,17 @@ class Lot:
                  lot_detail: {},
                  standard_values: {},
                  demand_profile: {},
-                 lot_storage_reporting: {}):
+                 lot_storage_reporting: {},):
+
         self._id = id
         self._cd3 = cd3_instance
 
-        self._standard_values = standard_values
+        self._standard_values = standard_values[lot_detail["soil_id"]]
+
+        self._green_roofs = None
+        if lot_detail["green_roof"]:
+            self._green_roofs = standard_values[lot_detail["green_roof"]["soil_id"]]
+
 
         self._internal_streams = {}
         self._external_streams = {}
@@ -101,11 +107,27 @@ class Lot:
 
         :return:
         """
+
+
         self._create_demand_node(lot["persons"])
+
+
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
+        # Green roofs
+        if (self._green_roofs):
+            roof_evapotranspiration = np.array(self._green_roofs[UnitFlows.pervious_evapotranspiration]) * (
+                lot["roof_area"])
+            self._internal_streams[LotStream.roof_runoff] = self._create_stream(
+                self._standard_values[UnitFlows.pervious_runoff], lot["roof_area"])
+        else:
+            roof_evapotranspiration = np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (
+                lot["roof_area"])
+            self._internal_streams[LotStream.roof_runoff] = self._create_stream(
+                self._standard_values[UnitFlows.roof_runoff], lot["roof_area"])
+
         evapo = (np.array(self._standard_values[UnitFlows.impervious_evapotranspiration]) * (lot["impervious_area"]) + \
-                 np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (lot["roof_area"]) + \
+                 roof_evapotranspiration + \
                  np.array(self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated]) * lot[
                      "irrigated_garden_area"] + \
                  np.array(self._standard_values[UnitFlows.pervious_evapotranspiration]) * (
@@ -113,14 +135,15 @@ class Lot:
 
         self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall],
                                                                          lot["area"])
-        self._internal_streams[LotStream.roof_runoff] = self._create_stream(
-            self._standard_values[UnitFlows.roof_runoff], lot["roof_area"])
+
         self._internal_streams[LotStream.pervious_runoff] = self._create_stream(
             self._standard_values[UnitFlows.pervious_runoff], pervious_area)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream(
             self._standard_values[UnitFlows.impervious_runoff], lot["impervious_area"])
+
         self._internal_streams[LotStream.outdoor_demand] = self._create_stream(
             self._standard_values[UnitFlows.outdoor_demand], lot["irrigated_garden_area"])
+
         self._internal_streams[LotStream.evapotranspiration] = self._create_stream(evapo, 1)
         self._internal_streams[LotStream.infiltration] = self._create_stream(
             self._standard_values[UnitFlows.groundwater_infiltration], pervious_area)
