@@ -118,8 +118,10 @@ class Lot:
         if (self._green_roofs):
             roof_evapotranspiration = np.array(self._green_roofs[UnitFlows.pervious_evapotranspiration]) * (
                 lot["roof_area"])
+            roof_runoff = (np.array(self._green_roofs[UnitFlows.pervious_runoff]) * lot["roof_area"] + \
+                          np.array(self._green_roofs[UnitFlows.groundwater_infiltration]) * lot["roof_area"]).tolist()
             self._internal_streams[LotStream.roof_runoff] = self._create_stream(
-                self._green_roofs[UnitFlows.pervious_runoff], lot["roof_area"])
+                roof_runoff, 1)
         else:
             roof_evapotranspiration = np.array(self._standard_values[UnitFlows.roof_evapotranspiration]) * (
                 lot["roof_area"])
