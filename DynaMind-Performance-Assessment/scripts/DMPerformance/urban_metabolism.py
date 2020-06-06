@@ -71,6 +71,8 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages = ViewContainer('wb_sub_storages', DM.COMPONENT, DM.READ)
         self.wb_sub_storages.addAttribute("inflow_stream_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("demand_stream_id", DM.Attribute.INT, DM.READ)
+        self.wb_sub_storages.addAttribute("demand_stream_1_id", DM.Attribute.INT, DM.READ)
+        self.wb_sub_storages.addAttribute("demand_stream_2_id", DM.Attribute.INT, DM.READ)
         self.wb_sub_storages.addAttribute("volume", DM.Attribute.DOUBLE, DM.READ)
         self.wb_sub_storages.addAttribute('provided_volume', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.wb_sub_storages.addAttribute('storage_behaviour', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
@@ -204,6 +206,11 @@ class UrbanMetabolismModel(Module):
                        "demand": "sub_" + str(s.GetFieldAsInteger("demand_stream_id")),
                        "volume": s.GetFieldAsInteger("volume"),
                        "id" : s.GetFID()}
+            if s.GetFieldAsInteger("demand_stream_1_id") > 0:
+                storage["demand_1"] = "sub_" + str(s.GetFieldAsInteger("demand_stream_1_id"))
+            if s.GetFieldAsInteger("demand_stream_2_id") > 0:
+                storage["demand_2"] = "sub_" + str(s.GetFieldAsInteger("demand_stream_2_id"))
+
             wb_sub_storages[s.GetFID()] = storage
 
         green_roofs = {}

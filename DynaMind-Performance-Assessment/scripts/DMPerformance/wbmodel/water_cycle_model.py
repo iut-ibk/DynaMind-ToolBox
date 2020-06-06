@@ -150,19 +150,27 @@ class WaterCycleModel():
                                       self._wb_demand_profile[lot["wb_demand_profile_id"]],
                                       self._lot_storage_reporting)
 
+        # Create all nodes in network
         for name, network in self._networks.items():
             self._create_nodes(network)
 
+        # Add all storages
         for name, s in self._wb_sub_storages.items():
             self._create_storage(s)
 
         for name, network in self._networks.items():
             self._create_network(name, network)
 
+    # option to connect storage back to multiple uses
     def _create_storage(self, storage):
         demand_port = self._nodes[storage["inflow"]].add_storage(storage)
-        self._storage_reporting[storage["id"]] = demand_port[0]
-        self._nodes[storage["demand"]].link_storage(demand_port)
+        self._storage_reporting[storage["id"]] = demand_port[0] # link to actual storage
+        self._nodes[storage["demand"]].link_storage([demand_port[0], demand_port[1]["in_0"], demand_port[1]["out_0"]])
+        if "demand_1" in storage:
+            self._nodes[storage["demand_1"]].link_storage([demand_port[0], demand_port[1]["in_1"], demand_port[1]["out_1"]])
+        if "demand_2" in storage:
+            self._nodes[storage["demand_2"]].link_storage([demand_port[0], demand_port[1]["in_2"], demand_port[1]["out_2"]])
+
 
     def _create_nodes(self, network):
         nodes = {}

@@ -13,17 +13,23 @@ class TransferNode:
         :param storage:
         :return:
         """
-        s = self._cd3.add_node("RWHT")
+        s = self._cd3.add_node("MultiUseStorage")
         s.setDoubleParameter("storage_volume", storage["volume"])
 
         self._cd3.add_connection(self.out_port[0], self.out_port[1], s, "in_sw")
         self._out_port = (s, "out_sw")
 
-        return s, "in_np"
+        return s, {"in_0": "q_in_0",
+                   "in_1": "q_in_1",
+                   "in_2": "q_in_2",
+                   "out_0": "q_out_0",
+                   "out_1": "q_out_1",
+                   "out_2": "q_out_2",
+                   }
 
     def link_storage(self, s):
         self._cd3.add_connection(self.out_port[0], self.out_port[1], s[0], s[1])
-        self._out_port = (s[0], "out_np")
+        self._out_port = (s[0], s[2])
 
     def add_flow_probe(self):
         flow_probe = self._cd3.add_node("FlowProbe")
