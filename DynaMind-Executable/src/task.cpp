@@ -15,6 +15,7 @@
 #include <QCoreApplication>
 #include <QSettings>
 #include <QStringList>
+#include <QFileInfo>
 
 #include <dmlogger.h>
 #include <dmlog.h>
@@ -158,7 +159,7 @@ void showSettings()
     }
 }
 
-void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloads)
+void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloads, QDir & simFileDir)
 {
     QStringList overloadlist = QString::fromStdString(parameteroverloads).split(";", QString::SkipEmptyParts);
 
@@ -216,6 +217,15 @@ void OverloadParameters(DM::Simulation* sim, const std::string& parameteroverloa
                 DM::Logger(DM::Error) << "parameter '" << parameterName << "' not found in module '" << moduleName << "'";
                 continue;
             }
+			if (module->getParameter(parameterName)->type == DM::FILENAME){
+				if (!QString::fromStdString(value).contains("host=")){
+					QDir path(simFileDir.absoluteFilePath(QString::fromStdString(value)));
+					DM::Logger(DM::Standard) << "converted relative path '" << value << "'";
+					value = QDir::cleanPath(simFileDir.absoluteFilePath(QString::fromStdString(value))).toStdString();
+					DM::Logger(DM::Standard) << "to absolute path '" << value << "'";
+				}
+			}
+
             module->setParameterValue(parameterName, value);
         }
     }
@@ -474,7 +484,11 @@ void Task::run()
 	}
 
     s.loadSimulation(realsimulationfile);
-    OverloadParameters(&s, parameteroverloads);
+
+
+	QDir simFileDir = QFileInfo(QString::fromStdString(realsimulationfile)).absoluteDir();
+
+	OverloadParameters(&s, parameteroverloads, simFileDir);
 
 	// Overload EPSG
 	if (vm.count("epsg"))
