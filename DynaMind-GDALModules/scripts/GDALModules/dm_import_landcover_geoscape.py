@@ -25,7 +25,7 @@ class DM_ImportLandCoverGeoscape(Module):
         self.createParameter("view_name_grid", STRING)
         self.view_name_grid = "city"
 
-        self.createParameter("raster_file", STRING)
+        self.createParameter("raster_file", FILENAME)
         self.raster_file = ""
 
         self.createParameter("username", STRING)
