@@ -58,12 +58,11 @@ class Lot:
         self._id = id
         self._cd3 = cd3_instance
 
-        self._standard_values = standard_values[lot_detail["soil_id"]]
+        self._standard_values = standard_values[(lot_detail["soil_id"],lot_detail["station_id"])]
 
         self._green_roofs = None
         if lot_detail["green_roof"]:
-            self._green_roofs = standard_values[lot_detail["green_roof"]["soil_id"]]
-
+            self._green_roofs = standard_values[(lot_detail["green_roof"]["soil_id"],lot_detail["station_id"])]
 
         self._internal_streams = {}
         self._external_streams = {}
@@ -108,9 +107,7 @@ class Lot:
         :return:
         """
 
-
         self._create_demand_node(lot["persons"])
-
 
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
@@ -207,20 +204,6 @@ class Lot:
         # Produces non-potable (out_np) and potable demands (out_p)
         consumer = self._cd3.add_node("Consumption")
         l_d_to_m_s = 1. / (1000. * 60. * 60. * 24.)
-
-        leak_other = 6.
-        washing_machine = 22.
-        taps = 21.
-        toilet = 19.
-        shower_bath = 34.
-
-        # consumer.setParameter("const_flow_potable", self._create_const_flow(
-        #     (washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
-        # consumer.setParameter("const_flow_nonpotable", self._create_const_flow(toilet * l_d_to_m_s * residents))
-        #
-        # consumer.setParameter("const_flow_greywater",
-        #                       self._create_const_flow((washing_machine + taps + shower_bath) * l_d_to_m_s * residents))
-        # consumer.setParameter("const_flow_sewer", self._create_const_flow((toilet) * l_d_to_m_s * residents))
 
         consumer.setParameter("const_flow_potable", self._create_const_flow(
             self._demand_profile[DemandProfile.potable_demand_per_person] * l_d_to_m_s * residents))

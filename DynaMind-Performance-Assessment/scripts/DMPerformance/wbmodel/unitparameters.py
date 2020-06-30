@@ -41,6 +41,7 @@ class UnitParameters:
                  start_date,
                  end_date,
                  soil_parameters: {},
+                 climate_data : {},
                  library_path):
         """
         Calculate standard values for per m2
@@ -70,10 +71,8 @@ class UnitParameters:
         self._library_path = library_path
         self._standard_values = {}
         self.start_date = start_date
+        self._climate_data = climate_data
         self.end_date = end_date
-
-        self._rain_data = self._load_rainfall()
-        self._evapotranspiration = self._load_eta()
 
         lot_area = 500
         perv_area_fra = 0.2
@@ -145,10 +144,10 @@ class UnitParameters:
             catchment_w_routing.setDoubleParameter(p[0], p[1])
 
         rain = catchment_model.add_node("SourceVector")
-        rain.setDoubleVectorParameter("source", self._rain_data)
+        rain.setDoubleVectorParameter("source", self._climate_data["rainfall intensity"])
 
         evapo = catchment_model.add_node("SourceVector")
-        evapo.setDoubleVectorParameter("source", self._evapotranspiration)
+        evapo.setDoubleVectorParameter("source", self._climate_data["evapotranspiration"])
 
         catchment_model.add_connection(rain, "out", catchment_w_routing, "Rain")
         catchment_model.add_connection(evapo, "out", catchment_w_routing, "Evapotranspiration")
@@ -165,14 +164,15 @@ class UnitParameters:
             scaling = 1. / reporting[key]["factor"]
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
 
-        self._standard_values[UnitFlows.rainfall] = [v for v in self._rain_data]
-        self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._evapotranspiration]
+        self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
+        self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
         roof_evapotranspiration = []
         pervious_evapotranspiration = []
-
+        # print(len(self._standard_values[UnitFlows.rainfall]))
+        # print(len(self._standard_values[UnitFlows.groundwater_infiltration]))
         for idx, v in enumerate(self._standard_values[UnitFlows.groundwater_infiltration]):
             pervious_evapotranspiration.append(self._standard_values[UnitFlows.rainfall][idx]
                                                - self._standard_values[UnitFlows.pervious_runoff][idx]
@@ -210,13 +210,3 @@ class UnitParameters:
 
     def get_default_folder(self):
         return self._library_path
-
-    def _load_rainfall(self):
-        with open(self.get_default_folder() + '/Data/Raindata/melb_rain_24.ixx') as f:
-            rainfall = f.read()
-        return [float(r.split("\t")[4]) / 1000. for r in rainfall.splitlines()]
-
-    def _load_eta(self):
-        with open(self.get_default_folder() + '/Data/Raindata/melb_eva_24.ixx') as f:
-            rainfall = f.read()
-        return [float(r.split("\t")[1]) / 1000. for r in rainfall.splitlines()]

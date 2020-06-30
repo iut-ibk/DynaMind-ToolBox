@@ -10,24 +10,29 @@ class WaterCycleModel():
                  wb_sub_storages: {},
                  wb_demand_profile: {},
                  soils: {},
+                 stations: {},
                  library_path=None):
 
         self._standard_values = {}
         self._flow_probes = {}
-        self.start_date = "2000-Jan-01 00:00:00"
-        self.end_date = "2001-Jan-01 00:00:00"
+        self.start_date = "2001-Jan-01 00:00:00"
+        self.end_date = "2002-Jan-01 00:00:00"
         self._library_path = library_path
         self._nodes = {}
         self._sub_catchments = sub_catchments
         self._wb_sub_storages = wb_sub_storages
         self._wb_lot_to_sub_catchments = wb_lot_to_sub_catchments
         self._wb_demand_profile = wb_demand_profile
-
-        for key, parameters in soils.items():
-            self._standard_values[key] = UnitParameters(self.start_date,
-                                                   self.end_date,
-                                                   parameters,
-                                                   self._library_path).unit_values
+        self._stations = stations
+        for station_id in self._stations.keys():
+            for key, parameters in soils.items():
+                logging.info(
+                    f"station: {station_id} key: {key}")
+                self._standard_values[(key, station_id)] = UnitParameters(self.start_date,
+                                                       self.end_date,
+                                                       parameters,
+                                                       self._stations[station_id],
+                                                       self._library_path).unit_values
         self._lots = lots
         self._lot_storage_reporting = {}
         self._storage_reporting = {}
@@ -106,8 +111,8 @@ class WaterCycleModel():
     def get_storage(self, storage_id):
         return self._storage_reporting[storage_id]
 
-    def get_standard_values(self, soil_id):
-        return self._standard_values[soil_id]
+    def get_standard_values(self, soil_id, station_id):
+        return self._standard_values[(soil_id, station_id)]
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
@@ -165,12 +170,12 @@ class WaterCycleModel():
     def _create_storage(self, storage):
         demand_port = self._nodes[storage["inflow"]].add_storage(storage)
         self._storage_reporting[storage["id"]] = demand_port[0] # link to actual storage
-        self._nodes[storage["demand"]].link_storage([demand_port[0], demand_port[1]["in_0"], demand_port[1]["out_0"]])
+        if "demand" in storage:
+            self._nodes[storage["demand"]].link_storage([demand_port[0], demand_port[1]["in_0"], demand_port[1]["out_0"]])
         if "demand_1" in storage:
             self._nodes[storage["demand_1"]].link_storage([demand_port[0], demand_port[1]["in_1"], demand_port[1]["out_1"]])
         if "demand_2" in storage:
             self._nodes[storage["demand_2"]].link_storage([demand_port[0], demand_port[1]["in_2"], demand_port[1]["out_2"]])
-
 
     def _create_nodes(self, network):
         nodes = {}
@@ -182,10 +187,10 @@ class WaterCycleModel():
 
         for n in nodes.keys():
             if n not in self._nodes:
-                self._nodes[n] = TransferNode(self._cd3, nodes[n])
+                self._nodes[n] = TransferNode(self._cd3, nodes[n], self._library_path)
 
     def _create_network(self, name, network):
-        print(name, network['stream'], len(network['edges']))
+
         stream = network["stream"]
         for e in network["edges"]:
             if e[0] not in self._nodes:

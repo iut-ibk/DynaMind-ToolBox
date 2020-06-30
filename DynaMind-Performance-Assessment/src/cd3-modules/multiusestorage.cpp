@@ -13,21 +13,14 @@ MultiUseStorage::MultiUseStorage() {
 
 
 	addInPort(ADD_PARAMETERS(in_sw));
-	addInPort(ADD_PARAMETERS(q_in_0));
-	addInPort(ADD_PARAMETERS(q_in_1));
-	addInPort(ADD_PARAMETERS(q_in_2));
+//	addInPort(ADD_PARAMETERS(q_in_0));
+//	addInPort(ADD_PARAMETERS(q_in_1));
+//	addInPort(ADD_PARAMETERS(q_in_2));
 
 	addOutPort(ADD_PARAMETERS(out_sw));
-	addOutPort(ADD_PARAMETERS(q_out_0));
-	addOutPort(ADD_PARAMETERS(q_out_1));
-	addOutPort(ADD_PARAMETERS(q_out_2));
-//	v_in_q.push_back(&q_in_0);
-//	v_in_q.push_back(&q_in_1);
-//	v_in_q.push_back(&q_in_2);
-
-//	v_out_q.push_back(&q_out_0);
-//	v_out_q.push_back(&q_out_1);
-//	v_out_q.push_back(&q_out_2);
+//	addOutPort(ADD_PARAMETERS(q_out_0));
+//	addOutPort(ADD_PARAMETERS(q_out_1));
+//	addOutPort(ADD_PARAMETERS(q_out_2));
 
 	for (int i = 0; i< 3; i++){
 		Flow * q;
