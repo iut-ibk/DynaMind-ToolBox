@@ -11,12 +11,13 @@ class WaterCycleModel():
                  wb_demand_profile: {},
                  soils: {},
                  stations: {},
+                 dates: (),
                  library_path=None):
 
         self._standard_values = {}
         self._flow_probes = {}
-        self.start_date = "2001-Jan-01 00:00:00"
-        self.end_date = "2002-Jan-01 00:00:00"
+        self.start_date = dates[0]
+        self.end_date = dates[1]
         self._library_path = library_path
         self._nodes = {}
         self._sub_catchments = sub_catchments
@@ -24,6 +25,9 @@ class WaterCycleModel():
         self._wb_lot_to_sub_catchments = wb_lot_to_sub_catchments
         self._wb_demand_profile = wb_demand_profile
         self._stations = stations
+
+        print(self.start_date, self.end_date)
+
         for station_id in self._stations.keys():
             for key, parameters in soils.items():
                 logging.info(

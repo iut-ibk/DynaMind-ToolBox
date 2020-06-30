@@ -5,6 +5,7 @@ import time
 
 from pydynamind import *
 from osgeo import ogr
+from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
 from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile
@@ -127,6 +128,8 @@ class UrbanMetabolismModel(Module):
             self.timeseries.addAttribute("data", DM.Attribute.DOUBLEVECTOR, DM.READ)
             self.timeseries.addAttribute("station_id", DM.Attribute.INT, DM.READ)
             self.timeseries.addAttribute("type", DM.Attribute.STRING, DM.READ)
+            self.timeseries.addAttribute("start", Attribute.STRING, READ)
+            self.timeseries.addAttribute("end", Attribute.STRING, READ)
             self.lot.addAttribute("station_id", DM.Attribute.INT, DM.READ)
 
             view_register.append(self.timeseries)
@@ -263,7 +266,8 @@ class UrbanMetabolismModel(Module):
 
             lots[l.GetFID()] = lot
 
-        stations = self._load_station()
+        stations, dates = self._load_station()
+
 
         wb = WaterCycleModel(lots=lots,
                              sub_catchments=sub_catchments,
@@ -272,6 +276,7 @@ class UrbanMetabolismModel(Module):
                              wb_demand_profile = demand_profile,
                              soils=soils,
                              stations=stations,
+                             dates=dates,
                              library_path=self.getSimulationConfig().getDefaultLibraryPath())
 
         # self.wb_soil_parameters.reset_reading()
@@ -339,7 +344,7 @@ class UrbanMetabolismModel(Module):
         self.lot.finalise()
         self.wb_lot_storages.finalise()
 
-    def _load_station(self) -> dict:
+    def _load_station(self):
         """
         Load rainfall stations from database
         :return: dict with timeseries key is the station id
@@ -351,11 +356,14 @@ class UrbanMetabolismModel(Module):
             "evapotranspiration": self._load_eta()
         }
 
+        start_date = "2001-Jan-01 00:00:00"
+        end_date = "2002-Jan-01 00:00:00"
+
         if self.from_rain_station:
             for t in self.timeseries:
                 t: ogr.Feature
                 series = [v/1000. for v in DM.dm_get_double_list(t, "data")]
-                print(sum(series))
+
                 type = t.GetFieldAsString("type")
                 station_id = t.GetFieldAsInteger("station_id")
                 if station_id in stations:
@@ -364,8 +372,11 @@ class UrbanMetabolismModel(Module):
                     station = {}
                 station[type] = series
                 stations[station_id] = station
+                start_date = datetime.strptime(t.GetFieldAsString("start"), '%d.%m.%Y %H:%M:%S').strftime('%Y-%b-%d %H:%M:%S')
+                end_date = datetime.strptime(t.GetFieldAsString("end"), '%d.%m.%Y %H:%M:%S').strftime('%Y-%b-%d %H:%M:%S')
             self.timeseries.finalise()
-        return stations
+
+        return stations, (start_date, end_date)
 
     def get_default_folder(self):
         return self.getSimulationConfig().getDefaultLibraryPath()
