@@ -187,7 +187,7 @@ class WaterCycleModel():
 
         for n in nodes.keys():
             if n not in self._nodes:
-                self._nodes[n] = TransferNode(self._cd3, nodes[n], self._library_path)
+                self._nodes[n] = TransferNode(self._cd3, nodes[n])
 
     def _create_network(self, name, network):
 
