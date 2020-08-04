@@ -92,7 +92,7 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
 	if (rc != SQLITE_OK) {
 		DM::Logger(DM::Error) << " init failed";
-		this->setStatus(DM::MOD_CHECK_ERROR);
+//		this->setStatus(DM::MOD_CHECK_ERROR);
 		DM::Logger(DM::Error) <<  "Error preparing filter:" << sqlite3_errmsg(db);
 		return "";
 	}
@@ -116,7 +116,7 @@ void DMSelector::run()
 {
 	if (!properInit) {
 		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
-		this->setStatus(DM::MOD_CHECK_ERROR);
+//		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
 
