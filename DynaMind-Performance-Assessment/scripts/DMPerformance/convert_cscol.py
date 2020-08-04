@@ -31,8 +31,8 @@ class ConvertCsCOL(Module):
                 # if str(p.GetFieldAsString("type")) != 'HW-closed':
                 #     continue
                 #print p.GetFieldAsString("cscol1")
-                height = map(float, str(p.GetFieldAsString("cscol1")).split())
-                width = map(float, str(p.GetFieldAsString("cscol2")).split())
+                height = list(map(float, str(p.GetFieldAsString("cscol1")).split()))
+                width = list(map(float, str(p.GetFieldAsString("cscol2")).split()))
                 #print width
                 #print height
                 p.SetField("width", max(width) - min(width))

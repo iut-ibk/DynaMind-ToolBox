@@ -64,6 +64,7 @@ private:
 	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
 	OGRGeometry *addToSystem(SFCGAL::Polygon &poly);
 
+	double scalePolgon(OGRFeature * feature, OGRPolygon *ogr_poly, double scale);
 	double site_coverage;
 
 public:

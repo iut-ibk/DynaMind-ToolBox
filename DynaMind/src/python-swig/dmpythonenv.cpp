@@ -158,7 +158,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	script << "if not isinstance(sys.stdout,Logger):\n";
 	script << "        sys.stdout=Logger(sys.stdout,False)\n";
 	script << "        sys.stderr=Logger(sys.stderr,True)\n";
-	script << "print \"Redirect python stdout and stderr\"\n";
+	script << "print(\"Redirect python stdout and stderr\")\n";
 	//script << "print sys.path\n";
 	/*script << "import PyQt4\n";
 	script << "import reimport\n";
@@ -166,7 +166,7 @@ bool PythonEnv::addOverWriteStdCout() {
 	script << "import osgeo\n";
 	script << "import numpy\n";
 	script << "import scipy\n";*/
-	script << "print \"Python environment is ready for use\"\n";
+	script << "print(\"Python environment is ready for use\")\n";
 
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
@@ -181,6 +181,7 @@ bool PythonEnv::addOverWriteStdCout() {
 }
 
 void PythonEnv::addPythonPath(std::string path) {
+	DM::Logger(DM::Standard) << "Add Python Path " << path;
 	ostringstream script;
 
 	script << "import sys\n";
@@ -199,6 +200,7 @@ void PythonEnv::addPythonPath(std::string path) {
 
 bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 {
+	DM::Logger(DM::Standard) << "Register " << module;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyObject *pydynamind_module = PyImport_ImportModule("pydynamind");
 	if (PyErr_Occurred()) {
@@ -216,14 +218,14 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	}
 
 	QSettings settings;
-	QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
+//	QString PathtoUrbanSim = settings.value("UrbanSim").toString().replace("\\","/");
 
-	if(PathtoUrbanSim.size())
-	{
-		if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
-			PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
-		}
-	}
+//	if(PathtoUrbanSim.size())
+//	{
+//		if (PathtoUrbanSim[PathtoUrbanSim.size()-1] == '/') {
+//			PathtoUrbanSim.remove(PathtoUrbanSim.size()-1,1);
+//		}
+//	}
 
 	ostringstream script;
 	script << "import reimport\n";
@@ -232,10 +234,10 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	script << "import pydynamind\n";
 	script << "import site\n";
 	script << "import inspect\n";
-	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
-	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
-	script << "os.environ['PYTHONPATH']  = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
-	script << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+//	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/')\n";
+//	script << "sys.path.append('" << PathtoUrbanSim.toStdString() << "/src/opus_core/tools')\n";
+//	script << "os.environ['PYTHONPATH']  = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
+//	script << "os.environ['OPUS_HOME']   = '" << PathtoUrbanSim.toStdString() << "/src/'\n";
 
 	std::string f = QDir::currentPath().toStdString();
 	script << "site.addsitedir(\""<< QDir::currentPath().toStdString() << "\") \n";

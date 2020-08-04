@@ -15,14 +15,14 @@ import numpy as np
 import pylab as pl
 import decimal
 
-file_names=os.listdir('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\check')[0:]
+file_names=os.listdir('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\check')[0:]
 list_csv=zeros((len(file_names),1)).tolist()
 final_list=zeros((len(file_names),1)).tolist()
 
 for i in range(len(file_names)): 
     file_name=file_names[i]
     
-    with open("C:\Users\Acer\Documents\GitHub\CD3Waterbalance\check\%s" % file_name) as csvfile:
+    with open("C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\check\%s" % file_name) as csvfile:
         data=csv.reader(csvfile, delimiter=',', quotechar='$')     
         
         global list_csv
@@ -92,8 +92,8 @@ cumulated_absolut_error=sum(balance_for_each_time)
 relative_averaged_error=2*cumulated_absolut_error / (sum(sum_array_absolut[0])+sum(sum_array_absolut[1])+sum(sum_array_absolut[2])+sum(sum_array_absolut[3])+sum(sum_array_absolut[4])+sum(sum_array_absolut[5]))/100
 
 days=float(dt)/60/60/24*len(balance_for_each_time)
-print''
-print 'The duration of the simulation was %s days' %days
-print 'The absolut cumulated error value is %s m³' %cumulated_absolut_error 
-print 'The realtive averaged error is %s percent' %relative_averaged_error
-print''
+print('')
+print(('The duration of the simulation was %s days' %days))
+print(('The absolut cumulated error value is %s m³' %cumulated_absolut_error)) 
+print(('The realtive averaged error is %s percent' %relative_averaged_error))
+print('')

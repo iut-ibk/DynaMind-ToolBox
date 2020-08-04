@@ -80,8 +80,17 @@ include_directories(src/cd3core)
 #include python scripting capabilites
 option(WITH_PYTHON "Include Python scripting capabilites" ON)
 if (WITH_PYTHON)
-	find_package(PythonLibs 2.7 REQUIRED)
-	find_package(SWIG REQUIRED)
+    FIND_PACKAGE(PythonLibs 3.5 REQUIRED)
+    FIND_PROGRAM(PYTHON_EXECUTABLE NAMES python)
+    INCLUDE_DIRECTORIES(src/python-swig ${PYTHON_INCLUDE_PATH})
+    FIND_PACKAGE(SWIG REQUIRED)
+    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+    execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+        from distutils import sysconfig as sc
+	print(sc.get_python_lib(prefix='', plat_specific=True))"
+      OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif (WITH_PYTHON)
 if (WITH_PYTHON AND PYTHONLIBS_FOUND AND SWIG_FOUND)
 	message(STATUS "Python support enabled")

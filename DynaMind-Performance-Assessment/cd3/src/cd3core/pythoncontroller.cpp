@@ -9,13 +9,13 @@
 #define BEFORE "timestep_before"
 
 extern "C" {
-void init_pycd3(void);
+void PyInit__pycd3(void);
 }
 
 PythonController::PythonController(const std::string &path) {
 	if (!Py_IsInitialized()) {
 		Py_Initialize();
-		init_pycd3();
+		PyInit__pycd3();
 	}
 
 	if (!boost::filesystem::exists(path)) {
@@ -35,8 +35,8 @@ PythonController::PythonController(const std::string &path) {
 
 	PyObject *pycd3_module = PyImport_ImportModule("pycd3");
 
-	PyObject* PyFileObject = PyFile_FromString((char *) path.c_str(), "r");
-	PyRun_File(PyFile_AsFile(PyFileObject), path.c_str(), Py_file_input, main_namespace, 0);
+	FILE* PyFileObject = fopen((char *) path.c_str(), "r");
+	PyRun_File(PyFileObject, path.c_str(), Py_file_input, main_namespace, 0);
 
 	ts_after_cb = PyDict_GetItemString(main_namespace, AFTER);
 	ts_before_cb = PyDict_GetItemString(main_namespace, BEFORE);

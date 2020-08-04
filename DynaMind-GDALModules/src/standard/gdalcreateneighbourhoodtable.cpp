@@ -65,17 +65,18 @@ void GDALCreateNeighbourhoodTable::run()
 
 	if (!onlyShareEdge) {
 		query << "SELECT p1.OGC_FID as \"" << name_id1 << "\", p2.OGC_FID as \"" << name_id2 << "\" FROM " <<  viewName <<" as p1, " << viewName;
-		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND  p2.ROWID IN ( SELECT pkid ";
-		query << "FROM " << "idx_"<< viewName << "_geometry";
-		query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
+		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND  p2.ROWID IN ( SELECT ROWID FROM SpatialIndex WHERE f_table_name ='";
+		query << viewName << "' AND search_frame = p2.Geometry ORDER BY ROWID)";
 	} else {
 		query << "SELECT p1.OGC_FID as \"" << name_id1 << "\", p2.OGC_FID as \"" << name_id2 << "\" FROM " <<  viewName <<" as p1, " << viewName;
-		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND GeometryType(Intersection(p1.geometry, p2.geometry)) != 'POINT'  AND p2.ROWID IN ( SELECT pkid ";
-		query << "FROM " << "idx_"<< viewName << "_geometry";
-		query << " WHERE pkid MATCH RTreeIntersects(MbrMinX(p1.geometry),MbrMinY(p1.geometry),MbrMaxX(p1.geometry),MbrMaxY(p1.geometry)));";
+		query << " as p2 WHERE ST_Touches(p1.geometry, p2.geometry) AND GeometryType(Intersection(p1.geometry, p2.geometry)) != 'POINT'  AND  p2.ROWID IN "
+				 "( SELECT ROWID FROM SpatialIndex WHERE f_table_name ='";
+		query << viewName << "' AND search_frame = p2.Geometry ORDER BY ROWID)";
 	}
 
+
 	DM::Logger(DM::Standard) << query.str();
+
 	OGRLayer * l = sys->getDataSource()->ExecuteSQL(query.str().c_str(), 0, "SQLITE");
 
 	if (!l) {
@@ -101,5 +102,4 @@ string GDALCreateNeighbourhoodTable::getHelpUrl()
 {
 	return "/DynaMind-GDALModules/gdalcreateneighbourhoodtable.html";
 }
-
 

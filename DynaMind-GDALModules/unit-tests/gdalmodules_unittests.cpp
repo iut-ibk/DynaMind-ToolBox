@@ -213,12 +213,21 @@ TEST_F(GDALModules_Unittests, GDALHostStartSimulation) {
 #ifdef GDALPARCELSPLIT
 TEST_F(GDALModules_Unittests, GDALParcelSplit) {
 	ostream *out = &cout;
-	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Standard);
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig sc;
+	sc = sim.getSimulationConfig();
+	sc.setWorkingDir("/tmp/");
+	sc.setCoordinateSystem(3857);
+	sim.setSimulationConfig(sc);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
+
+	sim.registerModulesFromDirectory(QDir("./Modules"));
+	sim.registerModulesFromDirectory(QDir("./PythonModules/scripts"));
+
 	DM::Module * rect = sim.addModule("GDALCreateRectangle");
 	rect->setParameterValue("width", "100");
 	rect->setParameterValue("height", "200");
@@ -269,8 +278,18 @@ TEST_F(GDALModules_Unittests, GDALAttributeCaluclator) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig sc;
+	sc = sim.getSimulationConfig();
+	sc.setWorkingDir("/tmp/");
+	sc.setCoordinateSystem(3857);
+	sim.setSimulationConfig(sc);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
+
+	sim.registerModulesFromDirectory(QDir("./Modules"));
+	sim.registerModulesFromDirectory(QDir("./PythonModules/scripts"));
+
+
 	DM::Module * rect = sim.addModule("GDALCreateRectangle");
 	rect->setParameterValue("width", "800");
 	rect->setParameterValue("height", "800");
@@ -477,8 +496,17 @@ TEST_F(GDALModules_Unittests, Multithrading) {
 	DM::Logger(DM::Standard) << "Create System";
 
 	DM::Simulation sim;
+	DM::SimulationConfig sc;
+	sc = sim.getSimulationConfig();
+	sc.setWorkingDir("/tmp/");
+	sc.setCoordinateSystem(3857);
+	sim.setSimulationConfig(sc);
 	QDir dir("./");
 	sim.registerModulesFromDirectory(dir);
+
+	sim.registerModulesFromDirectory(QDir("./Modules"));
+	sim.registerModulesFromDirectory(QDir("./PythonModules/scripts"));
+
 	DM::Module * rect = sim.addModule("GDALCreateRectangle");
 	rect->setParameterValue("width", "10000");
 	rect->setParameterValue("height", "10000");

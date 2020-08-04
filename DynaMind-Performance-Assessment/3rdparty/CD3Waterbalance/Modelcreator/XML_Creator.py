@@ -5,7 +5,7 @@ Created on Mon Jan 05 12:16:56 2015
 @author: Acer
 """
 import sys
-sys.path.append('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\Modelcreator')
+sys.path.append('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\Modelcreator')
 from Need_to_have_modelinput import Need_to_have_modelinput
 from Simulation_basic_setup import Simulation_basic_setup
 from Gardenwateringsetup import Gardenwateringsetup
@@ -139,7 +139,7 @@ class XML_Creator():
         
     def PrintConnections(self):
         for i in range(len(self.Connectionlist)):    
-            print self.Connectionlist[i] 
+            print((self.Connectionlist[i])) 
         return
     
 #    Connection_Name_List = [['Inport', "Raintank_0", "Collected_Water"],['Outport', "Raintank_0", "Current_Volume"]]
@@ -206,7 +206,7 @@ class XML_Creator():
                         pass
                         
             else:
-                print "Wrong Input!!"
+                print("Wrong Input!!")
             Global_counters.number_of_fileouts += 1 
         Fileoutattrvec = []
         for i in range(len(Connection_Name_List)):
@@ -220,7 +220,7 @@ class XML_Creator():
       
       
       
-    def SaveXML(self,directory = 'C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles\Test.xml'):
+    def SaveXML(self,directory = 'C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\outputfiles\Test.xml'):
         ''' creating XML - List '''
     
         #Basic Setup list
@@ -250,8 +250,8 @@ class XML_Creator():
         for i in range(len(self.Allstrings)):
             outFile.write( self.Allstrings[i])
         outFile.close()
-        print str(len(self.Connectionlist))+' Connections have been created!'
-        print 'The xml file has been created and saved!'        
+        print((str(len(self.Connectionlist))+' Connections have been created!'))
+        print('The xml file has been created and saved!')        
         
         return 
         

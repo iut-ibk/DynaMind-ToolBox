@@ -95,7 +95,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.nonpotcollstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.nonpotcollstrings += string'+str(o)
+                        exec('self.nonpotcollstrings += string'+str(o))
                     self.nonpot_coll_strings.append(self.nonpotcollstrings)
             else:
                 counter_1 = 0
@@ -113,7 +113,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.nonpotcollstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.nonpotcollstrings += string'+str(o)
+                        exec('self.nonpotcollstrings += string'+str(o))
                     self.nonpot_coll_strings.append(self.nonpotcollstrings)
             else:
                 counter_2 = 0
@@ -132,7 +132,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.nonpotcollstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.nonpotcollstrings += string'+str(o)
+                        exec('self.nonpotcollstrings += string'+str(o))
                     self.nonpot_coll_strings.append(self.nonpotcollstrings)
             else:
                 counter_3 = 0
@@ -146,7 +146,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.nonpotcollstrings = ''
             for o in range(5)[1:]:
-                exec 'self.nonpotcollstrings += string'+str(o)
+                exec('self.nonpotcollstrings += string'+str(o))
             self.nonpot_coll_strings.append(self.nonpotcollstrings)
             #writes collector number in list that knows number of inports for later reference
             Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, counter_1+counter_2+counter_3])
@@ -167,7 +167,7 @@ class Supplylevel:
                 #writes all string in one and puts it in list
                 self.potcollstrings = ''
                 for o in range(5)[1:]:
-                    exec 'self.potcollstrings += string'+str(o)
+                    exec('self.potcollstrings += string'+str(o))
                 self.pot_coll_strings.append(self.potcollstrings)
             
             #adds potable water reservoir connecting pot
@@ -179,7 +179,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.potcollstrings = ''
             for o in range(5)[1:]:
-                exec 'self.potcollstrings += string'+str(o)
+                exec('self.potcollstrings += string'+str(o))
             self.pot_coll_strings.append(self.potcollstrings)  
             #writes collector number in list that knows number of inports for later reference
             Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, counter_1])
@@ -206,7 +206,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.stormdrainstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.stormdrainstrings += string'+str(o)
+                        exec('self.stormdrainstrings += string'+str(o))
                     self.stormdrain_strings.append(self.stormdrainstrings)
             else:
                 counter_1 = 0
@@ -223,7 +223,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.stormdrainstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.stormdrainstrings += string'+str(o)
+                        exec('self.stormdrainstrings += string'+str(o))
                     self.stormdrain_strings.append(self.stormdrainstrings)
             else:
                 counter_2 = 0
@@ -237,7 +237,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.stormdrainstrings = ''
             for o in range(5)[1:]:
-                exec 'self.stormdrainstrings += string'+str(o)
+                exec('self.stormdrainstrings += string'+str(o))
             self.stormdrain_strings.append(self.stormdrainstrings)  
             #writes collector number in list that knows number of inports for later reference
             Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, counter_1 + counter_2 ])
@@ -263,7 +263,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
             else:
@@ -282,7 +282,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
             else:
@@ -301,7 +301,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
             else:
@@ -320,7 +320,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
             else:
@@ -339,7 +339,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
             else:
@@ -357,7 +357,7 @@ class Supplylevel:
                     #writes all string in one and puts it in list
                     self.sewerstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.sewerstrings += string'+str(o)
+                        exec('self.sewerstrings += string'+str(o))
                     self.sewer_strings.append(self.sewerstrings)
                     
                     
@@ -370,7 +370,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.sewerstrings = ''
             for o in range(5)[1:]:
-                exec 'self.sewerstrings += string'+str(o)
+                exec('self.sewerstrings += string'+str(o))
             self.sewer_strings.append(self.sewerstrings)
             
             #writes collector number in list that knows number of inports for later reference
@@ -405,7 +405,7 @@ class Supplylevel:
         #writes all string in one and puts it in list
         self.modelinputstrings = ''
         for o in range(5)[1:]:
-            exec 'self.modelinputstrings += string'+str(o)
+            exec('self.modelinputstrings += string'+str(o))
         self.modelinput_strings.append(self.modelinputstrings)
         
         #fileout - distributor connection
@@ -417,7 +417,7 @@ class Supplylevel:
         #writes all string in one and puts it in list
         self.modelinputstrings = ''
         for o in range(5)[1:]:
-            exec 'self.modelinputstrings += string'+str(o)
+            exec('self.modelinputstrings += string'+str(o))
         self.modelinput_strings.append(self.modelinputstrings)
         
         #distributor - catchment connection (rain)
@@ -430,7 +430,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.modelinputstrings = ''
             for o in range(5)[1:]:
-                exec 'self.modelinputstrings += string'+str(o)
+                exec('self.modelinputstrings += string'+str(o))
             self.modelinput_strings.append(self.modelinputstrings)
         
         #writes collector number in list that knows number of inports for later reference
@@ -449,7 +449,7 @@ class Supplylevel:
         #writes all string in one and puts it in list
         self.modelinputstrings = ''
         for o in range(5)[1:]:
-            exec 'self.modelinputstrings += string'+str(o)
+            exec('self.modelinputstrings += string'+str(o))
         self.modelinput_strings.append(self.modelinputstrings)
         
         
@@ -462,7 +462,7 @@ class Supplylevel:
         #writes all string in one and puts it in list
         self.modelinputstrings = ''
         for o in range(5)[1:]:
-            exec 'self.modelinputstrings += string'+str(o)
+            exec('self.modelinputstrings += string'+str(o))
         self.modelinput_strings.append(self.modelinputstrings)
         
         #fileout - distributor connection
@@ -474,7 +474,7 @@ class Supplylevel:
         #writes all string in one and puts it in list
         self.modelinputstrings = ''
         for o in range(5)[1:]:
-            exec 'self.modelinputstrings += string'+str(o)
+            exec('self.modelinputstrings += string'+str(o))
         self.modelinput_strings.append(self.modelinputstrings)
         
         #distributor - catchment connection (evapo)
@@ -487,7 +487,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.modelinputstrings = ''
             for o in range(5)[1:]:
-                exec 'self.modelinputstrings += string'+str(o)
+                exec('self.modelinputstrings += string'+str(o))
             self.modelinput_strings.append(self.modelinputstrings)
              
         #writes collector number in list that knows number of inports for later reference
@@ -511,7 +511,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkgardensstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkgardensstrings += string'+str(o)
+                exec('self.checkgardensstrings += string'+str(o))
             self.check_garden_strings.append(self.checkgardensstrings)
              
         #writes collector number in list that knows number of inports for later reference
@@ -534,7 +534,7 @@ class Supplylevel:
                 #writes all string in one and puts it in list
                 self.checkgreytanksstrings = ''
                 for o in range(5)[1:]:
-                    exec 'self.checkgreytanksstrings += string'+str(o)
+                    exec('self.checkgreytanksstrings += string'+str(o))
                 self.check_greytanks_strings.append(self.checkgreytanksstrings)
                  
             #writes collector number in list that knows number of inports for later reference
@@ -559,7 +559,7 @@ class Supplylevel:
                 #writes all string in one and puts it in list
                 self.checkgreyresstrings = ''
                 for o in range(5)[1:]:
-                    exec 'self.checkgreyresstrings += string'+str(o)
+                    exec('self.checkgreyresstrings += string'+str(o))
                 self.check_greyres_strings.append(self.checkgreyresstrings)
                  
             #writes collector number in list that knows number of inports for later reference
@@ -584,7 +584,7 @@ class Supplylevel:
                 #writes all string in one and puts it in list
                 self.checkstormtanksstrings = ''
                 for o in range(5)[1:]:
-                    exec 'self.checkstormtanksstrings += string'+str(o)
+                    exec('self.checkstormtanksstrings += string'+str(o))
                 self.check_stormtanks_strings.append(self.checkstormtanksstrings)
                  
             #writes collector number in list that knows number of inports for later reference
@@ -609,7 +609,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkraintanksstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkraintanksstrings += string'+str(o)
+                exec('self.checkraintanksstrings += string'+str(o))
             self.check_raintanks_strings.append(self.checkraintanksstrings)
              
         #writes collector number in list that knows number of inports for later reference
@@ -631,7 +631,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkinfiltrationstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkinfiltrationstrings += string'+str(o)
+                exec('self.checkinfiltrationstrings += string'+str(o))
             self.check_infiltration_strings.append(self.checkinfiltrationstrings)
              
         #writes collector number in list that knows number of inports for later reference
@@ -653,7 +653,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkoutdoordemandstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkoutdoordemandstrings += string'+str(o)
+                exec('self.checkoutdoordemandstrings += string'+str(o))
             self.check_outdoordemand_strings.append(self.checkoutdoordemandstrings)
              
         #writes collector number in list that knows number of inports for later reference
@@ -675,7 +675,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_bath_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -693,7 +693,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_shower_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -711,7 +711,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_kitchen_tap_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -729,7 +729,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_handbasin_tap_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -747,7 +747,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_toilet_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -765,7 +765,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_washingmachine_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -783,7 +783,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_dishwasher_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -801,7 +801,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkdemandmodelbathstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkdemandmodelbathstrings += string'+str(o)
+                exec('self.checkdemandmodelbathstrings += string'+str(o))
             self.check_demandmodel_evapcooler_strings.append(self.checkdemandmodelbathstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_demandmodels])
@@ -820,7 +820,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.checkindoordemandstrings = ''
             for o in range(5)[1:]:
-                exec 'self.checkindoordemandstrings += string'+str(o)
+                exec('self.checkindoordemandstrings += string'+str(o))
             self.check_indoordemand_strings.append(self.checkindoordemandstrings)   
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(self.indoor_demand_coll_list)])
@@ -841,7 +841,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.sewersstrings = ''
             for o in range(5)[1:]:
-                exec 'self.sewersstrings += string'+str(o)
+                exec('self.sewersstrings += string'+str(o))
             self.sewers_strings.append(self.sewersstrings)
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_sewers])
@@ -862,7 +862,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.stormdrainsstrings = ''
             for o in range(5)[1:]:
-                exec 'self.stormdrainsstrings += string'+str(o)
+                exec('self.stormdrainsstrings += string'+str(o))
             self.stormdrains_strings.append(self.stormdrainsstrings)
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_stormwaterpipes])
@@ -883,7 +883,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.potstrings = ''
             for o in range(5)[1:]:
-                exec 'self.potstrings += string'+str(o)
+                exec('self.potstrings += string'+str(o))
             self.pot_strings.append(self.potstrings)
         #writes collector number in list that knows number of inports for later reference
         Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, Global_counters.number_of_potablwaterreservoirs])
@@ -906,7 +906,7 @@ class Supplylevel:
             #writes all string in one and puts it in list
             self.fileoutstrings = ''
             for o in range(5)[1:]:
-                exec 'self.fileoutstrings += string'+str(o)
+                exec('self.fileoutstrings += string'+str(o))
             self.fileout_strings.append(self.fileoutstrings) 
             Global_counters.numbers_names_of_fileouts_list.append([Global_counters.number_of_fileouts, str(self.need_to_have_filout_list[q][1])+'.txt'])
             Global_counters.number_of_fileouts += 1

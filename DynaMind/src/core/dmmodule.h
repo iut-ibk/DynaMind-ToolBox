@@ -322,6 +322,8 @@ public:
 	/** @brief Returns simulation config */
 	DM::SimulationConfig getSimulationConfig();
 
+	void setUUID(const std::string & uuid);
+
 protected:
 	/** @brief returns the data from the desired stream */
 	ISystem* getIData(const std::string& streamName);
@@ -432,6 +434,7 @@ private:
 
 	GDALSystem * reconnect_sys;
 
+	std::string uuid;
 
 	//View containers registered in the simulation and therefore managed by the simulation
 	std::vector<DM::ViewContainer *> regiseredViewContainers;

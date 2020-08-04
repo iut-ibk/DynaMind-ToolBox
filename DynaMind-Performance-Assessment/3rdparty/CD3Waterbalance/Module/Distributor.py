@@ -45,15 +45,15 @@ class Distributor(pycd3.Node):
         self.addInPort("Inport", self.inflow)
 
         for i in range(self.numberof_out_ports):
-            exec 'self.Out'+str(i+1)+'=pycd3.Flow()'
-            exec 'self.addOutPort("Outport_'+str(i+1)+'", self.Out'+str(i+1)+')'        
+            exec('self.Out'+str(i+1)+'=pycd3.Flow()')
+            exec('self.addOutPort("Outport_'+str(i+1)+'", self.Out'+str(i+1)+')')        
          
         return True
         
     def f(self, current, dt):
               
         for i in range(self.numberof_out_ports):
-            exec 'self.Out'+str(i+1)+'[0]=self.inflow[0]'
+            exec('self.Out'+str(i+1)+'[0]=self.inflow[0]')
           
         return dt
     

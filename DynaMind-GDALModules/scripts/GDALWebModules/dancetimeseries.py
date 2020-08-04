@@ -41,6 +41,12 @@ class LoadDAnCETimeseries(Module):
             self.createParameter("from_city", BOOL)
             self.from_city = False
 
+            self.createParameter("start_date_name", STRING)
+            self.start_date_name = "start_date"
+
+            self.createParameter("end_date_name", STRING)
+            self.end_date_name = "end_date"
+
             self.createParameter("view_name", STRING)
             self.view_name = "station"
 
@@ -64,8 +70,8 @@ class LoadDAnCETimeseries(Module):
 
             if self.from_city:
                 self.city = ViewContainer("city", COMPONENT, READ)
-                self.city.addAttribute("start_date", Attribute.STRING, READ)
-                self.city.addAttribute("end_date", Attribute.STRING, READ)
+                self.city.addAttribute(self.start_date_name, Attribute.STRING, READ)
+                self.city.addAttribute(self.end_date_name, Attribute.STRING, READ)
                 datastream.append(self.city)
 
             #self.node_station.addAttribute("station_id", Attribute.DOUBLEVECTOR, WRITE)
@@ -93,8 +99,8 @@ class LoadDAnCETimeseries(Module):
 
             if self.from_city:
                 for c in self.city:
-                    start_date = c.GetFieldAsString("start_date")
-                    end_date = c.GetFieldAsString("end_date")
+                    start_date = c.GetFieldAsString(self.start_date_name)
+                    end_date = c.GetFieldAsString(self.end_date_name)
 
 
             for id, name in self.measurement_types(cur):

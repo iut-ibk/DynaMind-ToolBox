@@ -125,7 +125,7 @@ public:
 	~Simulation();
 
 	/** @brief adds a module to the simulation, returning a pointer to the object. returns 0 if failed. */
-	virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true);
+	virtual Module* addModule(const std::string ModuleName, Module* parent = NULL, bool callInit = true, const string uuid = "");
 
 	/** @brief Removes and deletes a module from the simulation */
 	virtual void removeModule(Module* m);
@@ -179,6 +179,8 @@ public:
 
 	/** @brief returns a list of all modules in this simulation */
 	std::list<Module*> getModules(){return modules;};
+
+
 
 	/** @brief returns a list of all links in this simulation */
 	std::list<Link*> getLinks(){return links;};

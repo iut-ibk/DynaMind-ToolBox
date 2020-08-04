@@ -10,7 +10,7 @@ from Global_meaning_list import Global_meaning_list
 def Purpose_Finder_Collectors(word):
     for i in range(len(Global_meaning_list.collectors)):
         if word in Global_meaning_list.collectors[i]:
-            print Global_meaning_list.collectors[i][1]
+            print((Global_meaning_list.collectors[i][1]))
         else:
             pass
             

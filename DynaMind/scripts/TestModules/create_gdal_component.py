@@ -39,7 +39,7 @@ class CreateGDALComponents(Module):
 
             views = []
             self.n = ViewContainer("out", NODE, WRITE)
-            print self.n
+            print(self.n)
             views.append(self.n)
 
             self.addGDALData("out", views)

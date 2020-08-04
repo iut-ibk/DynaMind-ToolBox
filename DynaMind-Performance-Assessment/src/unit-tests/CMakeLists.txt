@@ -1,4 +1,6 @@
 SET(gtest_force_shared_crt "ON" CACHE BOOL "")
+SET(EXECUTABLE_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR})
+
 MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
 		    ${gtest_SOURCE_DIR}/include
@@ -12,7 +14,7 @@ FILE(GLOB UNIT_CPP *.cpp)
 ADD_EXECUTABLE(unit-test_WaterBalance ${UNIT_CPP})
 
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-	SET_TARGET_PROPERTIES(unit-test_BasicModules  PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
+        SET_TARGET_PROPERTIES(unit-test_WaterBalance  PROPERTIES COMPILE_FLAGS "-frounding-math -fPIC")
 ENDIF()
 
 IF(USEQT5)

@@ -1,4 +1,5 @@
 SET(gtest_force_shared_crt "ON" CACHE BOOL "")
+SET(EXECUTABLE_OUTPUT_PATH ${DYNAMIND_TOOLBOX_BUILD_DIR})
 MESSAGE(STATUS "gtest_force_shared_crt = ${gtest_force_shared_crt}")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
 		    ${gtest_SOURCE_DIR}/include

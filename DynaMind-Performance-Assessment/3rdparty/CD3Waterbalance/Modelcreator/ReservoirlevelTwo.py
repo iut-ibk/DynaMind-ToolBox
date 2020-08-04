@@ -107,7 +107,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.additionaldemand_coll_strings.append(self.additionaldemandcollstrings)
                 else:
                     m=-1
@@ -126,7 +126,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.additionaldemand_coll_strings.append(self.additionaldemandcollstrings)
                 else:
                     counter_1 = 0    
@@ -145,7 +145,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.additionaldemand_coll_strings.append(self.additionaldemandcollstrings)
                 else:
                     counter_2 = 0   
@@ -172,10 +172,10 @@ class ReservoirlevelTwo:
                     #writes all string in one and puts it in list
                     self.gwrinflowstring = ''
                     for o in range(5)[1:]:
-                        exec 'self.gwrinflowstring += string'+str(o)
+                        exec('self.gwrinflowstring += string'+str(o))
                     self.gwr_inflow_strings.append(self.gwrinflowstring)
                 if self.gwr_in_still_not_connected == []:
-                    print "You can't insert another Greywater Reservoir, since there's not gonna be any inflow!"
+                    print("You can't insert another Greywater Reservoir, since there's not gonna be any inflow!")
                 else:
                     pass
                 #writes collector number in list that knows number of inports for later reference
@@ -203,8 +203,8 @@ class ReservoirlevelTwo:
                 self.gwrinstring = ''
                 self.gwroutstring = ''
                 for o in range(5)[1:]:
-                    exec 'self.gwrinstring += string'+str(o+4)
-                    exec 'self.gwroutstring += string'+str(o)
+                    exec('self.gwrinstring += string'+str(o+4))
+                    exec('self.gwroutstring += string'+str(o))
                 self.gwr_in_strings.append(self.gwrinstring)
                 self.gwr_out_strings.append(self.gwroutstring)
                 self.additional_demand_gwr.append(Global_counters.number_of_greywaterreservoirs)
@@ -226,10 +226,10 @@ class ReservoirlevelTwo:
                     #writes all string in one and puts it in list
                     self.swrinflowcollstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.swrinflowcollstrings += string'+str(o)
+                        exec('self.swrinflowcollstrings += string'+str(o))
                     self.swr_inflow_coll_strings.append(self.swrinflowcollstrings)
                 if self.swr_in_still_not_connected == []:
-                    print "You can't insert another Stormwater Reservoir, since there's not gonna be any inflow!" 
+                    print("You can't insert another Stormwater Reservoir, since there's not gonna be any inflow!") 
                 else:
                     pass                    
                 #writes collector number in list that knows number of inports for later reference
@@ -251,7 +251,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.swroutflowcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.swroutflowcollstrings += string'+str(o)
+                            exec('self.swroutflowcollstrings += string'+str(o))
                         self.swr_outflow_coll_strings.append(self.swroutflowcollstrings)  
                 else:
                     m=-1
@@ -270,7 +270,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.swr_outflow_coll_strings.append(self.additionaldemandcollstrings)
                 else:
                     counter_1 = 0    
@@ -289,7 +289,7 @@ class ReservoirlevelTwo:
                         #writes all string in one and puts it in list
                         self.additionaldemandcollstrings = ''
                         for o in range(5)[1:]:
-                            exec 'self.additionaldemandcollstrings += string'+str(o)
+                            exec('self.additionaldemandcollstrings += string'+str(o))
                         self.swr_outflow_coll_strings.append(self.additionaldemandcollstrings)
                 else:
                     counter_2 = 0    
@@ -323,8 +323,8 @@ class ReservoirlevelTwo:
                 self.swrinstring = ''
                 self.swroutstring = ''
                 for o in range(5)[1:]:
-                    exec 'self.swrinstring += string'+str(o+4)
-                    exec 'self.swroutstring += string'+str(o)
+                    exec('self.swrinstring += string'+str(o+4))
+                    exec('self.swroutstring += string'+str(o))
                 self.swr_in_strings.append(self.swrinstring)
                 self.swr_out_strings.append(self.swroutstring)
                 self.additional_demand_swr.append(Global_counters.number_of_stormwaterreservoirs)

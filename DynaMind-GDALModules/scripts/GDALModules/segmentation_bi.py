@@ -64,10 +64,10 @@ class SegmentationUndirected(Module):
                 self.node_edge_list[start_node].append(f_id)
                 self.node_edge_list[end_node].append(f_id)
 
-            print len(self.node_list)
+            print(len(self.node_list))
             self.deep = 0
             self.deeper = 0
-            for edge_id in self.edge_list.keys():
+            for edge_id in list(self.edge_list.keys()):
                 elements = []
                 attribute = self.edge_list[edge_id][2]
                 self.get_next_elements(edge_id, True, attribute, elements)

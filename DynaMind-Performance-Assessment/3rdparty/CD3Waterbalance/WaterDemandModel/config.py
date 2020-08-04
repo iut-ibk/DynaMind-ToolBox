@@ -3,7 +3,7 @@ __project__ = 'WaterDemandModel'
 
 import os
 
-RAW_FILE_PATH = "C:\Users\Acer\Documents\GitHub\CD3Waterbalance\WaterDemandModel"
+RAW_FILE_PATH = "C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\WaterDemandModel"
 
 RESIDENTIAL_DIURNAL_PATTERN_DATABASE = os.path.join(RAW_FILE_PATH, "csvFiles\ResidentialDiurnalPattern.csv")
 

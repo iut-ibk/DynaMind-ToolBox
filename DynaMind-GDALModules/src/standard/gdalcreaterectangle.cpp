@@ -33,11 +33,11 @@ void GDALCreateRectangle::init()
 void GDALCreateRectangle::run() {
 
 	OGRLinearRing lr;
-	lr.addPoint(0,0,0);
-	lr.addPoint(width,0,0);
-	lr.addPoint(width, length,0);
-	lr.addPoint(0, length, 0);
-	lr.addPoint(0, 0, 0);
+	lr.addPoint(0,0);
+	lr.addPoint(width,0);
+	lr.addPoint(width, length);
+	lr.addPoint(0, length);
+	lr.addPoint(0, 0);
 	OGRPolygon poly;
 	poly.addRing(&lr);
 

@@ -88,6 +88,6 @@ def createInputArrayWithDummy(filepath):
 
         except ValueError:  # if they arent numbers and a Error is returned:
             Xvals.append(x)  # append Xvals but dont convert to float. Will be in e.g '0-2' format
-            Xvals_dummy = range(1, len(Xvals) + 1,1)  # create a dummy Xvals array that contains numbers and can be used the following methods to create a logNormDist. range(start,stop,step)
+            Xvals_dummy = list(range(1, len(Xvals) + 1,1))  # create a dummy Xvals array that contains numbers and can be used the following methods to create a logNormDist. range(start,stop,step)
 
     return Xvals, Yvals, Xvals_dummy

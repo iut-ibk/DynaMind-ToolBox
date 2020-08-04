@@ -254,6 +254,39 @@ public:
 };
 %}
 
+%extend WrappedDouble {
+//	float __floordiv__(float value) {
+//			return $self->value / value;
+//	}
+	float __truediv__(float value) {
+			return $self->value / value;
+	}
+	float __rtruediv__(float value) {
+			return $self->value / value;
+	}
+	float __mul__(float value) {
+			return $self->value * value;
+	}
+	float __mul__(WrappedDouble * value) {
+			return (float) $self->value * value->value;
+	}
+}
+
+%extend WrappedInteger {
+		int __floordiv__(int value) {
+				return (int) $self->value / value;
+		}
+		int __rfloordiv__(int value) {
+				return (int) $self->value / value;
+		}
+//		int __truediv__(int value) {
+//				return (int) $self->value / value;
+//		}
+		int __mul__(int value) {
+				return (int) $self->value * value;
+		}
+}
+
 class Flow {
 public:
 	enum CalculationUnit {
@@ -291,7 +324,7 @@ public:
 			return Py_None;
 		}
 		length = Flow::size();
-		PySlice_GetIndices((PySliceObject*)slice, length, &start, &stop, &step);
+		PySlice_GetIndices(slice, length, &start, &stop, &step);
 		PyObject *list = PyList_New(0);
 		for (int i = start; i < stop; i+= step) {
 			PyObject *number = PyFloat_FromDouble((*self)[i]);
@@ -485,6 +518,11 @@ protected:
 		return *d;
 	}
 
+	double get_state_value_as_int(std::string state) {
+		int * d = $self->getState<int>(state);
+		return *d;
+	}
+
 	std::vector<double> get_state_value_as_double_vector(std::string state) {
 		std::vector<double> * vd = $self->getState<std::vector<double> >(state);
 		return *vd;
@@ -564,6 +602,7 @@ public:
 
 	void addNativePlugin(const std::string &plugin_path);
 	void addPythonPlugin(const std::string &script);
+	void addToPythonPath(const std::string &p);
 
 
 };
@@ -784,6 +823,14 @@ class CityDrain3:
 		:return: None
 		"""
 		self.node_registry.addPythonPlugin(file_name)
+
+	def register_python_path(self, path):
+		"""
+		:type start_time: str
+		:param file_name: file name
+		:return: None
+		"""
+		self.node_registry.addToPythonPath(path)
 
 	def set_simulation_parameter(self, start_time, end_time, delta_t):
 		"""

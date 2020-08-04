@@ -59,12 +59,19 @@ SET(SCRIPT_PATH ${OUTPUT_DIR}/PythonModules)
 INCLUDE_DIRECTORIES(src/core ${QT_QTCORE_INCLUDE_DIR})
 
 IF(PYTHON_EMBEDDING)
-    FIND_PACKAGE(PythonLibs 2.7 REQUIRED)
+    FIND_PACKAGE(PythonLibs 3.5 REQUIRED)
     FIND_PROGRAM(PYTHON_EXECUTABLE NAMES python)
     INCLUDE_DIRECTORIES(src/python-swig ${PYTHON_INCLUDE_PATH})
     FIND_PACKAGE(SWIG REQUIRED)
     INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
-	SET(PYTHON_SITE_PACKAGES "lib/python2.7/site-packages")
+    execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+        from distutils import sysconfig as sc
+        print(sc.get_python_lib(prefix='', plat_specific=True))"
+      OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  
+	#SET(PYTHON_SITE_PACKAGES "lib/python2.7/site-packages")
 	#execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
 ELSE()
     ADD_DEFINITIONS(-DPYTHON_EMBEDDING_DISABLED)

@@ -87,5 +87,5 @@ class DM_ValueFromRasterPoly(Module):
                              return
                          val = tuple_of_floats[0]
                 node.SetField(self.attribute_name, float(sum_val))
-            print "syncronise"
+            print("syncronise")
             self.node_view.finalise()

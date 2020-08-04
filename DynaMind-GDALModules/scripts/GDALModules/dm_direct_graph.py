@@ -73,7 +73,7 @@ class DM_DirectGraph(Module):
 
             self.visited_edges = set() # That is global ... I guess
             for s in start_nodes:
-                print s
+                print(s)
                 leafs = [s]
                 counter = 0
 

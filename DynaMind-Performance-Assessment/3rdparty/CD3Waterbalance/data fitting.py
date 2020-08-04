@@ -10,14 +10,14 @@ import os
 from scipy.interpolate import interp1d
 from datetime import datetime
 
-file_names=os.listdir('C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulation with patterns\pattern')[0:]
+file_names=os.listdir('C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulation with patterns\pattern')[0:]
 list_csv=zeros((len(file_names),1)).tolist()
 final_list=zeros((len(file_names),1)).tolist()
 
 for i in range(len(file_names)): 
     file_name=file_names[i]
     
-    with open("C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulation with patterns\pattern\%s" % file_name) as csvfile:
+    with open("C:\\Users\Acer\Documents\GitHub\CD3Waterbalance\simulation with patterns\pattern\%s" % file_name) as csvfile:
         data=csv.reader(csvfile, delimiter=',', quotechar='$')     
         
         global list_csv

@@ -18,7 +18,7 @@ def result_dict(elements, data_dict, id_name):
     catchments = []
     for e in elements:
         result = {}
-        for cd in data_dict.keys():
+        for cd in list(data_dict.keys()):
             result[cd] = 0
         catchment_r[getattr(e, id_name)] = result
         catchments.append(e)
@@ -144,11 +144,11 @@ class DMCatchment(Module):
                     max_runoff = 0
                 if catch.runoff > max_runoff:
                     max_runoff = catch.runoff
-                for k in results.keys():
+                for k in list(results.keys()):
                     r = results[k]
                     for c in r[0]:
                         id = getattr(c, r[3])
-                        for c_r in r[1][id].keys():
+                        for c_r in list(r[1][id].keys()):
                             r[1][id][c_r] += getattr(c, c_r) * r[2][c_r]
 
                 # sim.report()
@@ -251,7 +251,7 @@ class DMCatchment(Module):
             ';;Name           Raingage         Outlet           Area     Imperv   Width    Slope    Length   Pack\n')
         out_file.write(
             ';;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- --------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '               RG1              ' + 'o' + c + '                ' + str(
                 sub_satchment[c]["area"]) + '        ' + str(sub_satchment[c]["imp"]) + '       ' + str(
                 math.sqrt(sub_satchment[c]["area"]) * 10000) + '      0.1      0\n')
@@ -261,23 +261,23 @@ class DMCatchment(Module):
         out_file.write(';;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted\n')
         out_file.write(
             ';;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '                0.01       0.2   ' + str(inital_loss) +  '        15       25         OUTLET\n')
         out_file.write('\n')
         out_file.write('[INFILTRATION]\n')
         out_file.write(';;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil\n')
         out_file.write(';;-------------- ---------- ---------- ---------- ---------- ----------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write(c + '                 3.0        0.5        4          7          0\n')
         out_file.write('\n')
         out_file.write('[OUTFALLS]\n')
         out_file.write(';;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded\n')
         out_file.write(';;-------------- ---------- ---------- ---------- ---------- ---------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write('o' + c + '                 0        FREE       NO          \n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write('n' + c + '                 0        FREE       NO         \n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             out_file.write('r' + c + '                 0        FREE       NO         \n')
 
         out_file.write('\n')
@@ -305,7 +305,7 @@ class DMCatchment(Module):
             ';;Subcatchment   LID Process      Number  Area       Width      InitSat    FromImp    ToPerv     RptFile                  DrainTo    \n')
         out_file.write(
             ';;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------\n')
-        for c in sub_satchment.keys():
+        for c in list(sub_satchment.keys()):
             if 'rwht' in sub_satchment[c]:
                 out_file.write(c + '                barrel           ' + str(
                     sub_satchment[c]["rwht"]["number"]) + '   1          0.5        0          ' + str(
@@ -419,7 +419,7 @@ class DMCatchment(Module):
                                             "connected_imp_fraction": connected_area_tree / (imp/100 * area  *10000.) * 100,  "tree_pit_area": tree_pit_area}
 
                                    }}, tree_pit_storage_depth, inital_loss)
-            print wsud
+            print(wsud)
             c.SetField("runoff", wsud['catchment'][1]['1']['runoff'] + wsud['nodes'][1]['n1']['total_inflow'])
             c.SetField("runoff_treated", wsud['nodes'][1]['n1']['total_inflow'])
             if "tree_pit_inflow" in wsud:

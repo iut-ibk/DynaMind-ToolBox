@@ -1,6 +1,6 @@
 include(${SWIG_USE_FILE})
 execute_process(COMMAND ${SWIG_EXECUTABLE} -python -threads -external-runtime swigruntime.h)
-SET(PYTHON_SITE_PACKAGES "lib/python2.7/site-packages")
+#SET(PYTHON_SITE_PACKAGES "lib/python2.7/site-packages")
 #execute_process(COMMAND ${SWIG_EXECUTABLE} -python -c++ -o pycd3WRAP.cpp ${CMAKE_CURRENT_SOURCE_DIR}/pycd3.i
 #	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 

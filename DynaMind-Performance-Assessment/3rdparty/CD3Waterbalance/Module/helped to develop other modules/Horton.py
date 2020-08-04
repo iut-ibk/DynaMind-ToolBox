@@ -13,21 +13,21 @@ class NodeFactory(pycd3.INodeFactory):
     def __init__(self, node):
         pycd3.INodeFactory.__init__(self)
         self.node = node
-        print "NodeFactory.__init__"
+        print("NodeFactory.__init__")
         
     def getNodeName(self):
-        print "NodeFactory.getName"
+        print("NodeFactory.getName")
         return self.node.__name__
         
     def createNode(self):
-        print "NodeFactory.createNode"
+        print("NodeFactory.createNode")
         n = self.node()
         n.__disown__()
-        print "NodeFactory.disowned"
+        print("NodeFactory.disowned")
         return n
         
     def getSource(self):
-        print "NodeFactory.getSource"
+        print("NodeFactory.getSource")
         return "Practice.py"
 
 class Horton(pycd3.Node):
@@ -39,7 +39,7 @@ class Horton(pycd3.Node):
         self.actuell_infiltr = pycd3.Flow()
         self.runoff = pycd3.Flow()
         #dir (self.inf)
-        print "init node"
+        print("init node")
         self.addInPort("rain", self.rain)
         self.addInPort("evapo", self.evapo)
         self.addOutPort("infiltr", self.infiltr)
@@ -59,9 +59,9 @@ class Horton(pycd3.Node):
         self.time=-1.0
         
     def init(self, start, stop, dt):
-        print start
-        print stop
-        print dt
+        print(start)
+        print(stop)
+        print(dt)
         return True
         
     def f(self, current, dt):

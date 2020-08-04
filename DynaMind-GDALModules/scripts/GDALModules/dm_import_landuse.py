@@ -74,7 +74,7 @@ class DM_ImportLanduse(Module):
             try:
                 self.sftp.get(file_name,  self.real_file_name)
             except Exception as e:
-                print e
+                print(e)
                 self.real_file_name = ""
                 return False
             self.downloaded_file = self.generate_downloaded_file_name()
@@ -168,5 +168,5 @@ class DM_ImportLanduse(Module):
                     if val_array.sum() < 1:
                          continue                   
                     node.SetField(key, float(val_array[self.landuse_classes[key]]/val_array.sum()))
-            print "syncronise"
+            print("syncronise")
             self.node_view.finalise()

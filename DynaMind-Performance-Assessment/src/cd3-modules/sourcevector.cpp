@@ -26,10 +26,16 @@ CD3_DECLARE_NODE_NAME(SourceVector)
 SourceVector::SourceVector() {
 	out = Flow();
 
+
+
+
 	addOutPort(ADD_PARAMETERS(out));
 
 
 	addParameter(ADD_PARAMETERS(source));
+
+	factor = 1;
+	addParameter(ADD_PARAMETERS(factor));
 }
 
 SourceVector::~SourceVector() {
@@ -43,7 +49,7 @@ bool SourceVector::init(ptime start, ptime end, int dt) {
 int SourceVector::f(ptime time, int dt) {
 	(void) time;
 
-	out[0] = source[counter];
+	out[0] = source[counter]*factor;
 
 	counter++;
 	return dt;

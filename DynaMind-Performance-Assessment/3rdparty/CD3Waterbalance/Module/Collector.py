@@ -43,8 +43,8 @@ class Collector(pycd3.Node):
 #        print "init node"
         
         for i in range(self.numberof_in_ports):
-            exec 'self.Inport'+str(i+1)+'=pycd3.Flow()'
-            exec 'self.addInPort("Inport_'+str(i+1)+'", self.Inport'+str(i+1)+')'        
+            exec('self.Inport'+str(i+1)+'=pycd3.Flow()')
+            exec('self.addInPort("Inport_'+str(i+1)+'", self.Inport'+str(i+1)+')')        
         
         self.addOutPort("Outport", self.outflow)
         
@@ -55,7 +55,7 @@ class Collector(pycd3.Node):
         self.memory = 0.0     
         
         for i in range(self.numberof_in_ports):
-            exec 'self.memory += self.Inport'+str(i+1)+'[0]'
+            exec('self.memory += self.Inport'+str(i+1)+'[0]')
           
         self.outflow[0] = self.memory
         

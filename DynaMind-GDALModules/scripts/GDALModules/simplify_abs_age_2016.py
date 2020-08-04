@@ -64,7 +64,7 @@ class SimplifyABSAge2016(Module):
 
             self.__b04 = ViewContainer("g01", NODE, READ)
 
-            for k in self.translation_table.keys():
+            for k in list(self.translation_table.keys()):
                 self.__b04.addAttribute(k, Attribute.INT, READ)
 
 

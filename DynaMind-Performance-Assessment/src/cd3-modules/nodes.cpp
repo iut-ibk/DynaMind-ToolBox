@@ -11,6 +11,7 @@
 #include "simpletreatment.h"
 #include "monthlyevo.h"
 #include "redistributer.h"
+#include "multiusestorage.h"
 
 #include <noderegistry.h>
 #include <nodefactory.h>
@@ -37,6 +38,7 @@ extern "C" {
 				registry->addNodeFactory(new NodeFactory<SimpleTreatment>(SOURCE));
 				registry->addNodeFactory(new NodeFactory<MonthlyEvo>(SOURCE));
 				registry->addNodeFactory(new NodeFactory<Redistributer>(SOURCE));
+				registry->addNodeFactory(new NodeFactory<MultiUseStorage>(SOURCE));
 
 	}
 

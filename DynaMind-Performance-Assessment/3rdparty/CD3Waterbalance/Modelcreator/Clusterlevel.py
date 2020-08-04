@@ -69,7 +69,7 @@ class Clusterlevel:
                 #writes all string in one and puts it in list
                 self.streetstrings = ''
                 for o in range(5)[1:]:
-                    exec 'self.streetstrings += string'+str(o)
+                    exec('self.streetstrings += string'+str(o))
                 self.street_strings.append(self.streetstrings)
     
                 # adds collector for runoff from catchment
@@ -83,7 +83,7 @@ class Clusterlevel:
                     #writes all string in one and puts it in list
                     self.runoffstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.runoffstrings += string'+str(o)
+                        exec('self.runoffstrings += string'+str(o))
                     self.runoff_coll_strings.append(self.runoffstrings)
                 #writes collector number in list that knows number of inports for later reference
                 Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(clusterbuildingvec[i][0])+1])
@@ -129,7 +129,7 @@ class Clusterlevel:
                     #writes all string in one and puts it in list
                     self.greywaterstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.greywaterstrings += string'+str(o)
+                        exec('self.greywaterstrings += string'+str(o))
                     self.greywater_coll_strings.append(self.greywaterstrings)
                 #writes collector number in list that knows number of inports for later reference
                 Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(clusterbuildingvec[i][0])])
@@ -155,7 +155,7 @@ class Clusterlevel:
                     #writes all string in one and puts it in list
                     self.overflowstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.overflowstrings += string'+str(o)
+                        exec('self.overflowstrings += string'+str(o))
                     self.overflow_coll_strings.append(self.overflowstrings)
                 #writes collector number in list that knows number of inports for later reference
                 Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(clusterbuildingvec[i][0])])
@@ -182,7 +182,7 @@ class Clusterlevel:
                     #writes all string in one and puts it in list
                     self.raintankstoragestrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.raintankstoragestrings += string'+str(o)
+                        exec('self.raintankstoragestrings += string'+str(o))
                     self.raintankstorage_coll_strings.append(self.raintankstoragestrings)
                 #writes collector number in list that knows number of inports for later reference
                 Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(clusterbuildingvec[i][0])])
@@ -215,7 +215,7 @@ class Clusterlevel:
                     #writes all string in one and puts it in list
                     self.additionaldemandstrings = ''
                     for o in range(5)[1:]:
-                        exec 'self.additionaldemandstrings += string'+str(o)
+                        exec('self.additionaldemandstrings += string'+str(o))
                     self.additionaldemand_coll_strings.append(self.additionaldemandstrings)
                 #writes collector number in list that knows number of inports for later reference
                 Global_counters.number_of_collectors_ports_list.append([Global_counters.number_of_collectors, len(clusterbuildingvec[i][0])])

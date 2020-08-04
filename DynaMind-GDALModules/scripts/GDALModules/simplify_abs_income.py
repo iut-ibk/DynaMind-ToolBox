@@ -59,7 +59,7 @@ class SimplifyABSIncome(Module):
 
             self.__b28 = ViewContainer("b28", NODE, READ)
 
-            for k in self.translation_table.keys():
+            for k in list(self.translation_table.keys()):
                 self.__b28.addAttribute(k, Attribute.INT, READ)
 
 
@@ -94,7 +94,7 @@ class SimplifyABSIncome(Module):
 
 
 
-                for k in self.translation_table.keys():
+                for k in list(self.translation_table.keys()):
                     values[self.translation_table[k]] += b40.GetFieldAsInteger(k)
 
                 f = self.__ress.create_feature()
@@ -102,7 +102,7 @@ class SimplifyABSIncome(Module):
                 f.SetGeometry(b40.GetGeometryRef())
 
                 sum = 0.0
-                for vk in values.keys():
+                for vk in list(values.keys()):
                     sum += float(values[vk])
                     f.SetField(vk, int(values[vk]))
 

@@ -27,6 +27,25 @@ PythonException::PythonException() {
 	if (!Py_IsInitialized() || !PyErr_Occurred()) {
 		return;
 	}
+
+
+	PyObject *ptype, *pvalue, *ptraceback;
+	PyObject *pystr, *module_name, *pyth_module, *pyth_func;
+
+
+	PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+
+
+//	PyObject* repr = PyObject_Repr(pvalue);
+	PyObject* str = PyUnicode_AsEncodedString(pvalue, "utf-8", "~E~");
+	const char *bytes = PyBytes_AS_STRING(str);
+
+	printf("REPR: %s\n", bytes);
+
+	Py_XDECREF(pvalue);
+	Py_XDECREF(str);
+
+
 	PyErr_Print();
 #endif
 }

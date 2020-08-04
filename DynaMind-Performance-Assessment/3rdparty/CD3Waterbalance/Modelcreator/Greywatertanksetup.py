@@ -14,9 +14,9 @@ class Greywatertanksetup:
         self.Greywatertankattributelist = []
         self.Greywatertanknodelist = []
         for i in range(numberofGreywatertanks+starting_value_i)[starting_value_i:]:
-            exec 'self.Greywatertankattributelist.append({"Greywatertank_'+str(i)+'" : dict.copy(Greywatertankattributes)})'
+            exec('self.Greywatertankattributelist.append({"Greywatertank_'+str(i)+'" : dict.copy(Greywatertankattributes)})')
 
-        print str(numberofGreywatertanks)+' Greywatertanks have been created!'
+        print((str(numberofGreywatertanks)+' Greywatertanks have been created!'))
         return
     
     def Setandwrite_attributes(self,numberofGreywatertanks, starting_value_i, attributevector):
@@ -25,14 +25,14 @@ class Greywatertanksetup:
             self.Greywatertankattributelist[i-starting_value_i][str('Greywatertank_'+str(i))]["Storage_Volume"] = attributevector[i-starting_value_i][1]
     
         for i in range(numberofGreywatertanks+starting_value_i)[starting_value_i:]:
-            exec '''self.line1='\\t\\t\\t<node id="Greywatertank_'+str(i)+'" class="Greywatertank"> \\n' '''
-            exec '''self.line2='\\t\\t\\t\\t<parameter name="Yield_of_Treatment_[-]" type="double" value="'+str(self.Greywatertankattributelist[i-starting_value_i][str('Greywatertank_'+str(i))]["Yield_of_Treatment"])+'"/> \\n ' '''
-            exec '''self.line3='\\t\\t\\t\\t<parameter name="Storage_Volume_[m^3]" type="double" value="'+str(self.Greywatertankattributelist[i-starting_value_i][str('Greywatertank_'+str(i))]["Storage_Volume"])+'"/> \\n ' '''
-            exec '''self.line4='\\t\\t\\t</node> \\n ' '''        
+            exec('''self.line1='\\t\\t\\t<node id="Greywatertank_'+str(i)+'" class="Greywatertank"> \\n' ''')
+            exec('''self.line2='\\t\\t\\t\\t<parameter name="Yield_of_Treatment_[-]" type="double" value="'+str(self.Greywatertankattributelist[i-starting_value_i][str('Greywatertank_'+str(i))]["Yield_of_Treatment"])+'"/> \\n ' ''')
+            exec('''self.line3='\\t\\t\\t\\t<parameter name="Storage_Volume_[m^3]" type="double" value="'+str(self.Greywatertankattributelist[i-starting_value_i][str('Greywatertank_'+str(i))]["Storage_Volume"])+'"/> \\n ' ''')
+            exec('''self.line4='\\t\\t\\t</node> \\n ' ''')        
             
             alllines = ''
             for n in range(4):
-                exec 'alllines += self.line'+str(n+1)
+                exec('alllines += self.line'+str(n+1))
             self.Greywatertanknodelist.append(alllines)
         
         return

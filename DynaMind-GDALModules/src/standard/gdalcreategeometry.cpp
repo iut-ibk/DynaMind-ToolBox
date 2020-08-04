@@ -30,7 +30,7 @@ void GDALCreateGeometry::initDatabase(){
         return;
     }
     sqlite3_enable_load_extension(db,1);
-    execute_query("SELECT load_extension('mod_spatialite')", false);
+//    execute_query("SELECT load_extension('mod_spatialite')", false);
 
 #ifdef WIN32
     execute_query("SELECT load_extension('mod_spatialite')", false);

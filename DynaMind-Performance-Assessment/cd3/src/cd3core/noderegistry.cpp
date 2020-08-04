@@ -20,6 +20,7 @@
 #ifndef PYTHON_DISABLED
 #define SWIG_PYTHON_THREADS
 #include <Python.h>
+#include <cstdio>
 #include <swigruntime.h>
 #include <pythonexception.h>
 #endif
@@ -38,7 +39,7 @@ using namespace boost;
 #ifndef PYTHON_DISABLED
 std::vector<std::string> NodeRegistry::python_paths = std::vector<std::string>();
 PyObject *NodeRegistry::main_namespace = 0;
-void NodeRegistry::addToPythonPath(std::string p) {
+void NodeRegistry::addToPythonPath(const std::string &p) {
 	NodeRegistry::python_paths.push_back(p);
 }
 #endif
@@ -90,13 +91,14 @@ void NodeRegistry::addNativePlugin(const std::string &plugin_path) {
 
 #ifndef PYTHON_DISABLED
 extern "C" {
-void init_pycd3(void);
+void PyInit__pycd3(void);
 }
 
 void NodeRegistry::addPythonPlugin(const std::string &script) {
     if (!Py_IsInitialized()) {
+
         Py_Initialize();
-        init_pycd3();
+		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
         main_namespace = PyModule_GetDict(main);
         Py_INCREF(main_namespace);
@@ -106,21 +108,25 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 
         PyObject *pycd3_module = PyImport_ImportModule("pycd3");
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
             return;
         }
         PyObject *pycd3_dict = PyModule_GetDict(pycd3_module);
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
         }
         Py_XDECREF(pycd3_module);
         PyObject *callback = PyDict_GetItemString(pycd3_dict, "install_redirector");
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
         }
         PyObject *res = PyObject_Call(callback, Py_None, Py_None);
         if (PyErr_Occurred()) {
-            PyErr_Print();
+			throw PythonException();
+			//PyErr_Print();
             return;
         }
         Py_XDECREF(res);
@@ -132,9 +138,9 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 
     if(!main_namespace) {
         SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-        init_pycd3();
+		PyInit__pycd3();
         PyObject *main = PyImport_ImportModule("__main__");
-        main_namespace = PyModule_GetDict(main);
+		main_namespace = PyModule_GetDict(main);
         Py_DECREF(main);
     }
 
@@ -162,8 +168,8 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
         }
 	}
 	
-	PyObject* PyFileObject = PyFile_FromString((char *) script.c_str(), "r");
-	PyRun_File(PyFile_AsFile(PyFileObject), script.c_str(), Py_file_input, main_namespace, 0);
+	FILE* PyFileObject = fopen((char *) script.c_str(), "r");
+	PyRun_File(PyFileObject, script.c_str(), Py_file_input, main_namespace, 0);
 
 	if (PyErr_Occurred()) {
 		Logger(Error) << "error loading python script" << script;
@@ -181,7 +187,9 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 		//load pycd3 module an get 'registerAllCallback'
 		PyObject *pycd3_module = PyImport_ImportModule("pycd3");
 		if (PyErr_Occurred()) {
-			Logger(Error) << "error importint pycd3 module";
+			Logger(Error) << "error import int pycd3 module";
+
+
 			throw PythonException();
 			return;
 		}

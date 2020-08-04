@@ -244,7 +244,7 @@ class Polder(Module):
         for p in pump_volumes:
             if p[2]:
                 ports += 1
-        print("number of ports ", ports)
+        print(("number of ports ", ports))
 
         # Number of inputs depends on number of connected pumps
         mixer.setIntParameter("num_inputs", ports)
@@ -340,7 +340,7 @@ class Polder(Module):
 
                 # print(self.flow_probes["biofilter_n"].get_state_value_as_double_vector("Flow"))
                 # print(self.flow_probes["catchment_n"].get_state_value_as_double_vector("Flow"))
-            print(sum(overflow), sum(water_supply))
+            print((sum(overflow), sum(water_supply)))
 
             for idx, r in enumerate(reticulations):
                 r.SetField("removed_pollution", self.treatments[idx].get_state_value_as_double_vector("treated")[0])

@@ -16,16 +16,16 @@ class Buildingsetup:
         self.Buildingattributelist = []
         self.Buildingnodelist = []
         for i in range(numberofBuildings+starting_value_i)[starting_value_i:]:
-            exec 'self.Buildingattributelist.append({"Building_'+str(i)+'" : Buildingattributes})'
-            exec '''self.line1='\\t\\t\\t<node id="Building_'+str(i)+'" class="Building"/> \\n' '''
+            exec('self.Buildingattributelist.append({"Building_'+str(i)+'" : Buildingattributes})')
+            exec('''self.line1='\\t\\t\\t<node id="Building_'+str(i)+'" class="Building"/> \\n' ''')
          
             alllines = ''
             for n in range(1):
-                exec 'alllines += self.line'+str(n+1)
+                exec('alllines += self.line'+str(n+1))
                 
             self.Buildingnodelist.append(alllines)
 
-        print str(numberofBuildings)+' Buildings have been created!'
+        print((str(numberofBuildings)+' Buildings have been created!'))
         return
     
     
