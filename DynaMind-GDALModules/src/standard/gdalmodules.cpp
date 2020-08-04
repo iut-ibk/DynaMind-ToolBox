@@ -60,6 +60,7 @@
 #include "dm_createcomponent.h"
 #include "gdalcreategeometry.h"
 #include "scalepolygon.h"
+#include "dmselector.h"
 
 using namespace std;
 extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *registry) {
@@ -98,4 +99,5 @@ extern "C" void DM_HELPER_DLL_EXPORT  registerModules(DM::ModuleRegistry *regist
 	registry->addNodeFactory(new DM::NodeFactory<DM_CreateComponent>());
 	registry->addNodeFactory(new DM::NodeFactory<GDALCreateGeometry>());
 	registry->addNodeFactory(new DM::NodeFactory<ScalePolygon>());
+	registry->addNodeFactory(new DM::NodeFactory<DMSelector>());
 }
