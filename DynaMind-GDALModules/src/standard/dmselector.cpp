@@ -138,6 +138,7 @@ void DMSelector::run()
 		query << " AND  P." << lead_filter;
 	query << ")";
 
+	return
 
 	sqlite3 *db;
 	int rc =  sqlite3_open(this->leadingView.getDBID().c_str(), &db);
