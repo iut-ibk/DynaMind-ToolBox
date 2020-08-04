@@ -85,12 +85,15 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 	query << "SELECT filters from " << this->leadingViewName << " LIMIT 1";
 
 	sqlite3_stmt *stmt;
+
+	DM::Logger(DM::Standard) <<  query.str();
+
 	const char *sql = query.str().c_str(); //"SELECT ID, Name FROM User";
 	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
 	if (rc != SQLITE_OK) {
-		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
+		DM::Logger(DM::Error) << " init failed";
 		this->setStatus(DM::MOD_CHECK_ERROR);
-		DM::Logger(DM::Error) <<  "SQL error: " << sqlite3_errmsg(db);
+		DM::Logger(DM::Error) <<  "Error preparing filter:" << sqlite3_errmsg(db);
 		return "";
 	}
 
@@ -100,7 +103,7 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 		filter = std::string(reinterpret_cast<const char*>(name));
 	}
 	if (rc != SQLITE_DONE) {
-		DM::Logger(DM::Error) <<  "SQL error: " << sqlite3_errmsg(db);
+		DM::Logger(DM::Error) <<  "Error reading filter: " << sqlite3_errmsg(db);
 	}
 	sqlite3_finalize(stmt);
 
