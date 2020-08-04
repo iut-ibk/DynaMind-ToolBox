@@ -139,8 +139,6 @@ void DMSelector::run()
 	query << ")";
 
 
-
-
 	sqlite3 *db;
 	int rc =  sqlite3_open(this->leadingView.getDBID().c_str(), &db);
 	if( rc ){
@@ -155,7 +153,7 @@ void DMSelector::run()
 		execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
 	#endif
 
-	std::string filter =  linkView.get_attribute_filter_sql_string();
+	std::string filter;// =  linkView.get_attribute_filter_sql_string();
 	std::string geometry_filter = this->get_filter(db);
 
 	if (!filter.empty() || !geometry_filter.empty())
@@ -175,7 +173,7 @@ void DMSelector::run()
 	sqlite3_close(db);
 
 	DM::Logger(DM::Standard) << query.str();
-	return;
+
 }
 
 
