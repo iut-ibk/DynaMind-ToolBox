@@ -100,7 +100,8 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 	std::string filter;
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		const unsigned char *name = sqlite3_column_text(stmt, 0);
-		filter = std::string(reinterpret_cast<const char*>(name));
+
+//		filter = std::string(reinterpret_cast<const char*>(name));
 	}
 	if (rc != SQLITE_DONE) {
 		DM::Logger(DM::Error) <<  "Error reading filter: " << sqlite3_errmsg(db);
@@ -148,14 +149,13 @@ void DMSelector::run()
 	}
 	sqlite3_enable_load_extension(db,1);
 
-	sqlite3_enable_load_extension(db,1);
 	#ifdef WIN32
 		execute_query1(db,"SELECT load_extension('mod_spatialite')");
 	#else
 		execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
 	#endif
 
-	std::string filter = linkView.get_attribute_filter_sql_string();
+	std::string filter =  linkView.get_attribute_filter_sql_string();
 	std::string geometry_filter = this->get_filter(db);
 
 	if (!filter.empty() || !geometry_filter.empty())
