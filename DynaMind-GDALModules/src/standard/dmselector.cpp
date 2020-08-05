@@ -88,10 +88,11 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 
 	DM::Logger(DM::Standard) <<  query.str();
 
-	const char *sql = query.str().c_str(); //"SELECT ID, Name FROM User";
-	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+//	const char *sql = ; //"SELECT ID, Name FROM User";
+
+//	std::cout << sql << std::endl;
+	int rc = sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr);
 	if (rc != SQLITE_OK) {
-		DM::Logger(DM::Error) << " init failed";
 //		this->setStatus(DM::MOD_CHECK_ERROR);
 		DM::Logger(DM::Error) <<  "Error preparing filter:" << sqlite3_errmsg(db);
 		return "";
@@ -101,7 +102,7 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		const unsigned char *name = sqlite3_column_text(stmt, 0);
 
-//		filter = std::string(reinterpret_cast<const char*>(name));
+		filter = std::string(reinterpret_cast<const char*>(name));
 	}
 	if (rc != SQLITE_DONE) {
 		DM::Logger(DM::Error) <<  "Error reading filter: " << sqlite3_errmsg(db);
@@ -138,7 +139,7 @@ void DMSelector::run()
 		query << " AND  P." << lead_filter;
 	query << ")";
 
-	return
+
 
 	sqlite3 *db;
 	int rc =  sqlite3_open(this->leadingView.getDBID().c_str(), &db);
@@ -154,7 +155,7 @@ void DMSelector::run()
 		execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
 	#endif
 
-	std::string filter;// =  linkView.get_attribute_filter_sql_string();
+	std::string filter =  linkView.get_attribute_filter_sql_string();
 	std::string geometry_filter = this->get_filter(db);
 
 	if (!filter.empty() || !geometry_filter.empty())
