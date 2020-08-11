@@ -74,7 +74,7 @@ class TargetInegrationv2(Module):
         for t in range(143):
             if t % self.reporting_timestep == 0:
                 self.micro_climate_grid.addAttribute(f"taf_{t}", DM.Attribute.DOUBLE, DM.WRITE)
-
+                self.micro_climate_grid.addAttribute(f"utci_{t}", DM.Attribute.DOUBLE, DM.WRITE)
         if self.from_temperature_station:
 
             self.temperature_station = ViewContainer("temperature_station", DM.COMPONENT, DM.READ)
@@ -178,16 +178,16 @@ class TargetInegrationv2(Module):
         self.temperature_station.finalise()
         data["relative_humidity"] = []
         for idx, t in enumerate(data["temperature"]):  # Convert to m/s
-            td = data["dew_point_temperature"]
-            u = 100 * math.exp(1.8096 + (17.2694 * td) / (237.3 + td)) / math.exp(
+            td = data["dew_point_temperature"][idx]
+            u = 100. * math.exp(1.8096 + (17.2694 * td) / (237.3 + td)) / math.exp(
                 (1.8096) + (17.2694 * t) / (237.3 + t))
             d = data["relative_humidity"]
             d.append(u)
             data["relative_humidity"] = d
-
+        wind_speed = []
         for idx, w in enumerate(data["wind_speed"]):  # Convert to m/s
-            data["wind_speed"][idx] = w * 1000. / 24 / 60 / 60
-
+            wind_speed.append( w * 1000. / 24 / 60 / 60 )
+        data["wind_speed"] = wind_speed
         return data["temperature"], data["relative_humidity"], data["wind_speed"], data["pressure"], kd, ld
 
     def write_climate_file(self, cimate_file):
@@ -241,6 +241,7 @@ class TargetInegrationv2(Module):
                 utci.append(utc[element_y][element_x])
                 if t % self.reporting_timestep == 0:
                     m.SetField(f"taf_{t}", air_temperature[element_y][element_x])
+                    m.SetField(f"utci_{t}", utc[element_y][element_x])
             m.SetField("taf", np.array(at).max())
             m.SetField("utci", np.array(utci).max())
             dm_set_double_list(m, "taf_period", at)
@@ -286,10 +287,10 @@ class TargetInegrationv2(Module):
         # self.read_output_file("/tmp/7b483265-795b-4ccf-af30-a0a5a73b23c6.nc")
         self.city.finalise()
 
-        os.remove(str("/tmp/" + str(output_uuid) + str(".nc")))
-        os.remove(landuse_file)
-        os.remove(climate_file)
-        os.remove(config_file)
+        # os.remove(str("/tmp/" + str(output_uuid) + str(".nc")))
+        # os.remove(landuse_file)
+        # os.remove(climate_file)
+        # os.remove(config_file)
 
     def run_target(self, config_file):
         subprocess.call(
