@@ -30,7 +30,7 @@ class TargetInegrationv2(Module):
         self.createParameter("grid_size", DOUBLE)
         self.grid_size = 20.0
 
-        self.createParameter("reporting_timestep", INT)
+        self.createParameter("reporting_timestep", DM.INT)
         self.reporting_timestep = 4
 
         self.internal_grid_size = 0.0
@@ -48,7 +48,7 @@ class TargetInegrationv2(Module):
         self.city.addAttribute("max_lat", DM.Attribute.DOUBLE, DM.READ)
         self.city.addAttribute("max_long", DM.Attribute.DOUBLE, DM.READ)
 
-        self.registerViewContainers([self.micro_climate_grid, self.city, self.air_temperature_data])
+        self.registerViewContainers([self.city, self.air_temperature_data])
 
     def init(self):
 
