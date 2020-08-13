@@ -30,7 +30,7 @@ class UrbanMetabolismModel(Module):
 
 
 
-        self.lot = ViewContainer('parcel', DM.COMPONENT, DM.READ)
+        self.lot = ViewContainer('wb_lot', DM.COMPONENT, DM.READ)
         self.lot.addAttribute("persons", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
@@ -51,7 +51,7 @@ class UrbanMetabolismModel(Module):
         self.wb_lot_storages.addAttribute('storage_behaviour', DM.Attribute.DOUBLEVECTOR, DM.WRITE)
         self.wb_lot_storages.addAttribute('spills', DM.Attribute.INT, DM.WRITE)
         self.wb_lot_storages.addAttribute('dry', DM.Attribute.INT, DM.WRITE)
-        self.wb_lot_storages.addAttribute('parcel_id', DM.Attribute.INT, DM.WRITE)
+        self.wb_lot_storages.addAttribute('wb_lot_id', DM.Attribute.INT, DM.WRITE)
         self.wb_lot_storages.addAttribute('storage_id', DM.Attribute.INT, DM.WRITE)
 
         self.wb_lot_template = ViewContainer('wb_lot_template', DM.COMPONENT, DM.READ)
@@ -88,7 +88,7 @@ class UrbanMetabolismModel(Module):
 
         self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
         self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
-        self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
+        self.wb_lot_to_sub_catchments.addAttribute('wb_lot_id', DM.Attribute.LINK, DM.READ)
 
         self.green_roofs = ViewContainer('green_roof', DM.COMPONENT, DM.READ)
         self.green_roofs.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
@@ -189,7 +189,7 @@ class UrbanMetabolismModel(Module):
 
         for lot_sub_catchments in self.wb_lot_to_sub_catchments:
             lot_sub_catchments: ogr.Feature
-            parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
+            parcel_id = lot_sub_catchments.GetFieldAsInteger("wb_lot_id")
             wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
             sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
         self.wb_lot_to_sub_catchments.finalise()
@@ -325,7 +325,7 @@ class UrbanMetabolismModel(Module):
             l_id = l.GetFID()
             for key, storage in wb.get_internal_storages(l_id).items():
                 s = self.wb_lot_storages.create_feature()
-                s.SetField('parcel_id', l.GetFID())
+                s.SetField('wb_lot_id', l.GetFID())
                 s.SetField('storage_id', key)
                 s.SetField('spills', storage.get_state_value_as_int('spills'))
                 s.SetField('dry', storage.get_state_value_as_int('dry'))
