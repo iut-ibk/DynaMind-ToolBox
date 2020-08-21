@@ -10,14 +10,13 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile
 
-
-
 class UrbanMetabolismModel(Module):
 
     display_name = "Urban Metabolism Model"
     group_name = "Performance Assessment"
 
     def __init__(self):
+
         Module.__init__(self)
         self._templates = {}
         self._storages = {}
@@ -28,20 +27,22 @@ class UrbanMetabolismModel(Module):
 
     def init(self):
 
-
-
-        self.lot = ViewContainer('parcel', DM.COMPONENT, DM.READ)
+        self.lot = ViewContainer('wb_lot', DM.COMPONENT, DM.READ)
         self.lot.addAttribute("persons", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("outdoor_imp", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
+
+        for i in range(1, 10):
+            self.lot.addAttribute(f"wb_sub_catchment_id_{i}", DM.Attribute.INT, DM.READ)
+
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
-        self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("green_roof_id", DM.Attribute.INT, DM.READ)
-        self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.READ)
 
         for s in LotStream:
             self.lot.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
@@ -86,9 +87,9 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.addAttribute('spills', DM.Attribute.INT, DM.WRITE)
         self.wb_sub_storages.addAttribute('dry', DM.Attribute.INT, DM.WRITE)
 
-        self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
-        self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
-        self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
+        # self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
+        # self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
+        # self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
 
         self.green_roofs = ViewContainer('green_roof', DM.COMPONENT, DM.READ)
         self.green_roofs.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
@@ -109,14 +110,13 @@ class UrbanMetabolismModel(Module):
         # lot can be part of multiple sub catchment (1 for each stream)
         # key = (sub_catchment, stream)
 
-
         view_register = [self.lot,
                          self.wb_soil_parameters,
                          self.wb_lot_template,
                          self.wb_storages,
                          self.wb_sub_storages,
                          self.wb_sub_catchments,
-                         self.wb_lot_to_sub_catchments,
+                         # self.wb_lot_to_sub_catchments,
                          self.wb_lot_streams,
                          self.wb_lot_storages,
                          self.wb_demand_profile,
@@ -186,13 +186,6 @@ class UrbanMetabolismModel(Module):
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
         # self.wb_sub_catchments.finalise()
-
-        for lot_sub_catchments in self.wb_lot_to_sub_catchments:
-            lot_sub_catchments: ogr.Feature
-            parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
-            wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
-            sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
-        self.wb_lot_to_sub_catchments.finalise()
 
         # Lot scale storages
         for s in self.wb_storages:
@@ -265,6 +258,27 @@ class UrbanMetabolismModel(Module):
             }
 
             lots[l.GetFID()] = lot
+
+        self.lot.reset_reading()
+        for lot_sub_catchments in self.lot:
+            lot_sub_catchments: ogr.Feature
+            parcel_id = lot_sub_catchments.GetFID()
+            for i in range(1, 10):
+                wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger(f"wb_sub_catchment_id_{i}")
+                if wb_sub_catchment_id == 0:
+                    wb_sub_catchment_id = i
+                sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
+
+
+        # self.wb_lot_to_sub_catchments.finalise()
+
+        # for lot_sub_catchments in self.wb_lot_to_sub_catchments:
+        #     lot_sub_catchments: ogr.Feature
+        #     parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
+        #     wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
+        #     sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
+        # self.wb_lot_to_sub_catchments.finalise()
+
 
         stations, dates = self._load_station()
 
