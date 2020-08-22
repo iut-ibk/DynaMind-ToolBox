@@ -244,6 +244,7 @@ class UrbanMetabolismModel(Module):
                 station_id = l.GetFieldAsInteger("station_id")
             lot = {
                 "persons": l.GetFieldAsDouble("persons"),
+                "units": l.GetFieldAsInteger("units"),
                 "roof_area": l.GetFieldAsDouble("roof_area"),
                 "impervious_area": l.GetFieldAsDouble("outdoor_imp"),
                 "irrigated_garden_area": l.GetFieldAsDouble("garden_area"),
@@ -270,16 +271,6 @@ class UrbanMetabolismModel(Module):
                 sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
 
 
-        # self.wb_lot_to_sub_catchments.finalise()
-
-        # for lot_sub_catchments in self.wb_lot_to_sub_catchments:
-        #     lot_sub_catchments: ogr.Feature
-        #     parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
-        #     wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
-        #     sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
-        # self.wb_lot_to_sub_catchments.finalise()
-
-
         stations, dates = self._load_station()
 
 
@@ -293,11 +284,6 @@ class UrbanMetabolismModel(Module):
                              dates=dates,
                              library_path=self.getSimulationConfig().getDefaultLibraryPath())
 
-        # self.wb_soil_parameters.reset_reading()
-        # for s in self.wb_soil_parameters:
-        #     standard = wb.get_standard_values(s.GetFID())
-        #     for f in UnitFlows:
-        #         dm_set_double_list(s, str(f).split(".")[1], standard[f])
         self.wb_soil_parameters.finalise()
 
         self.wb_sub_catchments.reset_reading()
@@ -325,9 +311,6 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_sub_storages:
             s : ogr.Feature
             storage = wb.get_storage(s.GetFID())
-            # s.SetField('spills', storage.get_state_value_as_int('spills'))
-            # s.SetField('dry', storage.get_state_value_as_int('dry'))
-            # dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
             dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
             logging.info(
                 f"{s.GetFID()} storage_behaviour: {format(sum(storage.get_state_value_as_double_vector('storage_behaviour')), '.2f')}")
