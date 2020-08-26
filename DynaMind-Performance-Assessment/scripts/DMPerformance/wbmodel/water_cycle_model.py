@@ -37,6 +37,8 @@ class WaterCycleModel():
                                                        parameters,
                                                        self._stations[station_id],
                                                        self._library_path).unit_values
+
+
         self._lots = lots
         self._lot_storage_reporting = {}
         self._storage_reporting = {}
@@ -115,8 +117,11 @@ class WaterCycleModel():
     def get_storage(self, storage_id):
         return self._storage_reporting[storage_id]
 
-    def get_standard_values(self, soil_id, station_id):
+    def get_standard_value(self, soil_id, station_id):
         return self._standard_values[(soil_id, station_id)]
+
+    def get_standard_values(self) -> dict:
+        return self._standard_values
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():
