@@ -84,15 +84,18 @@ class TargetInegrationv2(Module):
             self.timeseries.addAttribute("data", DM.Attribute.DOUBLEVECTOR, DM.READ)
             self.timeseries.addAttribute("temperature_station_id", DM.Attribute.INT, DM.READ)
             self.timeseries.addAttribute("start", DM.Attribute.STRING, DM.READ)
-            datastream.append(self.micro_climate_grid)
+
             datastream.append(self.timeseries)
             datastream.append(self.temperature_station)
 
             if self.grid_size_from_city:
                 self.city.addAttribute("grid_size", DM.Attribute.DOUBLE, READ)
-            datastream.append(self.city)
 
-            self.registerViewContainers(datastream)
+        datastream.append(self.city)
+        datastream.append(self.air_temperature_data)
+        datastream.append(self.micro_climate_grid)
+
+        self.registerViewContainers(datastream)
 
     def fixNulls(self, text):
         if (text == None):
@@ -287,10 +290,10 @@ class TargetInegrationv2(Module):
         # self.read_output_file("/tmp/7b483265-795b-4ccf-af30-a0a5a73b23c6.nc")
         self.city.finalise()
 
-        # os.remove(str("/tmp/" + str(output_uuid) + str(".nc")))
-        # os.remove(landuse_file)
-        # os.remove(climate_file)
-        # os.remove(config_file)
+        os.remove(str("/tmp/" + str(output_uuid) + str(".nc")))
+        os.remove(landuse_file)
+        os.remove(climate_file)
+        os.remove(config_file)
 
     def run_target(self, config_file):
         subprocess.call(
@@ -314,7 +317,7 @@ class TargetInegrationv2(Module):
             if self.grid_size_from_city:
                 self.internal_grid_size = c.GetFieldAsDouble("grid_size")
 
-            print(self.internal_grid_size)
+        log(f"Grid Size {self.internal_grid_size}", Standard)
 
         current_pos = -1
 
