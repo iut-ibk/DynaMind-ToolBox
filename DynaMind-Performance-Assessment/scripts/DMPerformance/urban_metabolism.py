@@ -190,7 +190,6 @@ class UrbanMetabolismModel(Module):
             s: ogr.Feature
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
-        # self.wb_sub_catchments.finalise()
 
         # Lot scale storages
         for s in self.wb_storages:
@@ -382,6 +381,8 @@ class UrbanMetabolismModel(Module):
 
                 type = t.GetFieldAsString("type")
                 station_id = t.GetFieldAsInteger("station_id")
+                if station_id == 0:
+                    continue
                 if station_id in stations:
                     station = stations[station_id]
                 else:
