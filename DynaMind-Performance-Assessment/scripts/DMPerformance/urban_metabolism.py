@@ -316,9 +316,21 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_sub_storages:
             s : ogr.Feature
             storage = wb.get_storage(s.GetFID())
+
+            s.SetField('spills', storage.get_state_value_as_int('spills'))
+            s.SetField('dry', storage.get_state_value_as_int('dry'))
+            dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
             dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
-            logging.info(
+
+            logging.debug(
+                f"{s.GetFID()} provided_volume: {format(sum(storage.get_state_value_as_double_vector('provided_volume')), '.2f')}")
+            logging.debug(
                 f"{s.GetFID()} storage_behaviour: {format(sum(storage.get_state_value_as_double_vector('storage_behaviour')), '.2f')}")
+            logging.debug(
+                f"{s.GetFID()} spills: {format(storage.get_state_value_as_int('spills'), '.2f')}")
+            logging.debug(
+                f"{s.GetFID()} dry: {format(storage.get_state_value_as_int('dry'), '.2f')}")
+
         self.wb_sub_storages.finalise()
         self.lot.reset_reading()
 
