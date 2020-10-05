@@ -33,6 +33,7 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("outdoor_imp", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
+        # self.lot.addAttribute("tree_cover", DM.Attribute.DOUBLE, DM.READ)
 
         for i in range(1, 10):
             self.lot.addAttribute(f"wb_sub_catchment_id_{i}", DM.Attribute.INT, DM.READ)
@@ -103,6 +104,7 @@ class UrbanMetabolismModel(Module):
         for s in UnitFlows:
             self.wb_unit_flows.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
             self.wb_unit_flows.addAttribute("station_id", DM.Attribute.INT, DM.WRITE)
+            self.wb_unit_flows.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
             self.wb_unit_flows.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.wb_demand_profile = ViewContainer('wb_demand_profile', DM.COMPONENT, DM.READ)
@@ -338,10 +340,12 @@ class UrbanMetabolismModel(Module):
             f: ogr.Feature
             soil_id = keys[0]
             station_id = keys[1]
+            wb_demand_profile_id = keys[2]
 
             f = self.wb_unit_flows.create_feature()
             f.SetField("wb_soil_id", soil_id)
             f.SetField("station_id", station_id)
+            f.SetField("wb_demand_profile_id", wb_demand_profile_id)
             for s in UnitFlows:
                 dm_set_double_list(f, str(s).split(".")[1],
                                    item[s])

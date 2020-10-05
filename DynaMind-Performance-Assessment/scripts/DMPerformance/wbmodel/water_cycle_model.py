@@ -1,7 +1,7 @@
 import pycd3 as cd3
 import logging
 from pydynamind import *
-from . import Lot, TransferNode, UnitParameters, Streams, LotStream
+from . import Lot, TransferNode, UnitParameters, Streams, LotStream, DemandProfile
 
 class WaterCycleModel():
     def __init__(self, lots: {},
@@ -29,14 +29,16 @@ class WaterCycleModel():
         print(self.start_date, self.end_date)
 
         for station_id in self._stations.keys():
-            for key, parameters in soils.items():
-                logging.info(
-                    f"station: {station_id} key: {key}")
-                self._standard_values[(key, station_id)] = UnitParameters(self.start_date,
-                                                       self.end_date,
-                                                       parameters,
-                                                       self._stations[station_id],
-                                                       self._library_path).unit_values
+            for soil_id, parameters in soils.items():
+                for wb_demand_profile_id, wb_p in wb_demand_profile.items():
+                    logging.info(
+                        f"station: {station_id} soil_id: {soil_id} wb_demand_profile_id: {wb_demand_profile_id}")
+                    self._standard_values[(soil_id, station_id, wb_demand_profile_id)] = UnitParameters(self.start_date,
+                                                           self.end_date,
+                                                           parameters,
+                                                           self._stations[station_id],
+                                                           wb_p[DemandProfile.crop_factor],
+                                                           self._library_path).unit_values
 
 
         self._lots = lots
@@ -117,8 +119,8 @@ class WaterCycleModel():
     def get_storage(self, storage_id):
         return self._storage_reporting[storage_id]
 
-    def get_standard_value(self, soil_id, station_id):
-        return self._standard_values[(soil_id, station_id)]
+    def get_standard_value(self, soil_id, station_id, wb_demand_profile_id):
+        return self._standard_values[(soil_id, station_id, wb_demand_profile_id)]
 
     def get_standard_values(self) -> dict:
         return self._standard_values

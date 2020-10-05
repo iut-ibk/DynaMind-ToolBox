@@ -41,7 +41,8 @@ class UnitParameters:
                  start_date,
                  end_date,
                  soil_parameters: {},
-                 climate_data : {},
+                 climate_data: {},
+                 crop_factor: float,
                  library_path):
         """
         Calculate standard values for per m2
@@ -103,7 +104,7 @@ class UnitParameters:
         reporting[UnitFlows.roof_runoff] = {"port": "Collected_Water", "factor": (lot_area * roof_imp_fra)}
         reporting[UnitFlows.impervious_runoff] = {"port": "impervious_runoff",
                                                   "factor": (lot_area * (1 - perv_area_fra))}
-        reporting[UnitFlows.outdoor_demand] = {"port": "Outdoor_Demand", "factor": (lot_area * (
+        reporting[UnitFlows.outdoor_demand] = {"port": "Outdoor_Demand", "factor": (lot_area / crop_factor * (
             perv_area_fra))}  # {"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
         reporting[UnitFlows.possible_infiltration] = {"port": "Possible_Infiltration",
                                                       "factor": (lot_area * (perv_area_fra))}

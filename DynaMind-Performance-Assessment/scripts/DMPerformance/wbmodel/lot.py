@@ -10,6 +10,7 @@ class DemandProfile(Enum):
     black_water = 3
     grey_water = 4
     crop_factor = 5
+    # crop_factor_tree = 6
 
 
 class LotStream(Enum):
@@ -58,11 +59,11 @@ class Lot:
         self._id = id
         self._cd3 = cd3_instance
 
-        self._standard_values = standard_values[(lot_detail["soil_id"],lot_detail["station_id"])]
+        self._standard_values = standard_values[(lot_detail["soil_id"],lot_detail["station_id"], lot_detail["wb_demand_profile_id"])]
 
         self._green_roofs = None
         if lot_detail["green_roof"]:
-            self._green_roofs = standard_values[(lot_detail["green_roof"]["soil_id"],lot_detail["station_id"])]
+            self._green_roofs = standard_values[(lot_detail["green_roof"]["soil_id"],lot_detail["station_id"],lot_detail["wb_demand_profile_id"])]
 
         self._internal_streams = {}
         self._external_streams = {}
