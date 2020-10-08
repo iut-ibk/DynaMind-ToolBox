@@ -382,10 +382,11 @@ class UrbanMetabolismModel(Module):
         """
         stations = {}
 
-        stations[1] = {
-            "rainfall intensity": self._load_rainfall(),
-            "evapotranspiration": self._load_eta()
-        }
+        if not self.from_rain_station:
+            stations[1] = {
+                "rainfall intensity": self._load_rainfall(),
+                "evapotranspiration": self._load_eta()
+            }
 
         start_date = "2001-Jan-01 00:00:00"
         end_date = "2002-Jan-01 00:00:00"
@@ -394,6 +395,7 @@ class UrbanMetabolismModel(Module):
             for t in self.timeseries:
                 t: ogr.Feature
                 series = [v/1000. for v in DM.dm_get_double_list(t, "data")]
+
 
                 type = t.GetFieldAsString("type")
                 station_id = t.GetFieldAsInteger("station_id")
