@@ -23,10 +23,9 @@ class ClimateProjection(Module):
         self.min_temperature = '/Users/christianurich/Documents/rainfall/climate/tminscrAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
 
         self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
-        self.city.addAttribute("min_lat", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("min_long", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("max_lat", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("max_long", DM.Attribute.DOUBLE, DM.READ)
+        self.city.addAttribute("long", DM.Attribute.DOUBLE, DM.READ)
+        self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
+
 
         self.city.addAttribute("start_period", DM.Attribute.DOUBLE, DM.READ)
         self.city.addAttribute("end_period", DM.Attribute.DOUBLE, DM.READ)
@@ -230,10 +229,8 @@ class ClimateProjection(Module):
 
         data = {}
         for t in self.city:
-            min_lat = t.GetFieldAsDouble("min_lat")
-            min_long = t.GetFieldAsDouble("min_long")
-            max_lat = t.GetFieldAsDouble("max_lat")
-            max_long = t.GetFieldAsDouble("max_long")
+            lat = t.GetFieldAsDouble("lat")
+            long = t.GetFieldAsDouble("long")
             start_period = t.GetFieldAsInteger("start_period")
             end_period = t.GetFieldAsInteger("end_period")
         self.city.finalise()
@@ -243,14 +240,12 @@ class ClimateProjection(Module):
             self.temperature_station.finalise()
             return
 
-        lat = (min_lat + max_lat) / 2.
-        long = (min_long + max_long) / 2.
 
-        # long = 146.8169
-        # lat = -19.259
 
         temperature_data = self.load_temperature_data()
         c = pd.DataFrame(temperature_data)
+
+        print(long,lat)
 
         climate_data = pd.DataFrame(dates)
         climate_data = climate_data.assign(tscr_aveAdjust=self.extract_mean_timeseries("tscr_aveAdjust", long, lat))
