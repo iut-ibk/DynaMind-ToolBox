@@ -187,7 +187,7 @@ class ClimateProjection(Module):
         dataset = Dataset(self.datasets[key])
         lon, lat = self.convert_long_lat(x, y)
         ds_opendap = xr.open_dataset(self.datasets[key], chunks={'time': '100MB'}, decode_times=False)
-        return ds_opendap["tscr_aveAdjust"][:, int(lat), int(lon)].values - 237.15
+        return ds_opendap[key][:, int(lat), int(lon)].values - 237.15
         #return dataset[key][0:43800, int(lat), int(lon)] - 273.15
 
     def get_highest_3day_average(self, df, start_year, end_year):
