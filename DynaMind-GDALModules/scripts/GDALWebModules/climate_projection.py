@@ -1,6 +1,7 @@
 from pydynamind import *
 from netCDF4 import Dataset
 import pandas as pd
+import xarray as xr
 
 class ClimateProjection(Module):
     display_name = "Climate Projection"
@@ -27,8 +28,8 @@ class ClimateProjection(Module):
         self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
 
 
-        self.city.addAttribute("start_period", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("end_period", DM.Attribute.DOUBLE, DM.READ)
+        self.city.addAttribute("start_period", DM.Attribute.INT, DM.READ)
+        self.city.addAttribute("end_period", DM.Attribute.INT, DM.READ)
 
         self.registerViewContainers([self.city])
 
@@ -185,8 +186,9 @@ class ClimateProjection(Module):
     def extract_mean_timeseries(self, key, x, y):
         dataset = Dataset(self.datasets[key])
         lon, lat = self.convert_long_lat(x, y)
-
-        return dataset[key][0:43800, int(lat), int(lon)] - 273.15
+        ds_opendap = xr.open_dataset(self.datasets[key], chunks={'time': '100MB'}, decode_times=False)
+        return ds_opendap["tscr_aveAdjust"][:, int(lat), int(lon)].values - 237.15
+        #return dataset[key][0:43800, int(lat), int(lon)] - 273.15
 
     def get_highest_3day_average(self, df, start_year, end_year):
         return df.loc[(df[0] > f'{start_year}-01-01') & (df[0] < f'{end_year}-12-30')].sort_values(by='rolling_mean2',
@@ -223,6 +225,7 @@ class ClimateProjection(Module):
         return timeseries_new[0].tolist()
 
     def run(self):
+        print("huhuh")
         dr = pd.date_range(start='1/1/1980', end='12/31/2099', freq='1d')
         dates = dr[(dr.day != 29) | (dr.month != 2)]
 
@@ -238,10 +241,10 @@ class ClimateProjection(Module):
         if start_period < 1900:
             self.timeseries.finalise()
             self.temperature_station.finalise()
+            print("return because irrelevant")
             return
 
-
-
+        print("huhuh")
         temperature_data = self.load_temperature_data()
         c = pd.DataFrame(temperature_data)
 

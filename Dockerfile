@@ -42,6 +42,14 @@ RUN pip3 install pyswmm
 
 RUN pip3 install compiler
 
+RUN pip3 install pandas
+
+RUN pip3 install xarray
+
+RUN pip3 install dask
+
+RUN pip3 install toolz
+
 WORKDIR /home/node/
 
 #RUN git clone --progress --verbose -b release/2.4  https://github.com/OSGeo/gdal.git
@@ -72,11 +80,15 @@ WORKDIR /home/node/DynaMind-ToolBox/build/
 
 RUN cmake  -DWITH_GUI=FALSE -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=TRUE -DWITH_PLUGIN_GDALMODULE=TRUE  -DWITH_PLUGIN_GDALDRAINAGE=TRUE -DWITH_UNIT_TESTS=TRUE ..
 
-RUN	make -j 4
+RUN	make -j 5
 
 ENV  PYTHONPATH {$PYTHONPATH}:/usr/local/lib
 
 WORKDIR /home/node/DynaMind-ToolBox/build/output
-RUN ./unit-test --gtest_output="xml:/tmp/test_general.xml"
-RUN ./unit-test_WaterBalance --gtest_output="xml:/tmp/test_wb.xml"
+
+USER root 
+
+RUN ./dynamind ../../test.dyn
+#RUN ./unit-test --gtest_output="xml:/tmp/test_general.xml"
+#RUN ./unit-test_WaterBalance --gtest_output="xml:/tmp/test_wb.xml"
 #RUN ./unit-test_gdalmodules --gtest_output="xml:/tmp/modules_test.xml"
