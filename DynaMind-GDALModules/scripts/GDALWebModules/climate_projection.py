@@ -1,7 +1,9 @@
 from pydynamind import *
 from netCDF4 import Dataset
 import pandas as pd
-import xarray as xr
+# import xarray as xr
+import requests
+from io import StringIO
 
 class ClimateProjection(Module):
     display_name = "Climate Projection"
@@ -15,18 +17,24 @@ class ClimateProjection(Module):
         self.from_temperature_station = False
 
         self.createParameter("mean_temperature", DM.STRING)
-        self.mean_temperature =  '/Users/christianurich/Documents/rainfall/climate/tscr_aveAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        #self.mean_temperature =  '/Users/christianurich/Documents/rainfall/climate/tscr_aveAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        self.mean_temperature = 'https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/MeanTemperature/tscr_aveAdjust.daily.ccam10-awap_CSIRO-Mk3-6-0Q_rcp85.nc'
 
         self.createParameter("max_temperature", DM.STRING)
-        self.max_temperature = '/Users/christianurich/Documents/rainfall/climate/tmaxscrAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        #self.max_temperature = '/Users/christianurich/Documents/rainfall/climate/tmaxscrAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        self.max_temperature = 'https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/MaximumTemperature/tmaxscrAdjust.daily.ccam10-awap_CSIRO-Mk3-6-0Q_rcp85.nc'
 
         self.createParameter("min_temperature", DM.STRING)
-        self.min_temperature = '/Users/christianurich/Documents/rainfall/climate/tminscrAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        #self.min_temperature = '/Users/christianurich/Documents/rainfall/climate/tminscrAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
+        self.min_temperature ='https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/MinimumTemperature/tminscrAdjust.daily.ccam10-awap_CSIRO-Mk3-6-0Q_rcp85.nc'
 
         self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
         self.city.addAttribute("long", DM.Attribute.DOUBLE, DM.READ)
         self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
 
+        self.city.addAttribute("cs_mean_temperature", DM.Attribute.STRING, DM.READ)
+        self.city.addAttribute("cs_max_temperature", DM.Attribute.STRING, DM.READ)
+        self.city.addAttribute("cs_min_temperature", DM.Attribute.STRING, DM.READ)
 
         self.city.addAttribute("start_period", DM.Attribute.INT, DM.READ)
         self.city.addAttribute("end_period", DM.Attribute.INT, DM.READ)
@@ -173,22 +181,12 @@ class ClimateProjection(Module):
             "tmaxscrAdjust"] = self.max_temperature
 
 
+    def extract_mean_timeseries(self, key, long, lat):
 
-    def convert_long_lat(self, x, y):
-        total_l = (154 - 132) / 221.
-        total_h = (-10 + 32) / 221.
-
-        offset_x = x - 132
-        offset_y = y + 32
-
-        return offset_x / total_l, offset_y / total_h
-
-    def extract_mean_timeseries(self, key, x, y):
-        dataset = Dataset(self.datasets[key])
-        lon, lat = self.convert_long_lat(x, y)
-        ds_opendap = xr.open_dataset(self.datasets[key], chunks={'time': '100MB'}, decode_times=False)
-        return ds_opendap[key][:, int(lat), int(lon)].values - 237.15
-        #return dataset[key][0:43800, int(lat), int(lon)] - 273.15
+        url = f"{self.datasets[key]}?var={key}&latitude={lat}&longitude={long}&horizStride=1&time_start=1980-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1&accept=CSV"
+        print(url)
+        r = requests.get(url)
+        return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 237.15
 
     def get_highest_3day_average(self, df, start_year, end_year):
         return df.loc[(df[0] > f'{start_year}-01-01') & (df[0] < f'{end_year}-12-30')].sort_values(by='rolling_mean2',
@@ -225,10 +223,8 @@ class ClimateProjection(Module):
         return timeseries_new[0].tolist()
 
     def run(self):
-        print("huhuh")
         dr = pd.date_range(start='1/1/1980', end='12/31/2099', freq='1d')
         dates = dr[(dr.day != 29) | (dr.month != 2)]
-
 
         data = {}
         for t in self.city:
@@ -236,6 +232,13 @@ class ClimateProjection(Module):
             long = t.GetFieldAsDouble("long")
             start_period = t.GetFieldAsInteger("start_period")
             end_period = t.GetFieldAsInteger("end_period")
+            self.datasets[
+                "tscr_aveAdjust"] = t.GetFieldAsString("cs_mean_temperature")
+            self.datasets[
+                "tminscrAdjust"] = t.GetFieldAsString("cs_min_temperature")
+            self.datasets[
+                "tmaxscrAdjust"] = t.GetFieldAsString("cs_max_temperature")
+
         self.city.finalise()
 
         if start_period < 1900:
@@ -244,11 +247,8 @@ class ClimateProjection(Module):
             print("return because irrelevant")
             return
 
-        print("huhuh")
         temperature_data = self.load_temperature_data()
         c = pd.DataFrame(temperature_data)
-
-        print(long,lat)
 
         climate_data = pd.DataFrame(dates)
         climate_data = climate_data.assign(tscr_aveAdjust=self.extract_mean_timeseries("tscr_aveAdjust", long, lat))
