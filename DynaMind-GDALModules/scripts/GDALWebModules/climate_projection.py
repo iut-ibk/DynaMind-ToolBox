@@ -121,7 +121,7 @@ class ClimateProjection(Module):
 
         return data["temperature"]
 
-    def write_temperature_data(self, date, data):
+    def write_temperature_data(self, start_date, end_date, climate_data):
         if not self.from_temperature_station:
             log("No temperature station defined loading default values", Warning)
             return
@@ -144,8 +144,16 @@ class ClimateProjection(Module):
         for t in self.timeseries:
             if t.GetFieldAsInteger("temperature_station_id") == station_id:
                 if t.GetFieldAsString("type") == "temperature":
-                    dm_set_double_list(t, "data", data)
-                    t.SetField("start", date)
+                    t.SetField("temperature_station_id", -1)
+
+        timeseries = self.timeseries.create_feature()
+        timeseries.SetField("start", str(start_date))
+        timeseries.SetField("end", str(end_date))
+        timeseries.SetField("temperature_station_id", station_id)
+
+        dm_set_double_list(timeseries, "data", climate_data)
+        timeseries.SetField("type", "temperature")
+        timeseries.SetField("timestep", 60*30)
 
         self.timeseries.finalise()
         self.temperature_station.finalise()
@@ -186,7 +194,7 @@ class ClimateProjection(Module):
         url = f"{self.datasets[key]}?var={key}&latitude={lat}&longitude={long}&horizStride=1&time_start=1980-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1&accept=CSV"
         print(url)
         r = requests.get(url)
-        return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 237.15
+        return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 273.15
 
     def get_highest_3day_average(self, df, start_year, end_year):
         return df.loc[(df[0] > f'{start_year}-01-01') & (df[0] < f'{end_year}-12-30')].sort_values(by='rolling_mean2',
@@ -205,9 +213,11 @@ class ClimateProjection(Module):
 
         for i in range(3):
             unit_type = self.characteristics_day(c, i)
+
             unit_type = pd.DataFrame(unit_type).reset_index()
+            print("unit_type", days.iloc[i]['tminscrAdjust'], days.iloc[i]['tmaxscrAdjust'])
             time_series_data.append([unit_type, days.iloc[i]['tminscrAdjust'], days.iloc[i]['tmaxscrAdjust']])
-        return str(hihgest[0]), self.generate(time_series_data)
+        return str(hihgest[0] - pd.DateOffset(days=3)), str(hihgest[0]), self.generate(time_series_data)
 
     def genreate_unit_curve(self, unit_curve, min_value, max_value):
         return (unit_curve * (max_value - min_value) + min_value)[0].tolist()
@@ -258,7 +268,6 @@ class ClimateProjection(Module):
         # other statistics
         climate_data['rolling_mean2'] = climate_data['tscr_aveAdjust'].rolling(window=3).mean()
 
-        date, data = self.extract_extreme_event(climate_data, c, start_period, end_period)
-
-        self.write_temperature_data(date, data)
+        start_date, end_date, data = self.extract_extreme_event(climate_data, c, start_period, end_period)
+        self.write_temperature_data(start_date, end_date, data)
 
