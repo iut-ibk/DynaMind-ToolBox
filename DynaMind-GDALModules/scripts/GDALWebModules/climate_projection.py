@@ -16,6 +16,9 @@ class ClimateProjection(Module):
         self.createParameter("from_temperature_station", DM.BOOL)
         self.from_temperature_station = False
 
+        self.createParameter("fraction", DM.DOUBLE)
+        self.fraction = 0.0
+
         self.createParameter("mean_temperature", DM.STRING)
         #self.mean_temperature =  '/Users/christianurich/Documents/rainfall/climate/tscr_aveAdjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
         self.mean_temperature = 'https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/MeanTemperature/tscr_aveAdjust.daily.ccam10-awap_CSIRO-Mk3-6-0Q_rcp85.nc'
@@ -196,10 +199,11 @@ class ClimateProjection(Module):
         r = requests.get(url)
         return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 273.15
 
-    def get_highest_3day_average(self, df, start_year, end_year):
-        return df.loc[(df[0] > f'{start_year}-01-01') & (df[0] < f'{end_year}-12-30')].sort_values(by='rolling_mean2',
-                                                                                                   ascending=False).iloc[
-            0]
+    def get_3day_average(self, df, start_year, end_year, fraction):
+        sorted_values = df.loc[(df[0] > f'{start_year}-01-01') & (df[0] < f'{end_year}-12-30')].sort_values(by='rolling_mean2',
+                                                                                                   ascending=False)
+        row = int(fraction * len(sorted_values))
+        return sorted_values.iloc[row]
 
     def characteristics_day(self, c, d):
         min_value = c[d * 48:(d + 1) * 48].min()
@@ -207,7 +211,7 @@ class ClimateProjection(Module):
         return (c[d * 48:(d + 1) * 48] - min_value) / (max_value - min_value)
 
     def extract_extreme_event(self, climate_data, c, start, end):
-        hihgest = self.get_highest_3day_average(climate_data, start, end)
+        hihgest = self.get_3day_average(climate_data, start, end, self.fraction)
         days = climate_data.loc[(climate_data[0] > hihgest[0] - pd.DateOffset(days=3)) & (climate_data[0] <= hihgest[0])]
         time_series_data = []
 
