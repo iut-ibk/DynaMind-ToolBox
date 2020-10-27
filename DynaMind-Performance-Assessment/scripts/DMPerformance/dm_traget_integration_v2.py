@@ -13,6 +13,122 @@ import subprocess
 from netCDF4 import Dataset
 import math
 
+from timezonefinder import TimezoneFinder
+from dateutil import tz
+from scipy.optimize import curve_fit
+
+
+class Sun:
+
+    def getSunriseTime(self, coords, date):
+        return self.calcSunTime(coords, date, True)
+
+    def getSunsetTime(self, coords, date):
+        return self.calcSunTime(coords, date, False)
+
+    def getCurrentUTC(self):
+        now = datetime.datetime.now()
+        return [now.day, now.month, now.year]
+
+    def calcSunTime(self, coords, date, isRiseTime, zenith=90.8):
+
+        # isRiseTime == False, returns sunsetTime
+
+        # day, month, year = self.getCurrentUTC()
+
+        day = date["day"]
+        month = date["month"]
+        year = date["year"]
+
+        longitude = coords['longitude']
+        latitude = coords['latitude']
+
+        TO_RAD = math.pi / 180
+
+        # 1. first calculate the day of the year
+        N1 = math.floor(275 * month / 9)
+        N2 = math.floor((month + 9) / 12)
+        N3 = (1 + math.floor((year - 4 * math.floor(year / 4) + 2) / 3))
+        N = N1 - (N2 * N3) + day - 30
+
+        # 2. convert the longitude to hour value and calculate an approximate time
+        lngHour = longitude / 15
+
+        if isRiseTime:
+            t = N + ((6 - lngHour) / 24)
+        else:  # sunset
+            t = N + ((18 - lngHour) / 24)
+
+        # 3. calculate the Sun's mean anomaly
+        M = (0.9856 * t) - 3.289
+
+        # 4. calculate the Sun's true longitude
+        L = M + (1.916 * math.sin(TO_RAD * M)) + (0.020 * math.sin(TO_RAD * 2 * M)) + 282.634
+        L = self.forceRange(L, 360)  # NOTE: L adjusted into the range [0,360)
+
+        # 5a. calculate the Sun's right ascension
+
+        RA = (1 / TO_RAD) * math.atan(0.91764 * math.tan(TO_RAD * L))
+        RA = self.forceRange(RA, 360)  # NOTE: RA adjusted into the range [0,360)
+
+        # 5b. right ascension value needs to be in the same quadrant as L
+        Lquadrant = (math.floor(L / 90)) * 90
+        RAquadrant = (math.floor(RA / 90)) * 90
+        RA = RA + (Lquadrant - RAquadrant)
+
+        # 5c. right ascension value needs to be converted into hours
+        RA = RA / 15
+
+        # 6. calculate the Sun's declination
+        sinDec = 0.39782 * math.sin(TO_RAD * L)
+        cosDec = math.cos(math.asin(sinDec))
+
+        # 7a. calculate the Sun's local hour angle
+        cosH = (math.cos(TO_RAD * zenith) - (sinDec * math.sin(TO_RAD * latitude))) / (
+                    cosDec * math.cos(TO_RAD * latitude))
+
+        if cosH > 1:
+            return {'status': False, 'msg': 'the sun never rises on this location (on the specified date)'}
+
+        if cosH < -1:
+            return {'status': False, 'msg': 'the sun never sets on this location (on the specified date)'}
+
+        # 7b. finish calculating H and convert into hours
+
+        if isRiseTime:
+            H = 360 - (1 / TO_RAD) * math.acos(cosH)
+        else:  # setting
+            H = (1 / TO_RAD) * math.acos(cosH)
+
+        H = H / 15
+
+        # 8. calculate local mean time of rising/setting
+        T = H + RA - (0.06571 * t) - 6.622
+
+        # 9. adjust back to UTC
+        UT = T - lngHour
+        UT = self.forceRange(UT, 24)  # UTC time in decimal format (e.g. 23.23)
+
+        # 10. Return
+        hr = self.forceRange(int(UT), 24)
+        min = round((UT - int(UT)) * 60, 0)
+
+        return {
+            'status': True,
+            'decimal': UT,
+            'hr': hr,
+            'min': min
+        }
+
+    def forceRange(self, v, max):
+        # force v to be >= 0 and < max
+        if v < 0:
+            return v + max
+        elif v >= max:
+            return v - max
+
+        return v
+
 class TargetInegrationv2(Module):
     display_name = "Targetv2"
     group_name = "Performance Assessment"
@@ -43,12 +159,26 @@ class TargetInegrationv2(Module):
         self.target_path = ""
 
         self.city = ViewContainer("city", DM.COMPONENT, DM.READ)
-        self.city.addAttribute("min_lat", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("min_long", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("max_lat", DM.Attribute.DOUBLE, DM.READ)
-        self.city.addAttribute("max_long", DM.Attribute.DOUBLE, DM.READ)
+        self.city.addAttribute("region", DM.Attribute.STRING, DM.READ)
+        self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
+        self.city.addAttribute("long", DM.Attribute.DOUBLE, DM.READ)
+
 
         self.registerViewContainers([self.city, self.air_temperature_data])
+
+        self.kd = {}
+
+        self.kd["townsville"] = [999.24, 1017.83, 937.01666667, 844.53333333, 776.14,
+                 715.83666667, 748.51666667, 847.73, 912.15666667, 979.73666667,
+                 998.11666667, 1001.08333333]
+
+        self.kd["melbourne"] = [999.24, 1017.83, 937.01666667, 844.53333333, 776.14,
+                 715.83666667, 748.51666667, 847.73, 912.15666667, 979.73666667,
+                 998.11666667, 1001.08333333]
+
+        self.lat = 144.9631
+        self.long = -37.8136
+        self.region = "melbourne"
 
     def init(self):
 
@@ -102,7 +232,40 @@ class TargetInegrationv2(Module):
             text = 0.0
         return round(text, 2)
 
-    def load_temperature_data(self):
+    def convert_time(self,timezone, time, date):
+        seconds = time * 3600
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
+        time_to_string = "%d:%02d:%02d" % (h, m, s)
+        # METHOD 1: Hardcode zones:
+        from_zone = tz.gettz('UTC')
+
+        to_zone = tz.gettz(timezone)
+
+        utc = datetime.datetime.strptime(f'{date["year"]}-{date["month"]}-{date["day"]} {time_to_string}', '%Y-%m-%d %H:%M:%S')
+        utc = utc.replace(tzinfo=from_zone)
+        central = utc.astimezone(to_zone)
+        return central
+
+    def sunset_sunrise(self, long, lat, day, month, year):
+        # from Sun import Sun
+        coords = {'longitude': long, 'latitude': lat}
+        date = {'day': day, 'month': month, 'year': year}
+        sun = Sun()
+
+        tf = TimezoneFinder()
+        timezone = tf.timezone_at(lng=long, lat=lat)
+
+        # Sunrise time UTC (decimal, 24 hour format)
+        sunrise = self.convert_time(timezone, sun.getSunriseTime(coords, date)['decimal'], date)
+
+        # Sunset time UTC (decimal, 24 hour format)
+        sunset = self.convert_time(timezone, sun.getSunsetTime(coords, date)['decimal'], date)
+
+
+        return sunrise, sunset
+
+    def load_temperature_data(self, region, long, lat):
         t = [24.7, 24.5, 22.3, 22.3, 21.7, 21.7, 21.9, 20.6, 20.6, 21.3, 21.3, 19.6, 18.8, 18.7, 19.9, 22.9, 25.2, 27.3,
              29.4, 31, 33, 35, 36.4, 38, 37.9, 39.1, 39, 40.2, 39.8, 40.3, 41.2, 41.2, 42.3, 42.6, 42.4, 42.4, 42.2,
              41.9, 40.8, 39.9, 36.6, 34.5, 32.1, 31.1, 30.6, 29.5, 29.7, 28.4, 27.3, 26.4, 26.5, 26.3, 24.6, 24.5, 24.5,
@@ -173,9 +336,14 @@ class TargetInegrationv2(Module):
         self.timeseries.setAttributeFilter("temperature_station_id = " + str(station_id))
         self.timeseries.reset_reading()
         data = {}
+
+        start_date = datetime.datetime.strptime("5/02/2009 00:00", "%d/%m/%Y %H:%M")
         for t in self.timeseries:
             if t.GetFieldAsInteger("temperature_station_id") == station_id:
-                data[t.GetFieldAsString("type")] = dm_get_double_list(t, "data")
+                type = t.GetFieldAsString("type")
+                data[type] = dm_get_double_list(t, "data")
+                if type == "temperature":
+                    start_date = datetime.datetime.strptime(t.GetFieldAsString("start"), "%Y-%m-%d %H:%M:%S")
 
         self.timeseries.finalise()
         self.temperature_station.finalise()
@@ -191,10 +359,28 @@ class TargetInegrationv2(Module):
         for idx, w in enumerate(data["wind_speed"]):  # Convert to m/s
             wind_speed.append( w * 1000. / 24 / 60 / 60 )
         data["wind_speed"] = wind_speed
+
+        if region in self.kd:
+            kd = self.create_solar_radiation(self.kd[region][start_date.month], long, lat, start_date.day, start_date.month, start_date.year).tolist()
+
         return data["temperature"], data["relative_humidity"], data["wind_speed"], data["pressure"], kd, ld
 
-    def write_climate_file(self, cimate_file):
-        t, rh, ws, p, kd, ld = self.load_temperature_data()
+    def square_func(self, x, a, b, c):
+        return a * x * x + b * x + c
+
+    def create_solar_radiation(self, watt, long, lat, day, month, year):
+        sunrise, sunset = self.sunset_sunrise(long, lat, day, month, year)
+        start_time_step = (sunrise.hour * 60 + sunrise.minute) / 30
+        end_time_step = (sunset.hour * 60 + sunset.minute) / 30
+        g_popt, g_pcov = curve_fit(self.square_func, [start_time_step, (end_time_step + start_time_step) / 2, end_time_step],
+                                   [0, watt, 0])
+        curve = np.array([self.square_func(x, *g_popt) for x in range(0, 48, 1)])
+        curve[curve < 0] = 0
+        kd = np.append(curve, np.append(curve, curve))
+        return kd
+
+    def write_climate_file(self, cimate_file, region, long, lat):
+        t, rh, ws, p, kd, ld = self.load_temperature_data(region, long, lat)
 
         d = datetime.datetime.strptime("5/02/2009 00:00", "%d/%m/%Y %H:%M")
 
@@ -283,11 +469,11 @@ class TargetInegrationv2(Module):
         climate_file = "/tmp/" + str(uuid.uuid4()) + "climate.csv"
 
         cols, rows = self.write_input_file(landuse_file)
-        self.write_climate_file(climate_file)
+
+        self.write_climate_file(climate_file, self.region, self.long, self.lat)
         self.write_config(config_file, output_uuid, climate_file, landuse_file, cols, rows)
         self.run_target(config_file)
         self.read_output_file(str("/tmp/" + str(output_uuid) + str(".nc")))
-        # self.read_output_file("/tmp/7b483265-795b-4ccf-af30-a0a5a73b23c6.nc")
         self.city.finalise()
 
         os.remove(str("/tmp/" + str(output_uuid) + str(".nc")))
@@ -311,13 +497,17 @@ class TargetInegrationv2(Module):
         for c in self.city:
             min_lat = c.GetFieldAsDouble("min_lat")
             min_long = c.GetFieldAsDouble("min_long")
+            self.lat = c.GetFieldAsDouble("lat")
+            self.long = c.GetFieldAsDouble("long")
+            self.region = c.GetFieldAsString("region")
+            print(self.lat, self.long,self.region )
             height = c.GetFieldAsDouble("max_lat") - c.GetFieldAsDouble("min_lat")
             length = c.GetFieldAsDouble("max_long") - c.GetFieldAsDouble("min_long")
 
             if self.grid_size_from_city:
                 self.internal_grid_size = c.GetFieldAsDouble("grid_size")
 
-        log(f"Grid Size {self.internal_grid_size}", Standard)
+        log(f"Grid Size {self.grid_size}, {self.internal_grid_size}", Standard)
 
         current_pos = -1
 
