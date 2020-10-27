@@ -38,6 +38,7 @@ class ClimateProjection(Module):
         self.city.addAttribute("cs_mean_temperature", DM.Attribute.STRING, DM.READ)
         self.city.addAttribute("cs_max_temperature", DM.Attribute.STRING, DM.READ)
         self.city.addAttribute("cs_min_temperature", DM.Attribute.STRING, DM.READ)
+        self.city.addAttribute("temperature_exceedance_fraction", DM.Attribute.DOUBLE, DM.READ)
 
         self.city.addAttribute("start_period", DM.Attribute.INT, DM.READ)
         self.city.addAttribute("end_period", DM.Attribute.INT, DM.READ)
@@ -246,6 +247,8 @@ class ClimateProjection(Module):
             long = t.GetFieldAsDouble("long")
             start_period = t.GetFieldAsInteger("start_period")
             end_period = t.GetFieldAsInteger("end_period")
+            self.fraction = t.GetFieldAsDouble("temperature_exceedance_fraction")
+            
             self.datasets[
                 "tscr_aveAdjust"] = t.GetFieldAsString("cs_mean_temperature")
             self.datasets[
