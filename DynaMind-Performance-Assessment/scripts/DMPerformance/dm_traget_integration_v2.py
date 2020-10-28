@@ -361,7 +361,7 @@ class TargetInegrationv2(Module):
         data["wind_speed"] = wind_speed
 
         if region in self.kd:
-            kd = self.create_solar_radiation(self.kd[region][start_date.month], long, lat, start_date.day, start_date.month, start_date.year).tolist()
+            kd = self.create_solar_radiation(self.kd[region][start_date.month-1], long, lat, start_date.day, start_date.month, start_date.year).tolist()
 
         return data["temperature"], data["relative_humidity"], data["wind_speed"], data["pressure"], kd, ld
 
