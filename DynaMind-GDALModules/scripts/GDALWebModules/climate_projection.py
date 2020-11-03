@@ -265,7 +265,7 @@ class ClimateProjection(Module):
         return timeseries_new[0].tolist()
 
     def to_vector(self, st):
-        st = st.replace("{", "").replace("}", "")
+        st = st.replace("[", "").replace("]", "")
         return [float(d) for d in st.split(",")]
 
     def run(self):
