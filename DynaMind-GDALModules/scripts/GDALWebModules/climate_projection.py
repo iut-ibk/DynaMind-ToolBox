@@ -4,6 +4,8 @@ import pandas as pd
 # import xarray as xr
 import requests
 from io import StringIO
+import datetime
+from datetime import timedelta
 
 class ClimateProjection(Module):
     display_name = "Climate Projection"
@@ -15,6 +17,10 @@ class ClimateProjection(Module):
 
         self.createParameter("from_temperature_station", DM.BOOL)
         self.from_temperature_station = False
+
+        self.createParameter("from_projection", DM.BOOL)
+        self.from_projection = True
+
 
         self.createParameter("fraction", DM.DOUBLE)
         self.fraction = 0.0
@@ -32,6 +38,14 @@ class ClimateProjection(Module):
         self.min_temperature ='https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/MinimumTemperature/tminscrAdjust.daily.ccam10-awap_CSIRO-Mk3-6-0Q_rcp85.nc'
 
         self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
+
+        self.registerViewContainers([self.city])
+
+
+    def init(self):
+        datastream = []
+
+        self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
         self.city.addAttribute("long", DM.Attribute.DOUBLE, DM.READ)
         self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
 
@@ -42,6 +56,12 @@ class ClimateProjection(Module):
 
         self.city.addAttribute("start_period", DM.Attribute.INT, DM.READ)
         self.city.addAttribute("end_period", DM.Attribute.INT, DM.READ)
+
+        if not self.from_projection:
+            self.city.addAttribute("cs_mean_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
+            self.city.addAttribute("cs_max_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
+            self.city.addAttribute("cs_min_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
+            self.city.addAttribute("cs_start_date", DM.Attribute.STRING, DM.READ)
 
         self.registerViewContainers([self.city])
 
@@ -120,8 +140,6 @@ class ClimateProjection(Module):
             if t.GetFieldAsInteger("temperature_station_id") == station_id:
                 data[t.GetFieldAsString("type")] = dm_get_double_list(t, "data")
 
-        # self.timeseries.finalise()
-        # self.temperature_station.finalise()
 
         return data["temperature"]
 
@@ -154,15 +172,13 @@ class ClimateProjection(Module):
         timeseries.SetField("start", str(start_date))
         timeseries.SetField("end", str(end_date))
         timeseries.SetField("temperature_station_id", station_id)
-
+        print(climate_data)
         dm_set_double_list(timeseries, "data", climate_data)
         timeseries.SetField("type", "temperature")
         timeseries.SetField("timestep", 60*30)
 
         self.timeseries.finalise()
         self.temperature_station.finalise()
-
-
 
     def init(self):
 
@@ -211,6 +227,16 @@ class ClimateProjection(Module):
         max_value = c[d * 48:(d + 1) * 48].max()
         return (c[d * 48:(d + 1) * 48] - min_value) / (max_value - min_value)
 
+    def generate_from_min_max(self, c, min_values, max_values, start_date):
+
+        time_series_data = []
+        for i in range(3):
+            unit_type = self.characteristics_day(c, i)
+            unit_type = pd.DataFrame(unit_type).reset_index()
+            time_series_data.append([unit_type, min_values[i], max_values[i]])
+        start = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+        return str(start), str(start + timedelta(days=3)), self.generate(time_series_data)
+
     def extract_extreme_event(self, climate_data, c, start, end):
         hihgest = self.get_3day_average(climate_data, start, end, self.fraction)
         days = climate_data.loc[(climate_data[0] > hihgest[0] - pd.DateOffset(days=3)) & (climate_data[0] <= hihgest[0])]
@@ -248,13 +274,25 @@ class ClimateProjection(Module):
             start_period = t.GetFieldAsInteger("start_period")
             end_period = t.GetFieldAsInteger("end_period")
             self.fraction = t.GetFieldAsDouble("temperature_exceedance_fraction")
-            
+
             self.datasets[
                 "tscr_aveAdjust"] = t.GetFieldAsString("cs_mean_temperature")
             self.datasets[
                 "tminscrAdjust"] = t.GetFieldAsString("cs_min_temperature")
             self.datasets[
                 "tmaxscrAdjust"] = t.GetFieldAsString("cs_max_temperature")
+
+            cs_mean_temperatures = None
+            cs_max_temperatures = None
+            cs_min_temperatures = None
+            cs_start_date = None
+
+
+            cs_mean_temperatures = dm_get_double_list(t, "cs_mean_temperatures")
+            cs_max_temperatures = dm_get_double_list(t, "cs_max_temperatures")
+            cs_min_temperatures = dm_get_double_list(t, "cs_min_temperatures")
+            cs_start_date = t.GetFieldAsString("cs_start_date")
+
 
         self.city.finalise()
 
@@ -266,6 +304,11 @@ class ClimateProjection(Module):
 
         temperature_data = self.load_temperature_data()
         c = pd.DataFrame(temperature_data)
+
+        if len(cs_max_temperatures) == 3:
+            start_date, end_date, data =  self.generate_from_min_max(c, cs_min_temperatures,cs_max_temperatures,  cs_start_date)
+            self.write_temperature_data(start_date, end_date, data)
+            return
 
         climate_data = pd.DataFrame(dates)
         climate_data = climate_data.assign(tscr_aveAdjust=self.extract_mean_timeseries("tscr_aveAdjust", long, lat))
