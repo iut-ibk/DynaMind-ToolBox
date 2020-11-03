@@ -58,9 +58,9 @@ class ClimateProjection(Module):
         self.city.addAttribute("end_period", DM.Attribute.INT, DM.READ)
 
         if not self.from_projection:
-            self.city.addAttribute("cs_mean_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
-            self.city.addAttribute("cs_max_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
-            self.city.addAttribute("cs_min_temperatures", DM.Attribute.DOUBLEVECTOR, DM.READ)
+            self.city.addAttribute("cs_mean_temperatures", DM.Attribute.STRING, DM.READ)
+            self.city.addAttribute("cs_max_temperatures", DM.Attribute.STRING, DM.READ)
+            self.city.addAttribute("cs_min_temperatures", DM.Attribute.STRING, DM.READ)
             self.city.addAttribute("cs_start_date", DM.Attribute.STRING, DM.READ)
 
         self.registerViewContainers([self.city])
@@ -233,6 +233,7 @@ class ClimateProjection(Module):
         for i in range(3):
             unit_type = self.characteristics_day(c, i)
             unit_type = pd.DataFrame(unit_type).reset_index()
+            print( min_values[i], max_values[i])
             time_series_data.append([unit_type, min_values[i], max_values[i]])
         start = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         return str(start), str(start + timedelta(days=3)), self.generate(time_series_data)
@@ -263,6 +264,10 @@ class ClimateProjection(Module):
             timeseries_new = timeseries_new.append(df)
         return timeseries_new[0].tolist()
 
+    def to_vector(self, st):
+        st = st.replace("{", "").replace("}", "")
+        return [float(d) for d in st.split(",")]
+
     def run(self):
         dr = pd.date_range(start='1/1/1980', end='12/31/2099', freq='1d')
         dates = dr[(dr.day != 29) | (dr.month != 2)]
@@ -287,10 +292,9 @@ class ClimateProjection(Module):
             cs_min_temperatures = None
             cs_start_date = None
 
-
-            cs_mean_temperatures = dm_get_double_list(t, "cs_mean_temperatures")
-            cs_max_temperatures = dm_get_double_list(t, "cs_max_temperatures")
-            cs_min_temperatures = dm_get_double_list(t, "cs_min_temperatures")
+            cs_mean_temperatures = self.to_vector(t.GetFieldAsString("cs_mean_temperatures"))
+            cs_max_temperatures = self.to_vector(t.GetFieldAsString("cs_max_temperatures"))
+            cs_min_temperatures = self.to_vector(t.GetFieldAsString("cs_min_temperatures"))
             cs_start_date = t.GetFieldAsString("cs_start_date")
 
 
@@ -306,6 +310,7 @@ class ClimateProjection(Module):
         c = pd.DataFrame(temperature_data)
 
         if len(cs_max_temperatures) == 3:
+            print(cs_min_temperatures,cs_max_temperatures)
             start_date, end_date, data =  self.generate_from_min_max(c, cs_min_temperatures,cs_max_temperatures,  cs_start_date)
             self.write_temperature_data(start_date, end_date, data)
             return
