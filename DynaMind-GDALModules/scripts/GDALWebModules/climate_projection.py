@@ -212,8 +212,10 @@ class ClimateProjection(Module):
     def extract_mean_timeseries(self, key, long, lat):
 
         url = f"{self.datasets[key]}?var={key}&latitude={lat}&longitude={long}&horizStride=1&time_start=1980-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1&accept=CSV"
-        print(url)
+        log(url, Standard)
         r = requests.get(url)
+        log(r.status_code, Standard)
+        log("returned request", Standard)
         return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 273.15
 
     def get_3day_average(self, df, start_year, end_year, fraction):
@@ -266,6 +268,7 @@ class ClimateProjection(Module):
 
     def to_vector(self, st):
         st = st.replace("[", "").replace("]", "")
+        print(st)
         return [float(d) for d in st.split(",")]
 
     def run(self):
