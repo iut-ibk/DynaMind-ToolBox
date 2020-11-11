@@ -107,7 +107,7 @@ class ClimateProjectionRainfall(Module):
 
         if start_period < 1900:
             self.timeseries.finalise()
-            self.temperature_station.finalise()
+            self.station.finalise()
             print("return because irrelevant")
             return
 
