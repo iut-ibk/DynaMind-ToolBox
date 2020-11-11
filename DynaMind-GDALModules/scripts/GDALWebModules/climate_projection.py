@@ -214,7 +214,7 @@ class ClimateProjection(Module):
         url = f"{self.datasets[key]}?var={key}&latitude={lat}&longitude={long}&horizStride=1&time_start=1980-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1&accept=CSV"
         log(url, Standard)
         r = requests.get(url)
-        log(r.status_code, Standard)
+        log(str(r.status_code), Standard)
         log("returned request", Standard)
         return pd.read_csv(StringIO(r.text)).iloc[:, [3]].to_numpy() - 273.15
 
