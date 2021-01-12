@@ -137,7 +137,7 @@ class LoadExtremeTemperature(Module):
 
             for station in self.node_station:
                 station_id = station.GetFieldAsInteger("dance_station_id")
-
+                log(f"station_id {station_id} ", Standard)
                 for idx, event in enumerate(self.get_extreme_date(cur, station_id)):
                     ed = event[0]
                     sd = ed - datetime.timedelta(days=3)

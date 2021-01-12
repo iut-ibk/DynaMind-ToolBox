@@ -394,8 +394,7 @@ class UrbanMetabolismModel(Module):
         if self.from_rain_station:
             for t in self.timeseries:
                 t: ogr.Feature
-                series = [v/1000. for v in DM.dm_get_double_list(t, "data")]
-
+                series = [0. if v < 0. else v/1000. for v in DM.dm_get_double_list(t, "data")]
 
                 type = t.GetFieldAsString("type")
                 station_id = t.GetFieldAsInteger("station_id")
