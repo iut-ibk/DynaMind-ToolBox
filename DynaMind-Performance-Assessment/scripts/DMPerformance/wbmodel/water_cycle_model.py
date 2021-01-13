@@ -5,7 +5,7 @@ from . import Lot, TransferNode, UnitParameters, Streams, LotStream, DemandProfi
 
 
 def annual_sum(vec: list) -> float:
-    return sum(vec) / float(len(vec)) / 365.
+    return sum(vec) / (float(len(vec)) / 365.)
 
 class WaterCycleModel():
     def __init__(self, lots: {},
