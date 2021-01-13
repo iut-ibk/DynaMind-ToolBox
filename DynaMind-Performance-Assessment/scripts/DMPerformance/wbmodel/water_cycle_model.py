@@ -3,6 +3,10 @@ import logging
 from pydynamind import *
 from . import Lot, TransferNode, UnitParameters, Streams, LotStream, DemandProfile
 
+
+def annual_sum(vec: list) -> float:
+    return sum(vec) / float(len(vec)) / 365.
+
 class WaterCycleModel():
     def __init__(self, lots: {},
                  sub_catchments: {},
@@ -90,7 +94,7 @@ class WaterCycleModel():
         if parcel_id not in self._lot_storage_reporting:
             return 0
         for key, s in self._lot_storage_reporting[parcel_id].items():
-            total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+            total_provided += annual_sum(s.get_state_value_as_double_vector('provided_volume'))
         return total_provided
 
     def get_internal_storages(self, parcel_id):
@@ -103,18 +107,18 @@ class WaterCycleModel():
         if parcel_id not in self._nodes:
             return None
         lot = self._nodes[parcel_id]
-        return sum(lot.get_internal_stream_report(lot_stream_id).get_state_value_as_double_vector('Flow'))
+        return annual_sum(lot.get_internal_stream_report(lot_stream_id).get_state_value_as_double_vector('Flow'))
 
     def get_internal_storage_volumes(self, storage_id):
         total_provided = 0
         for key, storage in self._lot_storage_reporting.items():
             for id, s in storage.items():
                 if id == storage_id:
-                    total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+                    total_provided += annual_sum(s.get_state_value_as_double_vector('provided_volume'))
         return total_provided
 
     def get_storage_volumes(self, storage_id):
-        return sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
+        return annual_sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
 
     def get_storage(self, storage_id):
         return self._storage_reporting[storage_id]

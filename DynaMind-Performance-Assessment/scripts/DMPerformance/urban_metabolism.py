@@ -8,7 +8,7 @@ from osgeo import ogr
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
-from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile
+from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile, annual_sum
 
 class UrbanMetabolismModel(Module):
 
@@ -302,7 +302,7 @@ class UrbanMetabolismModel(Module):
             logging.info(
                 f"{s.GetFID()} {str(Streams(s.GetFieldAsInteger('stream')))} {format(sum(daily_flow), '.2f')}")
 
-            s.SetField("annual_flow", sum(daily_flow))
+            s.SetField("annual_flow", annual_sum(daily_flow))
             dm_set_double_list(s, 'daily_flow', daily_flow)
         self.wb_sub_catchments.finalise()
 
