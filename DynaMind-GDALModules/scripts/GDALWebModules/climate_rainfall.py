@@ -54,6 +54,11 @@ class ClimateProjectionRainfall(Module):
         self.city.addAttribute("rain_start_period", DM.Attribute.INT, DM.READ)
         self.city.addAttribute("rain_end_period", DM.Attribute.INT, DM.READ)
 
+        self.city.addAttribute("netcdf_start_year", DM.Attribute.INT, DM.READ)
+        self.city.addAttribute("netcdf_end_year", DM.Attribute.INT, DM.READ)
+
+        self.city.addAttribute("leap_year", DM.Attribute.INT, DM.READ)
+
         datastream.append(self.city)
         datastream.append(self.timeseries)
         datastream.append(self.station)
@@ -63,6 +68,31 @@ class ClimateProjectionRainfall(Module):
         self.datasets = {}
         self.datasets[
             "rnd24Adjust"] = self.daily_rainfall
+
+    def convert_long_lat(self, d, x, y):
+        lon = d.variables["lon"]
+        lat = d.variables["lat"]
+        min_lon = min(lon[:])
+        max_lon = max(lon[:])
+        min_lat = min(lat[:])
+        max_lat = max(lat[:])
+
+        total_l = (max_lon - min_lon) / lon.size
+        total_h = (max_lat - min_lat) / lat.size
+
+        offset_x = x - min_lon
+        offset_y = y - min_lat
+
+        return offset_x / total_l, offset_y / total_h
+
+    def extract_mean_timeseries_netcdf(self, key, long, lat):
+        d = Dataset(self.datasets[key])
+        lo, la = self.convert_long_lat(d, long, lat)
+        variable_name = list(d.variables.keys())[-1]
+
+        return pd.DataFrame(
+            d[variable_name][:, int(la), int(lo)]).to_numpy() * 60. * 60. * 24. / 1000.
+
 
     def extract_mean_timeseries(self, key, long, lat):
         url = f"{self.datasets[key]}?var={key}&latitude={lat}&longitude={long}&horizStride=1&time_start=1980-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1&accept=CSV"
@@ -90,9 +120,7 @@ class ClimateProjectionRainfall(Module):
         return timeseries_new[0].tolist()
 
     def run(self):
-        dr = pd.date_range(start='1/1/1980', end='12/31/2099', freq='1d')
-        dates = dr[(dr.day != 29) | (dr.month != 2)]
-        data = {}
+
         for t in self.city:
             lat = t.GetFieldAsDouble("lat")
             long = t.GetFieldAsDouble("long")
@@ -100,10 +128,28 @@ class ClimateProjectionRainfall(Module):
             end_period = t.GetFieldAsInteger("rain_end_period")
             fraction = t.GetFieldAsDouble("rainfall_exceedance_fraction")
 
+            self.city.addAttribute("netcdf_start_year", DM.Attribute.INT, DM.READ)
+            self.city.addAttribute("netcdf_end_year", DM.Attribute.INT, DM.READ)
+
+            self.city.addAttribute("leap_year", DM.Attribute.INT, DM.READ)
+
+            netcdf_start_year = t.GetFieldAsInteger("netcdf_start_year")
+            netcdf_end_year = t.GetFieldAsInteger("netcdf_end_year")
+            leap_year = t.GetFieldAsInteger("leap_year")
+
+
+
             self.datasets[
                 "rnd24Adjust"] = t.GetFieldAsString("cs_rainfall")
 
         self.city.finalise()
+
+        dr = pd.date_range(start=f'1/1/{netcdf_start_year}', end=f'12/31/{netcdf_end_year}', freq='1d')
+        if leap_year == 0:
+            dates = dr
+        else:
+            dates = dr[(dr.day != 29) | (dr.month != 2)]
+
 
         if start_period < 1900:
             self.timeseries.finalise()
@@ -112,7 +158,13 @@ class ClimateProjectionRainfall(Module):
             return
 
         climate_data = pd.DataFrame(dates)
-        climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries("rnd24Adjust", long, lat))
+
+        if "http://" in self.datasets["rnd24Adjust"]:
+            # assume to download data from the api
+            climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries("rnd24Adjust", long, lat))
+        else:
+            climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries_netcdf("rnd24Adjust", long,lat))
+
         climate_data = climate_data.set_index(0)
         year = self.get_year(climate_data, start_period, end_period, fraction)
 
@@ -122,8 +174,7 @@ class ClimateProjectionRainfall(Module):
         rain = climate_data.loc[(climate_data.index >= start) & (climate_data.index < end)]['rnd24Adjust'].to_list()
 
         dr = pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31', freq='1d')
-        # if len(dr) == 366:
-        #     rain.append(0)
+
 
         if not self.from_station:
             log("No temperature station defined loading default values", Warning)
