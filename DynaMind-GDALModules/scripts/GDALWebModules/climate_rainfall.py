@@ -86,7 +86,7 @@ class ClimateProjectionRainfall(Module):
 
         return offset_x / total_l, offset_y / total_h
 
-    def extract_mean_timeseries_netcdf(self, key, long, lat):
+    def lsextract_mean_timeseries_netcdf(self, key, long, lat):
         os.environ['HDF5_USE_FILE_LOCKING'] = "FALSE"
         try:
             d = Dataset(self.datasets[key])
@@ -98,7 +98,7 @@ class ClimateProjectionRainfall(Module):
         variable_name = list(d.variables.keys())[-1]
 
         return pd.DataFrame(
-            d[variable_name][:, int(la), int(lo)]).to_numpy() * 60. * 60. * 24. / 1000.
+            d[variable_name][:, int(la), int(lo)]).to_numpy() * 60. * 60. * 24.
 
 
     def extract_mean_timeseries(self, key, long, lat):
