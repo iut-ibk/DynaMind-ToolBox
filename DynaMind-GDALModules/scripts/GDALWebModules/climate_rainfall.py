@@ -6,6 +6,7 @@ import requests
 from io import StringIO
 import datetime
 from datetime import timedelta
+import os
 
 class ClimateProjectionRainfall(Module):
     display_name = "Climate Rainfall Projection"
@@ -86,7 +87,12 @@ class ClimateProjectionRainfall(Module):
         return offset_x / total_l, offset_y / total_h
 
     def extract_mean_timeseries_netcdf(self, key, long, lat):
-        d = Dataset(self.datasets[key])
+        os.environ['HDF5_USE_FILE_LOCKING'] = "FALSE"
+        try:
+            d = Dataset(self.datasets[key])
+        except Exception as err:
+            log("Can't connect to database", Error)
+            log(type(err).__name_, Error)
         lo, la = self.convert_long_lat(d, long, lat)
         variable_name = list(d.variables.keys())[-1]
 
