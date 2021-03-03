@@ -91,8 +91,9 @@ class ClimateProjectionRainfall(Module):
         try:
             d = Dataset(self.datasets[key])
         except Exception as err:
-            log("Can't connect to database", Error)
-            log(type(err).__name_, Error)
+            log(f"Can't connect to database {self.datasets[key]}", Error)
+            log(f"Error: {type(err)).__name_}", Error)
+
         lo, la = self.convert_long_lat(d, long, lat)
         variable_name = list(d.variables.keys())[-1]
 
