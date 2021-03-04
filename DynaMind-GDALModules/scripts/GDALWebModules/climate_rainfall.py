@@ -64,6 +64,8 @@ class ClimateProjectionRainfall(Module):
 
         self.city.addAttribute("leap_year", DM.Attribute.INT, DM.READ)
 
+        self.city.addAttribute("wb_start_date", DM.Attribute.STRING, DM.WRITE)
+        self.city.addAttribute("wb_end_date", DM.Attribute.STRING, DM.WRITE)
 
 
         datastream.append(self.city)
@@ -149,6 +151,17 @@ class ClimateProjectionRainfall(Module):
             netcdf_end_year = t.GetFieldAsInteger("netcdf_end_year")
             leap_year = t.GetFieldAsInteger("leap_year")
 
+            if fraction < 0:
+                start_export = start_period
+                end_export = end_period + 1
+            else:
+                start_export = 2001
+                end_export = start_export + 1
+
+
+            t.SetField("wb_start_date", f"\"{start_export}-Jan-01 00:00:00\"")
+            t.SetField("wb_end_date", f"\"{end_export}-Jan-01 00:00:00\"")
+
 
 
             self.datasets[
@@ -182,20 +195,16 @@ class ClimateProjectionRainfall(Module):
         if fraction < 0:
             year = start_period
             end_year = end_period+1
-            start_export = start_period
-            end_export = end_period
         else:
             year = self.get_year(climate_data, start_period, end_period, fraction)
             end_year = year+1
-            start_export = 2001
-            end_export = start_export+1
 
         start = datetime.datetime.strptime(f'{year}-01-01', "%Y-%m-%d")
         end = datetime.datetime.strptime(f'{end_year}-01-01', "%Y-%m-%d")
 
         rain = climate_data.loc[(climate_data.index >= start) & (climate_data.index < end)]['rnd24Adjust'].to_list()
 
-        dr = pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31', freq='1d')
+        # dr = pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31', freq='1d')
 
 
         if not self.from_station:
@@ -224,9 +233,12 @@ class ClimateProjectionRainfall(Module):
         timeseries.SetField("end", f'01.01.{end_export} 00:00:00')
         timeseries.SetField("station_id", station_id)
         print(rain, len(rain))
+        log(f"{len(rain)}; {start_period}, {end_period}; start: 01.01.{start_export}; 00:00:00; 01.01.{end_export} 00:00:00", Standard)
         dm_set_double_list(timeseries, "data", rain)
         timeseries.SetField("type", "rainfall intensity")
         timeseries.SetField("timestep", 86400)
+
+
 
         self.timeseries.finalise()
         self.station.finalise()
