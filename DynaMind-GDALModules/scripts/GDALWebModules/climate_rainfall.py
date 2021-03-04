@@ -50,7 +50,11 @@ class ClimateProjectionRainfall(Module):
         self.city.addAttribute("lat", DM.Attribute.DOUBLE, DM.READ)
 
         self.city.addAttribute("cs_rainfall", DM.Attribute.STRING, DM.READ)
+
+        # Exceedance fraction is 0, 0.99 if set to -1 to will extract the time series defined in the period
         self.city.addAttribute("rainfall_exceedance_fraction", DM.Attribute.DOUBLE, DM.READ)
+
+
 
         self.city.addAttribute("rain_start_period", DM.Attribute.INT, DM.READ)
         self.city.addAttribute("rain_end_period", DM.Attribute.INT, DM.READ)
@@ -59,6 +63,8 @@ class ClimateProjectionRainfall(Module):
         self.city.addAttribute("netcdf_end_year", DM.Attribute.INT, DM.READ)
 
         self.city.addAttribute("leap_year", DM.Attribute.INT, DM.READ)
+
+
 
         datastream.append(self.city)
         datastream.append(self.timeseries)
@@ -172,10 +178,20 @@ class ClimateProjectionRainfall(Module):
             climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries_netcdf("rnd24Adjust", long,lat))
 
         climate_data = climate_data.set_index(0)
-        year = self.get_year(climate_data, start_period, end_period, fraction)
+
+        if fraction < 0:
+            year = start_period
+            end_year = end_period+1
+            start_export = start_period
+            end_export = end_period+1
+        else:
+            year = self.get_year(climate_data, start_period, end_period, fraction)
+            end_year = year+1
+            start_export = 2001
+            end_export = start_export+1
 
         start = datetime.datetime.strptime(f'{year}-01-01', "%Y-%m-%d")
-        end = datetime.datetime.strptime(f'{year+1}-01-01', "%Y-%m-%d")
+        end = datetime.datetime.strptime(f'{end_year}-01-01', "%Y-%m-%d")
 
         rain = climate_data.loc[(climate_data.index >= start) & (climate_data.index < end)]['rnd24Adjust'].to_list()
 
@@ -204,8 +220,8 @@ class ClimateProjectionRainfall(Module):
                     t.SetField("station_id", 0)
 
         timeseries = self.timeseries.create_feature()
-        timeseries.SetField("start", f'01.01.{2001} 00:00:00')
-        timeseries.SetField("end", f'01.01.{2002} 00:00:00')
+        timeseries.SetField("start", f'01.01.{start_export} 00:00:00')
+        timeseries.SetField("end", f'01.01.{end_export} 00:00:00')
         timeseries.SetField("station_id", station_id)
         print(rain, len(rain))
         dm_set_double_list(timeseries, "data", rain)
