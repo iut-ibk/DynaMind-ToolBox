@@ -4,9 +4,10 @@ import pandas as pd
 # import xarray as xr
 import requests
 from io import StringIO
-import datetime
-from datetime import timedelta
 import os
+import subprocess
+from datetime import datetime, timedelta
+import datetime
 
 class ClimateProjectionRainfall(Module):
     display_name = "Climate Rainfall Projection"
@@ -32,6 +33,60 @@ class ClimateProjectionRainfall(Module):
         self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
 
         self.registerViewContainers([self.city])
+
+    def get_monthly_evapotranspiration(self, x, y):
+        """
+        Returns evapotranspiration time series from BOM data. X and Y are in 4326 coordinates
+        :param x:
+        :param y:
+        :return:
+        """
+        files = ["Data/bom_data/etaajan.tif",
+                 "Data/bom_data/etaafeb.tif",
+                 "Data/bom_data/etaamar.tif",
+                 "Data/bom_data/etaaapr.tif",
+                 "Data/bom_data/etaamay.tif",
+                 "Data/bom_data/etaajun.tif",
+                 "Data/bom_data/etaajul.tif",
+                 "Data/bom_data/etaaaug.tif",
+                 "Data/bom_data/etaasep.tif",
+                 "Data/bom_data/etaaoct.tif",
+                 "Data/bom_data/etaanov.tif",
+                 "Data/bom_data/etaadec.tif"
+                 ]
+        data = []
+        rootfolder = self.getSimulationConfig().getDefaultModulePath()
+        for f in files:
+            cmd = "gdallocationinfo -valonly  -wgs84 " + f"{rootfolder}/{f}" + " " + str(x) + " " + str(y)
+            data.append(float(subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()))
+        return data
+
+    def create_evapotranspiration(self, longitude, latitude, start, end, delta):
+        monthy_evapo = self.get_monthly_evapotranspiration(longitude, latitude)
+        print(monthy_evapo)
+        counter = 0
+        current_date = start
+        current_month = -1
+        values = []
+        while current_date < end:
+            counter += 1
+            if current_month != current_date.month:
+                this_month = datetime.datetime(current_date.year, current_date.month, current_date.day)
+                if current_date.month < 12:
+                    next_month = datetime.datetime(current_date.year, current_date.month + 1, current_date.day)
+                else:
+                    next_month = datetime.datetime(current_date.year + 1, 1, current_date.day)
+                days_in_this_month = next_month - this_month
+
+                delta_eva = monthy_evapo[current_month - 1] / float(days_in_this_month.days) / (
+                            24. * 60. * 60.) * delta.total_seconds()
+
+                current_month = current_date.month
+            values.append(delta_eva)
+
+            current_date += delta
+
+        return values
 
     def init(self):
 
@@ -232,11 +287,25 @@ class ClimateProjectionRainfall(Module):
         timeseries.SetField("start", f'01.01.{start_export} 00:00:00')
         timeseries.SetField("end", f'01.01.{end_export} 00:00:00')
         timeseries.SetField("station_id", station_id)
-        print(rain, len(rain))
-        log(f"{len(rain)}; {start_period}, {end_period}; start: 01.01.{start_export}; 00:00:00; 01.01.{end_export} 00:00:00", Standard)
+
+        log(f"{len(rain)}; {start_period}, {end_period}; start: 01.01.{start_export}; 00:00:00; 01.01.{end_export} 00:00:00",
+            Standard)
         dm_set_double_list(timeseries, "data", rain)
         timeseries.SetField("type", "rainfall intensity")
         timeseries.SetField("timestep", 86400)
+
+        evapo = self.create_evapotranspiration(long, lat, datetime.datetime(start_export, 1, 1, 0, 0, 0), datetime.datetime(end_export, 1, 1, 0, 0, 0), timedelta(seconds=60*60*24))
+        timeseries = self.timeseries.create_feature()
+        timeseries.SetField("start", f'01.01.{start_export} 00:00:00')
+        timeseries.SetField("end", f'01.01.{end_export} 00:00:00')
+        timeseries.SetField("station_id", station_id)
+        dm_set_double_list(timeseries, "data", evapo)
+        timeseries.SetField("type", "evapotranspiration")
+        timeseries.SetField("timestep", 86400)
+
+        log(
+            f"{len(evapo)}; {start_period}, {end_period}; start: 01.01.{start_export}; 00:00:00; 01.01.{end_export} 00:00:00",
+            Standard)
 
 
 
