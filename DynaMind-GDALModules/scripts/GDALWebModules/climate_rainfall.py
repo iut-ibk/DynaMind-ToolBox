@@ -183,7 +183,7 @@ class ClimateProjectionRainfall(Module):
             year = start_period
             end_year = end_period+1
             start_export = start_period
-            end_export = end_period+1
+            end_export = end_period
         else:
             year = self.get_year(climate_data, start_period, end_period, fraction)
             end_year = year+1
