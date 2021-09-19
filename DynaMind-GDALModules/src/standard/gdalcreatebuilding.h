@@ -61,6 +61,7 @@ private:
     std::string link_view_id;
 
 	int residential_units;
+	double residential_units_per_m2;
 	OGRGeometry *createBuilding(OGRPolygon *ogr_poly);
 	OGRGeometry *addToSystem(SFCGAL::Polygon &poly);
 
