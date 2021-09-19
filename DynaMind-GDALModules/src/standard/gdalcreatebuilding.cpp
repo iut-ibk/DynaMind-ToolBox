@@ -166,6 +166,9 @@ GDALCreateBuilding::GDALCreateBuilding()
 
 	this->residential_units = 1;
 	this->addParameter("residential_units", DM::INT, &this->residential_units);
+	
+	this->residential_units_per_m2 = 125;
+	this->addParameter("residential_units_per_m2", DM::DOUBLE, &this->residential_units_per_m2);
 
     this->paramter_from_linked_view = "";
     this->addParameter("paramter_from_linked_view", DM::STRING, &this->paramter_from_linked_view);
@@ -304,7 +307,7 @@ void GDALCreateBuilding::run()
 
 		//Cacluate RU
 		if (ru < 0) {
-            ru = (int) (area * (int) (bh) / 3) / 125;
+            ru = (int) (area * (int) (bh) / 3) / residential_units_per_m2;
 
 		}
 
