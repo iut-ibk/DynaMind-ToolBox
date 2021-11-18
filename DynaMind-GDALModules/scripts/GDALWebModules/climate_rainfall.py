@@ -239,7 +239,7 @@ class ClimateProjectionRainfall(Module):
 
         climate_data = pd.DataFrame(dates)
 
-        if "http://" in self.datasets["rnd24Adjust"]:
+        if "https://" in self.datasets["rnd24Adjust"]:
             # assume to download data from the api
             climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries("rnd24Adjust", long, lat))
         else:
