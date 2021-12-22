@@ -56,6 +56,9 @@ void GDALRandomSelector::init()
 	if (!this->viewNameFrom.empty() && !this->attributeNameFrom.empty()) {
 		this->view_from = DM::ViewContainer(this->viewNameFrom, DM::COMPONENT, DM::READ);
 		this->view_from.addAttribute(this->attributeNameFrom, DM::Attribute::INT, DM::READ);
+		std::stringstream ss;
+		ss << this->attributeNameFrom << "_placed";
+		this->view_from.addAttribute(ss.str(), DM::Attribute::INT, DM::WRITE);
 		data_stream.push_back(&view_from);
 		valueFromView = true;
 	}
@@ -204,7 +207,9 @@ void GDALRandomSelector::run()
                 DM::Logger(DM::Standard) << "Number of households not placed " << households;
             }
 
-
+			std::stringstream ss;
+			ss << this->attributeNameFrom << "_placed";
+			from->SetField(ss.str().c_str(), (int) total_households - households);
 		}
 	} else {
 		this->mark_parcels(0, this->elements);

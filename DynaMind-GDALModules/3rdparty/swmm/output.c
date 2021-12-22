@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "headers.h"
+#include <math.h>
 
 
 // Definition of 4-byte integer, 4-byte real and 8-byte real types             //(5.0.014 - LR)

@@ -137,7 +137,7 @@ class LoadExtremeTemperature(Module):
 
             for station in self.node_station:
                 station_id = station.GetFieldAsInteger("dance_station_id")
-
+                log(f"station_id {station_id} ", Standard)
                 for idx, event in enumerate(self.get_extreme_date(cur, station_id)):
                     ed = event[0]
                     sd = ed - datetime.timedelta(days=3)
@@ -167,24 +167,37 @@ class LoadExtremeTemperature(Module):
 
                 log(str(filter_query), Standard)
 
-                cur.execute("SELECT date, value from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(6) + filter_query + " ORDER BY date ASC")
-                rows = cur.fetchall()
-                result_temp = []
-                inserted = 0
-                val = 9999
-                for entry in rows:
-                    if float(entry[1]) < 9999:
-                        val = float(entry[1])
-                    result_temp.append(val)
-                    inserted+=1
-                timeseries = self.timeseries.create_feature()
-                timeseries.SetField("start", str(start_date))
-                timeseries.SetField("end", str(end_date))
-                timeseries.SetField(self.view_name+"_id", station.GetFID())
 
-                log(str(inserted), Standard)
-                dm_set_double_list(timeseries, "data", result_temp)
-                timeseries.SetField("type", "temperature")
-                timeseries.SetField("timestep", 60*30)
+
+                # 6, temperature, C
+                # 7, dew_point_temperature, C
+                # 8, wind_speed, km / h
+                # 9, wind_direction, degree
+                # 10, windgust, km / h
+                # 11, pressure, hPa
+
+
+                data = {"temperature": 6, "dew_point_temperature": 7, "wind_speed": 8, "pressure": 11}
+
+                for key, id in data.items():
+                    cur.execute("SELECT date, value from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(id) + filter_query + " ORDER BY date ASC")
+                    rows = cur.fetchall()
+                    result_temp = []
+                    inserted = 0
+                    val = 9999
+                    for entry in rows:
+                        if float(entry[1]) < 9999:
+                            val = float(entry[1])
+                        result_temp.append(val)
+                        inserted+=1
+                    timeseries = self.timeseries.create_feature()
+                    timeseries.SetField("start", str(start_date))
+                    timeseries.SetField("end", str(end_date))
+                    timeseries.SetField(self.view_name+"_id", station.GetFID())
+
+                    log(str(inserted), Standard)
+                    dm_set_double_list(timeseries, "data", result_temp)
+                    timeseries.SetField("type", key)
+                    timeseries.SetField("timestep", 60*30)
 
 

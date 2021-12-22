@@ -31,3 +31,5 @@ from dancetimeseries import *
 from dm_simdb_dropbox import *
 from publishtosftp import *
 from loadextremetemperature import *
+from climate_projection import *
+from climate_rainfall import *

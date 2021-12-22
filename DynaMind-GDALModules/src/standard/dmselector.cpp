@@ -85,22 +85,27 @@ std::string DMSelector::get_filter(sqlite3 *db) {
 	query << "SELECT filters from " << this->leadingViewName << " LIMIT 1";
 
 	sqlite3_stmt *stmt;
-	const char *sql = query.str().c_str(); //"SELECT ID, Name FROM User";
-	int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+
+	DM::Logger(DM::Standard) <<  query.str();
+
+//	const char *sql = ; //"SELECT ID, Name FROM User";
+
+//	std::cout << sql << std::endl;
+	int rc = sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr);
 	if (rc != SQLITE_OK) {
-		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
-		this->setStatus(DM::MOD_CHECK_ERROR);
-		DM::Logger(DM::Error) <<  "SQL error: " << sqlite3_errmsg(db);
+//		this->setStatus(DM::MOD_CHECK_ERROR);
+		DM::Logger(DM::Error) <<  "Error preparing filter:" << sqlite3_errmsg(db);
 		return "";
 	}
 
 	std::string filter;
 	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
 		const unsigned char *name = sqlite3_column_text(stmt, 0);
+
 		filter = std::string(reinterpret_cast<const char*>(name));
 	}
 	if (rc != SQLITE_DONE) {
-		DM::Logger(DM::Error) <<  "SQL error: " << sqlite3_errmsg(db);
+		DM::Logger(DM::Error) <<  "Error reading filter: " << sqlite3_errmsg(db);
 	}
 	sqlite3_finalize(stmt);
 
@@ -113,7 +118,7 @@ void DMSelector::run()
 {
 	if (!properInit) {
 		DM::Logger(DM::Error) << "GDALSpatialLinking init failed";
-		this->setStatus(DM::MOD_CHECK_ERROR);
+//		this->setStatus(DM::MOD_CHECK_ERROR);
 		return;
 	}
 
@@ -136,7 +141,6 @@ void DMSelector::run()
 
 
 
-
 	sqlite3 *db;
 	int rc =  sqlite3_open(this->leadingView.getDBID().c_str(), &db);
 	if( rc ){
@@ -145,14 +149,13 @@ void DMSelector::run()
 	}
 	sqlite3_enable_load_extension(db,1);
 
-	sqlite3_enable_load_extension(db,1);
 	#ifdef WIN32
 		execute_query1(db,"SELECT load_extension('mod_spatialite')");
 	#else
 		execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
 	#endif
 
-	std::string filter = linkView.get_attribute_filter_sql_string();
+	std::string filter =  linkView.get_attribute_filter_sql_string();
 	std::string geometry_filter = this->get_filter(db);
 
 	if (!filter.empty() || !geometry_filter.empty())
@@ -172,7 +175,7 @@ void DMSelector::run()
 	sqlite3_close(db);
 
 	DM::Logger(DM::Standard) << query.str();
-	return;
+
 }
 
 

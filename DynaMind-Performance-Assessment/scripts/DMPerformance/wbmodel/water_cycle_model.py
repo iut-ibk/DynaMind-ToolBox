@@ -1,7 +1,11 @@
 import pycd3 as cd3
 import logging
 from pydynamind import *
-from . import Lot, TransferNode, UnitParameters, Streams, LotStream
+from . import Lot, TransferNode, UnitParameters, Streams, LotStream, DemandProfile
+
+
+def annual_sum(vec: list) -> float:
+    return sum(vec) / (float(len(vec)) / 365.)
 
 class WaterCycleModel():
     def __init__(self, lots: {},
@@ -29,14 +33,18 @@ class WaterCycleModel():
         print(self.start_date, self.end_date)
 
         for station_id in self._stations.keys():
-            for key, parameters in soils.items():
-                logging.info(
-                    f"station: {station_id} key: {key}")
-                self._standard_values[(key, station_id)] = UnitParameters(self.start_date,
-                                                       self.end_date,
-                                                       parameters,
-                                                       self._stations[station_id],
-                                                       self._library_path).unit_values
+            for soil_id, parameters in soils.items():
+                for wb_demand_profile_id, wb_p in wb_demand_profile.items():
+                    logging.info(
+                        f"station: {station_id} soil_id: {soil_id} wb_demand_profile_id: {wb_demand_profile_id}")
+                    self._standard_values[(soil_id, station_id, wb_demand_profile_id)] = UnitParameters(self.start_date,
+                                                           self.end_date,
+                                                           parameters,
+                                                           self._stations[station_id],
+                                                           wb_p[DemandProfile.crop_factor],
+                                                           self._library_path).unit_values
+
+
         self._lots = lots
         self._lot_storage_reporting = {}
         self._storage_reporting = {}
@@ -86,7 +94,7 @@ class WaterCycleModel():
         if parcel_id not in self._lot_storage_reporting:
             return 0
         for key, s in self._lot_storage_reporting[parcel_id].items():
-            total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+            total_provided += annual_sum(s.get_state_value_as_double_vector('provided_volume'))
         return total_provided
 
     def get_internal_storages(self, parcel_id):
@@ -99,24 +107,27 @@ class WaterCycleModel():
         if parcel_id not in self._nodes:
             return None
         lot = self._nodes[parcel_id]
-        return sum(lot.get_internal_stream_report(lot_stream_id).get_state_value_as_double_vector('Flow'))
+        return annual_sum(lot.get_internal_stream_report(lot_stream_id).get_state_value_as_double_vector('Flow'))
 
     def get_internal_storage_volumes(self, storage_id):
         total_provided = 0
         for key, storage in self._lot_storage_reporting.items():
             for id, s in storage.items():
                 if id == storage_id:
-                    total_provided += sum(s.get_state_value_as_double_vector('provided_volume'))
+                    total_provided += annual_sum(s.get_state_value_as_double_vector('provided_volume'))
         return total_provided
 
     def get_storage_volumes(self, storage_id):
-        return sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
+        return annual_sum(self._storage_reporting[storage_id].get_state_value_as_double_vector('provided_volume'))
 
     def get_storage(self, storage_id):
         return self._storage_reporting[storage_id]
 
-    def get_standard_values(self, soil_id, station_id):
-        return self._standard_values[(soil_id, station_id)]
+    def get_standard_value(self, soil_id, station_id, wb_demand_profile_id):
+        return self._standard_values[(soil_id, station_id, wb_demand_profile_id)]
+
+    def get_standard_values(self) -> dict:
+        return self._standard_values
 
     def _reporting(self, timeseries = False):
         for key, network in self._networks.items():

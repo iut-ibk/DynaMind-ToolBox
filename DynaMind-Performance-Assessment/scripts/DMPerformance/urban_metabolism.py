@@ -8,9 +8,7 @@ from osgeo import ogr
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
-from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile
-
-
+from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile, annual_sum
 
 class UrbanMetabolismModel(Module):
 
@@ -18,6 +16,7 @@ class UrbanMetabolismModel(Module):
     group_name = "Performance Assessment"
 
     def __init__(self):
+
         Module.__init__(self)
         self._templates = {}
         self._storages = {}
@@ -28,20 +27,23 @@ class UrbanMetabolismModel(Module):
 
     def init(self):
 
-
-
-        self.lot = ViewContainer('parcel', DM.COMPONENT, DM.READ)
+        self.lot = ViewContainer('wb_lot', DM.COMPONENT, DM.READ)
         self.lot.addAttribute("persons", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("outdoor_imp", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
+        # self.lot.addAttribute("tree_cover", DM.Attribute.DOUBLE, DM.READ)
+
+        for i in range(1, 10):
+            self.lot.addAttribute(f"wb_sub_catchment_id_{i}", DM.Attribute.INT, DM.READ)
+
         self.lot.addAttribute("demand", DM.Attribute.DOUBLE, DM.WRITE)
         self.lot.addAttribute("wb_lot_template_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("provided_volume", DM.Attribute.DOUBLE, DM.WRITE)
-        self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
         self.lot.addAttribute("green_roof_id", DM.Attribute.INT, DM.READ)
-        self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
+        self.lot.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.READ)
 
         for s in LotStream:
             self.lot.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.WRITE)
@@ -86,9 +88,9 @@ class UrbanMetabolismModel(Module):
         self.wb_sub_storages.addAttribute('spills', DM.Attribute.INT, DM.WRITE)
         self.wb_sub_storages.addAttribute('dry', DM.Attribute.INT, DM.WRITE)
 
-        self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
-        self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
-        self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
+        # self.wb_lot_to_sub_catchments = ViewContainer('wb_lot_to_sub_catchments', DM.COMPONENT, DM.READ)
+        # self.wb_lot_to_sub_catchments.addAttribute('wb_sub_catchment_id', DM.Attribute.LINK, DM.READ)
+        # self.wb_lot_to_sub_catchments.addAttribute('parcel_id', DM.Attribute.LINK, DM.READ)
 
         self.green_roofs = ViewContainer('green_roof', DM.COMPONENT, DM.READ)
         self.green_roofs.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
@@ -98,8 +100,12 @@ class UrbanMetabolismModel(Module):
         for s in SoilParameters:
             self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
 
+        self.wb_unit_flows = ViewContainer('wb_unit_flow', DM.COMPONENT, DM.WRITE)
         for s in UnitFlows:
-            self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLEVECTOR, DM.WRITE)
+            self.wb_unit_flows.addAttribute("wb_soil_id", DM.Attribute.INT, DM.WRITE)
+            self.wb_unit_flows.addAttribute("station_id", DM.Attribute.INT, DM.WRITE)
+            self.wb_unit_flows.addAttribute("wb_demand_profile_id", DM.Attribute.INT, DM.WRITE)
+            self.wb_unit_flows.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLEVECTOR, DM.WRITE)
 
         self.wb_demand_profile = ViewContainer('wb_demand_profile', DM.COMPONENT, DM.READ)
         for s in DemandProfile:
@@ -109,18 +115,18 @@ class UrbanMetabolismModel(Module):
         # lot can be part of multiple sub catchment (1 for each stream)
         # key = (sub_catchment, stream)
 
-
         view_register = [self.lot,
                          self.wb_soil_parameters,
                          self.wb_lot_template,
                          self.wb_storages,
                          self.wb_sub_storages,
                          self.wb_sub_catchments,
-                         self.wb_lot_to_sub_catchments,
+                         # self.wb_lot_to_sub_catchments,
                          self.wb_lot_streams,
                          self.wb_lot_storages,
                          self.wb_demand_profile,
-                         self.green_roofs
+                         self.green_roofs,
+                         self.wb_unit_flows
                          ]
 
         if self.from_rain_station:
@@ -155,6 +161,7 @@ class UrbanMetabolismModel(Module):
             for p in DemandProfile:
                 profile[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             demand_profile[demand_id] = profile
+        self.wb_demand_profile.finalise()
 
         for s in self.wb_lot_streams:
             s: ogr.Feature
@@ -185,14 +192,6 @@ class UrbanMetabolismModel(Module):
             s: ogr.Feature
             sub_catchments[s.GetFID()] = Streams(s.GetFieldAsInteger("stream"))
             sub_catchments_lots[s.GetFID()] = []
-        # self.wb_sub_catchments.finalise()
-
-        for lot_sub_catchments in self.wb_lot_to_sub_catchments:
-            lot_sub_catchments: ogr.Feature
-            parcel_id = lot_sub_catchments.GetFieldAsInteger("parcel_id")
-            wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger("wb_sub_catchment_id")
-            sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
-        self.wb_lot_to_sub_catchments.finalise()
 
         # Lot scale storages
         for s in self.wb_storages:
@@ -236,6 +235,7 @@ class UrbanMetabolismModel(Module):
             s: ogr.Feature
             green_roof = {"soil_id": s.GetFieldAsInteger("wb_soil_id")}
             green_roofs[s.GetFID()] = green_roof
+        self.green_roofs.finalise()
 
         for l in self.lot:
             l : ogr.Feature
@@ -251,6 +251,7 @@ class UrbanMetabolismModel(Module):
                 station_id = l.GetFieldAsInteger("station_id")
             lot = {
                 "persons": l.GetFieldAsDouble("persons"),
+                "units": l.GetFieldAsInteger("units"),
                 "roof_area": l.GetFieldAsDouble("roof_area"),
                 "impervious_area": l.GetFieldAsDouble("outdoor_imp"),
                 "irrigated_garden_area": l.GetFieldAsDouble("garden_area"),
@@ -266,6 +267,17 @@ class UrbanMetabolismModel(Module):
 
             lots[l.GetFID()] = lot
 
+        self.lot.reset_reading()
+        for lot_sub_catchments in self.lot:
+            lot_sub_catchments: ogr.Feature
+            parcel_id = lot_sub_catchments.GetFID()
+            for i in range(1, 10):
+                wb_sub_catchment_id = lot_sub_catchments.GetFieldAsInteger(f"wb_sub_catchment_id_{i}")
+                if wb_sub_catchment_id == 0:
+                    wb_sub_catchment_id = i
+                sub_catchments_lots[wb_sub_catchment_id].append(parcel_id)
+
+
         stations, dates = self._load_station()
 
 
@@ -279,11 +291,6 @@ class UrbanMetabolismModel(Module):
                              dates=dates,
                              library_path=self.getSimulationConfig().getDefaultLibraryPath())
 
-        # self.wb_soil_parameters.reset_reading()
-        # for s in self.wb_soil_parameters:
-        #     standard = wb.get_standard_values(s.GetFID())
-        #     for f in UnitFlows:
-        #         dm_set_double_list(s, str(f).split(".")[1], standard[f])
         self.wb_soil_parameters.finalise()
 
         self.wb_sub_catchments.reset_reading()
@@ -295,7 +302,7 @@ class UrbanMetabolismModel(Module):
             logging.info(
                 f"{s.GetFID()} {str(Streams(s.GetFieldAsInteger('stream')))} {format(sum(daily_flow), '.2f')}")
 
-            s.SetField("annual_flow", sum(daily_flow))
+            s.SetField("annual_flow", annual_sum(daily_flow))
             dm_set_double_list(s, 'daily_flow', daily_flow)
         self.wb_sub_catchments.finalise()
 
@@ -311,14 +318,38 @@ class UrbanMetabolismModel(Module):
         for s in self.wb_sub_storages:
             s : ogr.Feature
             storage = wb.get_storage(s.GetFID())
-            # s.SetField('spills', storage.get_state_value_as_int('spills'))
-            # s.SetField('dry', storage.get_state_value_as_int('dry'))
-            # dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
+
+            s.SetField('spills', storage.get_state_value_as_int('spills'))
+            s.SetField('dry', storage.get_state_value_as_int('dry'))
+            dm_set_double_list(s, 'provided_volume', storage.get_state_value_as_double_vector('provided_volume'))
             dm_set_double_list(s, 'storage_behaviour', storage.get_state_value_as_double_vector('storage_behaviour'))
-            logging.info(
+
+            logging.debug(
+                f"{s.GetFID()} provided_volume: {format(sum(storage.get_state_value_as_double_vector('provided_volume')), '.2f')}")
+            logging.debug(
                 f"{s.GetFID()} storage_behaviour: {format(sum(storage.get_state_value_as_double_vector('storage_behaviour')), '.2f')}")
+            logging.debug(
+                f"{s.GetFID()} spills: {format(storage.get_state_value_as_int('spills'), '.2f')}")
+            logging.debug(
+                f"{s.GetFID()} dry: {format(storage.get_state_value_as_int('dry'), '.2f')}")
+
         self.wb_sub_storages.finalise()
         self.lot.reset_reading()
+
+        for keys, item in wb.get_standard_values().items():
+            f: ogr.Feature
+            soil_id = keys[0]
+            station_id = keys[1]
+            wb_demand_profile_id = keys[2]
+
+            f = self.wb_unit_flows.create_feature()
+            f.SetField("wb_soil_id", soil_id)
+            f.SetField("station_id", station_id)
+            f.SetField("wb_demand_profile_id", wb_demand_profile_id)
+            for s in UnitFlows:
+                dm_set_double_list(f, str(s).split(".")[1],
+                                   item[s])
+        self.wb_unit_flows.finalise()
 
         for l in self.lot:
             l.SetField("provided_volume", wb.get_internal_storage_volumes_lot(l.GetFID()))
@@ -351,10 +382,11 @@ class UrbanMetabolismModel(Module):
         """
         stations = {}
 
-        stations[1] = {
-            "rainfall intensity": self._load_rainfall(),
-            "evapotranspiration": self._load_eta()
-        }
+        if not self.from_rain_station:
+            stations[1] = {
+                "rainfall intensity": self._load_rainfall(),
+                "evapotranspiration": self._load_eta()
+            }
 
         start_date = "2001-Jan-01 00:00:00"
         end_date = "2002-Jan-01 00:00:00"
@@ -362,10 +394,12 @@ class UrbanMetabolismModel(Module):
         if self.from_rain_station:
             for t in self.timeseries:
                 t: ogr.Feature
-                series = [v/1000. for v in DM.dm_get_double_list(t, "data")]
+                series = [0. if v < 0. else v/1000. for v in DM.dm_get_double_list(t, "data")]
 
                 type = t.GetFieldAsString("type")
                 station_id = t.GetFieldAsInteger("station_id")
+                if station_id == 0:
+                    continue
                 if station_id in stations:
                     station = stations[station_id]
                 else:

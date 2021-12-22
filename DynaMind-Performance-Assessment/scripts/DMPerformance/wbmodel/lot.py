@@ -10,6 +10,7 @@ class DemandProfile(Enum):
     black_water = 3
     grey_water = 4
     crop_factor = 5
+    # crop_factor_tree = 6
 
 
 class LotStream(Enum):
@@ -58,11 +59,11 @@ class Lot:
         self._id = id
         self._cd3 = cd3_instance
 
-        self._standard_values = standard_values[(lot_detail["soil_id"],lot_detail["station_id"])]
+        self._standard_values = standard_values[(lot_detail["soil_id"],lot_detail["station_id"], lot_detail["wb_demand_profile_id"])]
 
         self._green_roofs = None
         if lot_detail["green_roof"]:
-            self._green_roofs = standard_values[(lot_detail["green_roof"]["soil_id"],lot_detail["station_id"])]
+            self._green_roofs = standard_values[(lot_detail["green_roof"]["soil_id"],lot_detail["station_id"],lot_detail["wb_demand_profile_id"])]
 
         self._internal_streams = {}
         self._external_streams = {}
@@ -149,8 +150,9 @@ class Lot:
 
         # This and reconnected
         if "storages" in lot:
+            units = lot["units"]
             for idx, s in enumerate(lot["storages"]):
-                self._add_storage(s)
+                self._add_storage(units, s)
 
         # Setup Streams
         for stream_id in self._external_streams:
@@ -163,24 +165,20 @@ class Lot:
         f[0] = value
         return f
 
-    def _add_storage(self, storage):
+    def _add_storage(self, units: int, storage: dict) -> None:
 
         s = self._cd3.add_node("MultiUseStorage")
-        # s = self._cd3.add_node("RWHT")
-        s.setDoubleParameter("storage_volume", storage["volume"])
+        s.setDoubleParameter("storage_volume", storage["volume"] * units)
 
         self._lot_storage_reporting[self._id][storage["id"]] = s
 
         demand_stream = self._internal_streams[storage["demand"]]
         inflow_stream = self._internal_streams[storage["inflow"]]
 
-
-        # self._cd3.add_connection(demand_stream[0], demand_stream[1], s, "in_np")
         self._cd3.add_connection(demand_stream[0], demand_stream[1], s, "q_in_0")
         self._cd3.add_connection(inflow_stream[0], inflow_stream[1], s, "in_sw")
         f_inflow_stream = self._add_flow_probe(s, "out_sw")
         f_demand_stream = self._add_flow_probe(s, "q_out_0")
-        # f_demand_stream = self._add_flow_probe(s, "out_np")
         inflow_stream[0] = f_inflow_stream[0]
         inflow_stream[1] = f_inflow_stream[1]
         demand_stream[0] = f_demand_stream[0]

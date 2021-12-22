@@ -10,6 +10,7 @@ from mikewhisperer import *
 from scale_demand import *
 # from polder import *
 from dm_traget_integration import *
-from dm_catchment import *
+# Disabled because of some issue with imports
+# from dm_catchment import *
 from dm_traget_integration_v2 import *
 from urban_metabolism import *
