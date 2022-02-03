@@ -147,6 +147,7 @@ class LoadDAnCETimeseries(Module):
                     times.append(r[0])
                 if len(times) != 2:
                     log("No data for this slice found ", Warning)
+                    log("SELECT date from " + str(self.table) + " WHERE station_id = " + str(station_id) + " AND measurment_type_id=" + str(measurment_type_id) + filter_query + " ORDER BY date ASC LIMIT 2 ")
                     continue
                 db_timestep = (times[1] - times[0]).total_seconds()
 
