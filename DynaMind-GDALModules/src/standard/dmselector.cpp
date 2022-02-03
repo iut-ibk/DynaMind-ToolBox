@@ -149,11 +149,9 @@ void DMSelector::run()
 	}
 	sqlite3_enable_load_extension(db,1);
 
-	#ifdef WIN32
-		execute_query1(db,"SELECT load_extension('mod_spatialite')");
-	#else
-		execute_query1(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
-	#endif
+    std::stringstream ss;
+    ss << "SELECT load_extension('" <<  this->getSimulationConfig().getSpatialiteModuleLocation() << "')";
+    execute_query1(db, ss.str().c_str());
 
 	std::string filter =  linkView.get_attribute_filter_sql_string();
 	std::string geometry_filter = this->get_filter(db);

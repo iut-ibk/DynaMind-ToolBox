@@ -13,8 +13,10 @@ private:
 	int CoordinateSystem; //As EPSG Code
 	std::string workingDir;
 	bool keepSystems;
+	std::string spatialiteLocation;
+	std::string defaultModulePath;
 public:
-	SimulationConfig() : CoordinateSystem(0), workingDir(QString(QDir::tempPath()+"/dynamind").toStdString()), keepSystems(false){}
+	SimulationConfig();
 	void setCoordinateSystem(int epsgCode) {CoordinateSystem = epsgCode;}
 	int getCoorindateSystem() const {return this->CoordinateSystem;}
 	bool getKeepSystems() const;
@@ -22,7 +24,11 @@ public:
 	std::string getWorkingDir() const;
 	void setWorkingDir(const std::string &value);
 	std::string getDefaultModulePath();
+	void setDefaultModulePath(const std::string & path);
 	std::string getDefaultLibraryPath();
+	std::string getSpatialiteModuleLocation();
+	void setSpatialiteModuleLocation(const std::string & spatialiteLocation );
+
 };
 
 }

@@ -89,6 +89,42 @@ PythonEnv::PythonEnv() {
 #endif
 }
 
+std::string PythonEnv::GetTraceback(){
+   PyObject* type;
+   PyObject* value;
+   PyObject* traceback;
+
+   PyErr_Fetch(&type, &value, &traceback);
+   PyErr_NormalizeException(&type, &value, &traceback);
+
+   std::string fcn = "";
+   fcn += "def get_pretty_traceback(exc_type, exc_value, exc_tb):\n";
+   fcn += "    import sys, traceback\n";
+   fcn += "    lines = []\n";
+   fcn += "    lines = traceback.format_exception(exc_type, exc_value, exc_tb)\n";
+   fcn += "    output = '\\n'.join(lines)\n";
+   fcn += "    return output\n";
+
+   PyRun_SimpleString(fcn.c_str());
+   PyObject* mod = PyImport_ImportModule("__main__");
+   PyObject* method = PyObject_GetAttrString(mod, "get_pretty_traceback");
+   PyObject* outStr = PyObject_CallObject(method, Py_BuildValue("OOO", type, value, traceback));
+   std::string pretty = PyBytes_AsString(PyUnicode_AsASCIIString(outStr));
+
+   Py_DECREF(method);
+   Py_DECREF(outStr);
+
+   // Pretty Logging
+   std::istringstream iss(pretty);
+   std::string line;
+
+   while ( std::getline( iss, line ) ) {
+        DM::Logger(Error) << line;
+}
+
+   return pretty;
+}
+
 PythonEnv::~PythonEnv()
 {
 	if(!Py_IsInitialized())
@@ -172,13 +208,15 @@ bool PythonEnv::addOverWriteStdCout() {
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
 	if (PyErr_Occurred()) {
 		printf("Error in PythonEnv::addOverWriteStdCout():\n");
-		PyErr_Print();
+		//PyErr_Print();
+		GetTraceback();
 		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
 	SWIG_PYTHON_THREAD_END_BLOCK;
 	return true;
 }
+
 
 void PythonEnv::addPythonPath(std::string path) {
 	DM::Logger(DM::Standard) << "Add Python Path " << path;
@@ -191,7 +229,10 @@ void PythonEnv::addPythonPath(std::string path) {
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
 	if (PyErr_Occurred()) {
-		PyErr_Print();
+		//PyErr_Print();
+
+        GetTraceback();
+
 		SWIG_PYTHON_THREAD_END_BLOCK;
 		return;
 	}
@@ -206,7 +247,8 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	if (PyErr_Occurred()) {
 		//Logger(Error) << "Could not import pydynamind module";
 		printf("Error in python module '%s':\n", module.c_str());
-		PyErr_Print();
+		//PyErr_Print();
+		 GetTraceback();
 		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
@@ -252,7 +294,8 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	PyRun_String(script.str().c_str(), Py_file_input, priv->main_namespace, 0);
 	if (PyErr_Occurred())
 	{
-		PyErr_Print();
+		//PyErr_Print();
+		GetTraceback();
 		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}
@@ -273,7 +316,8 @@ bool PythonEnv::registerNodes(ModuleRegistry *registry, const string &module)
 	Py_XDECREF(args);
 	if (PyErr_Occurred())
 	{
-		PyErr_Print();
+		//PyErr_Print();
+		GetTraceback();
 		SWIG_PYTHON_THREAD_END_BLOCK;
 		return false;
 	}

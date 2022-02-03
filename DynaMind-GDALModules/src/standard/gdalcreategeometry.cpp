@@ -30,13 +30,11 @@ void GDALCreateGeometry::initDatabase(){
         return;
     }
     sqlite3_enable_load_extension(db,1);
-//    execute_query("SELECT load_extension('mod_spatialite')", false);
 
-#ifdef WIN32
-    execute_query("SELECT load_extension('mod_spatialite')", false);
-#else
-    execute_query("SELECT load_extension('/usr/local/lib/mod_spatialite')", false);
-#endif
+    std::stringstream ss;
+    ss << "SELECT load_extension('" <<  this->getSimulationConfig().getSpatialiteModuleLocation() << "')";
+    execute_query(ss.str().c_str(), false);
+
 
 }
 
