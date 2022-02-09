@@ -14,6 +14,7 @@
 #endif
 
 #define LOADPYTHON
+#define PYTHONERROR
 #define ADVANCEDAPI
 #define READAPI
 #define MODIFYAPI
@@ -46,6 +47,33 @@ TEST_F(TestGDALPython,LoadPython) {
 
 	ASSERT_EQ(NULL,!sim.addModule("CreateGDALComponents"));
 	sim.run();
+
+}
+#endif
+
+#ifdef PYTHONERROR
+TEST_F(TestGDALPython,PythonError) {
+	ostream *out = &cout;
+	DM::Log::init(new DM::OStreamLogSink(*out), DM::Error);
+	DM::Logger(DM::Standard) << "Create Simulation";
+	//std::cout << QDir::currentPath().toStdString() << std::endl;
+	DM::PythonEnv::getInstance()->addPythonPath(QDir::currentPath().toStdString());
+
+	DM::Simulation sim;
+	DM::SimulationConfig conf;
+	conf.setCoordinateSystem(DEFAULTEPSG);
+	sim.setSimulationConfig(conf);
+
+	sim.registerModulesFromDefaultLocation();
+	DM::Logger(DM::Debug) << "Loaded Modules";
+	foreach (std::string m, sim.getModuleRegistry()->getRegisteredModules() ) {
+		DM::Logger(DM::Debug) << m;
+	}
+
+	ASSERT_EQ(NULL,!sim.addModule("PythonErrorLogging"));
+	sim.run();
+	ASSERT_EQ(DM::SIM_FAILED, sim.getSimulationStatus());
+
 
 }
 #endif
@@ -245,4 +273,5 @@ TEST_F(TestGDALPython,AdvancedDataTypes) {
 }
 #endif
 #endif
+
 
