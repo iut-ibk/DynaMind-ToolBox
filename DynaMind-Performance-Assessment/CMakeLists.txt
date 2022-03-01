@@ -5,6 +5,7 @@ FIND_PATH(DYNAMINDDEV DynaMindDevCmake.txt
             PATHS   $ENV{DYNAMIND_DIR}/include
             PATH_SUFFIXES dynamindcore/CMake)
 
+
 IF(DYNAMIND_INCLUDE_DIR)
         MESSAGE("Compiled from toolbox")
         MESSAGE("DYNAMIND_INCLUDE_DIR ${DYNAMIND_INCLUDE_DIR}")

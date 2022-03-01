@@ -1,5 +1,6 @@
 #include "multiusestorage.h"
 
+typedef  unsigned int uint;
 
 CD3_DECLARE_NODE_NAME(MultiUseStorage)
 
@@ -50,7 +51,7 @@ MultiUseStorage::MultiUseStorage() {
 }
 
 MultiUseStorage::~MultiUseStorage() {
-	for (uint i = 0; i < v_in_q.size(); i++){
+    for (uint i = 0; i < v_in_q.size(); i++){
 			delete v_in_q[i];
 			delete v_out_q[i];
 	}

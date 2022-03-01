@@ -41,6 +41,7 @@ namespace DM {
 		class DM_HELPER_DLL_EXPORT PythonEnv {
 		public:
 			virtual ~PythonEnv();
+			static std::string GetTraceback();
 			static PythonEnv *getInstance();
 			void addPythonPath(std::string path);
 			bool registerNodes(ModuleRegistry *registry,

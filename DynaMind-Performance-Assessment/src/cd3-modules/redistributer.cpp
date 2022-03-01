@@ -48,6 +48,7 @@ int Redistributer::f(ptime time, int dt) {
 			}
 		}
 	}
+    return dt;
 }
 
 bool Redistributer::init(ptime start, ptime end, int dt)

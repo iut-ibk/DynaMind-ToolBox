@@ -164,6 +164,7 @@ void NodeRegistry::addPythonPlugin(const std::string &script) {
 		PyRun_String(app_pp_cmd.c_str(), Py_file_input, main_namespace, 0);
         if (PyErr_Occurred()) {
             Logger(Error) << "error adding path to sys.path" << script;
+            PyErr_Print();
             throw PythonException();
         }
 	}

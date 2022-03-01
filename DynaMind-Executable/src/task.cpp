@@ -297,6 +297,8 @@ void Task::run()
             ("settings", po::value<string>(), "set an environment variable")
 			("epsg", po::value<int>(), "force epsg setting")
             ("show-settings", "show environment variables")
+            ("set-mod-spatialite", po::value<string>(), "set path to mod-spatialite")
+            ("default-module-path", po::value<string>(), "set the default module path")
             //("python-modules", po::value<vector <string> >(), "set path to python modules")
             ("parameter", po::value<string>(), "overwrites a parameter: ([modulename].[parametername]=[value];")
             ("parameterlist", "shows the available parameters for this file")
@@ -316,6 +318,9 @@ void Task::run()
     string parameteroverloads = "";
     int numThreads = 1;
     string lf = "";
+    string mod_spatialote = "";
+    string module_path = "";
+
 
     DM::LogLevel ll = DM::Standard;
     try
@@ -394,6 +399,7 @@ void Task::run()
         if (vm.count("loglevel"))		ll = (DM::LogLevel)vm["loglevel"].as<int>();
 
         if (vm.count("logpath"))		lf = vm["logpath"].as<string>();
+
 
         QDateTime time = QDateTime::currentDateTime();
         QString logfilepath = QDir::tempPath() + "/dynamind" + time.toString("_yyMMdd_hhmmss_zzz")+".log";
@@ -474,6 +480,23 @@ void Task::run()
         s.installStatusUpdater(path.str());
     }
 
+        if (vm.count("set-mod-spatialite")) {
+	    DM::SimulationConfig sc = s.getSimulationConfig();
+	    sc.setSpatialiteModuleLocation(vm["set-mod-spatialite"].as<string>());
+		s.setSimulationConfig(sc);
+
+		DM::Logger(DM::Standard) << "set mod spatialite path to " << sc.getSpatialiteModuleLocation();
+	}
+
+    if (vm.count("default-module-path")) {
+
+    	DM::SimulationConfig sc = s.getSimulationConfig();
+	    sc.setDefaultModulePath(vm["default-module-path"].as<string>());
+		s.setSimulationConfig(sc);
+
+		DM::Logger(DM::Standard) << "set module path to " << sc.getDefaultModulePath();
+    }
+
     s.registerModulesFromDefaultLocation();
     s.registerModulesFromSettings();
     realsimulationfile = replacestrings(replace, simulationfile);
@@ -503,6 +526,9 @@ void Task::run()
 		sc.setCoordinateSystem(epsgcode);
 		s.setSimulationConfig(sc);
 	}
+
+
+
 
 
     if (vm.count("parameterlist"))

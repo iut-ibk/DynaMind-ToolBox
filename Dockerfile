@@ -12,15 +12,15 @@ RUN apt-get -y update && apt-get -y install build-essential cmake git swig pytho
 
 RUN apt-get -y update && apt-get -y install libcgal-dev build-essential libssl-dev libffi-dev python3-dev libsfcgal-dev libspatialite-dev libsqlite3-mod-spatialite
 
+RUN apt-get -y update && apt-get -y install python-setuptools
 
 RUN useradd -ms /bin/bash node
 
 USER root
 
-# needed for gdal_wrap compile
-ENV CPLUS_INCLUDE_PATH /usr/local/include/gdal
-ENV C_INCLUDE_PATH /usr/local/include/gdal
+RUN pip3 install -U pip
 
+RUN pip3 install cftime
 
 RUN pip3 install netCDF4
 
@@ -88,7 +88,7 @@ WORKDIR /home/node/DynaMind-ToolBox/build/output
 
 USER root 
 
-RUN ./dynamind ../../test.dyn
+RUN ./unit-test
 #RUN ./unit-test --gtest_output="xml:/tmp/test_general.xml"
 #RUN ./unit-test_WaterBalance --gtest_output="xml:/tmp/test_wb.xml"
 #RUN ./unit-test_gdalmodules --gtest_output="xml:/tmp/modules_test.xml"

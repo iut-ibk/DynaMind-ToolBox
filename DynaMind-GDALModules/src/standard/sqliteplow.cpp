@@ -122,12 +122,10 @@ void SqlitePlow::plow() {
 		return;
 	}
 	sqlite3_enable_load_extension(db,1);
-	sqlite3_enable_load_extension(db,1);
-	#ifdef WIN32
-		execute_query(db,"SELECT load_extension('mod_spatialite')");
-	#else
-		execute_query(db,"SELECT load_extension('/usr/local/lib/mod_spatialite')");
-	#endif
+
+    std::stringstream ss;
+    ss << "SELECT load_extension('" <<  this->getSimulationConfig().getSpatialiteModuleLocation() << "')";
+    execute_query(ss.str().c_str(), false);
 
 	std::stringstream query_ss;
 	query_ss <<"SELECT load_extension('" << extensionLocation << "')";

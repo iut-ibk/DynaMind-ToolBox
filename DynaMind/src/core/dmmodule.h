@@ -153,6 +153,8 @@ public:
 	/** @brief an optional init function for runtime inits */
 	virtual void init() {};
 
+	virtual void moduleRun(){run();};
+
 	/** @brief executes the modules with the data given via parameters and 
 	inports (those are set by the simulation) */
 	virtual void run() = 0;

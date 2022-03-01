@@ -5,7 +5,7 @@
 @section LICENSE
 
 This file is part of DynaMind
-Copyright (C) 2011-2015  Christian Urich
+Copyright (C) 2011-2012  Christian Urich
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,13 +22,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-from pythontestmodule import *
-from create_gdal_component import *
-from create_gdal_advanced_api import *
-from read_gdal_advanced_api import *
-from modify_gdal_advanced_api import *
-from create_gdal_links_api import *
-from get_linked_component import *
-from advanced_data_types import *
-from read_advanced_data_types import *
-from python_error_logging import *
+from pydynamind import *
+from numpy import *
+from os import *
+
+
+class PythonErrorLogging(Module):
+    def __init__(self):
+        Module.__init__(self)
+        self.createParameter("Height", LONG, "Sample Description")
+        self.createParameter("Width", LONG, "Sample Description")
+        self.createParameter("CellSize", DOUBLE, "Sample Description")
+        self.Height = 200
+        self.Width = 200
+        self.CellSize = 20
+
+        views = []
+        self.n = View("OUT", NODE, WRITE)
+        views.append(self.n)
+        self.addData("OUT", views)
+
+    def run(self):
+        sys = self.getData("OUT")
+        c = a/5
+        for i in range(1000):
+            sys.addNode(0.0, 0.1, 0.2)

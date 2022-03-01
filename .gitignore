@@ -16,9 +16,10 @@ ui_*.h
 moc_*
 Makefile
 CMakeLists.txt.user
-build
+build*
 *.bat
 bin
 BuildWin/
 *.user*
 *.bak
+*.idea
