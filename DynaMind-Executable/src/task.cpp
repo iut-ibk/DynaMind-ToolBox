@@ -515,7 +515,7 @@ void Task::run()
 
     // Set simulation folder
     DM::SimulationConfig sc = s.getSimulationConfig();
-    s.setWorkingDir(simFileDir.absolutePath().toStdString());
+    sc.setWorkingDir(simFileDir.absolutePath().toStdString());
     s.setSimulationConfig(sc);
 
 	// Overload EPSG
