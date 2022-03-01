@@ -138,17 +138,19 @@ class DM_Fill(Module):
                 miny -= 50
                 maxx += 50
                 maxy += 50
-                print(str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny)
-                log(str(minx) + "/" + str(miny) + "/" + str(miny) + "/" + str(maxy), Standard)
+                # print(str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny)
+                log(str(minx) + "/" + str(maxx) + "/" + str(miny) + "/" + str(maxy), Standard)
 
                 values = band.ReadAsArray(minx, miny, maxx - minx, maxy - miny)
                 gminy = miny
                 gminx = minx
 
                 if not band.GetNoDataValue():
-                    no_data_value = 9999
+                    no_data_value = -9999
                 else:
                     no_data_value = band.GetNoDataValue()
+
+                log(str(values), Standard)
 
                 rda = rd.rdarray(values, no_data=no_data_value)
                 rda.projection = dataset.GetProjectionRef()
