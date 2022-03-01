@@ -138,6 +138,16 @@ class DM_Fill(Module):
                 miny -= 50
                 maxx += 50
                 maxy += 50
+
+                # Check if within dimensions
+                _maxx = dataset.RasterXSize
+                _maxy = dataset.RasterYSize
+                if _maxx < maxx:
+                    maxx = _maxx
+
+                if _maxy < maxy:
+                    maxy = _maxy
+
                 # print(str(minx) + "/" + str(miny) + "/" + str(maxx) + "/" + str(maxy), maxx - minx, maxy - miny)
                 log(str(minx) + "/" + str(maxx) + "/" + str(miny) + "/" + str(maxy), Standard)
 
