@@ -102,7 +102,7 @@ class DM_Fill(Module):
                 log("Failed to download file", Error)
                 return
         else:
-            self.real_file_name = self.raster_file
+            self.real_file_name = self.getSimulationConfig().getWorkingDir() + "/" + self.raster_file
 
         # log("Hello its me", Standard)
         dataset = gdal.Open(self.real_file_name, GA_ReadOnly)
