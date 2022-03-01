@@ -145,7 +145,12 @@ class DM_Fill(Module):
                 gminy = miny
                 gminx = minx
 
-                rda = rd.rdarray(values, no_data=band.GetNoDataValue())
+                if not band.GetNoDataValue():
+                    no_data_value = 9999
+                else:
+                    no_data_value = band.GetNoDataValue()
+
+                rda = rd.rdarray(values, no_data=no_data_value)
                 rda.projection = dataset.GetProjectionRef()
                 rda.geotransform = gt
                 rd.FillDepressions(rda, in_place=True)
