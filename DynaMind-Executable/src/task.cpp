@@ -513,6 +513,11 @@ void Task::run()
 
 	OverloadParameters(&s, parameteroverloads, simFileDir);
 
+    // Set simulation folder
+    DM::SimulationConfig sc = s.getSimulationConfig();
+    s.setWorkingDir(simFileDir.absolutePath().toStdString());
+    s.setSimulationConfig(sc);
+
 	// Overload EPSG
 	if (vm.count("epsg"))
 	{
