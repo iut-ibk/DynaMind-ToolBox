@@ -31,6 +31,7 @@ import tempfile
     #include <dmgdalsystem.h>
     #include <dmviewcontainer.h>
 	#include <ogr_api.h>
+	#include <dmpythonenv.h>
 
     using namespace std;
     using namespace DM;
@@ -55,6 +56,7 @@ import tempfile
 %include "../core/dmlogsink.h"
 %include "../core/dmsimulation.h"
 %include "../core/dmsimulationconfig.h"
+
 
 namespace std {
 	%template(stringvector) vector<string>;
@@ -91,7 +93,8 @@ namespace std {
 
 %feature("director:except") %{
 	if ($error != NULL) {
-		PyErr_Print();
+		DM::PythonEnv::GetTraceback();
+		//PyErr_Print();
 	}
 %}
 
@@ -193,6 +196,8 @@ public:
 
     ") run;
 	virtual void run() = 0;
+
+	virtual void moduleRun();
 
 	//std::map<std::string, std::map<std::string, DM::View> >  getViews() const;
 
@@ -335,8 +340,31 @@ protected:
 		return $self->getGroupCounter();
 	}
 
+
 	%pythoncode %{
 	_data = {'d':'Module'}
+	def moduleRun(self):
+		try:
+			self.run()	
+		except:
+			trace = self.full_stack()
+			for l in trace.split("\n"):
+				log(l, Error)
+			self.setStatus(MOD_EXECUTION_ERROR)
+
+	def full_stack(self):
+		import traceback, sys
+		exc = sys.exc_info()[0]
+		stack = traceback.extract_stack()[:-1]  # last one would be full_stack()
+		if exc is not None:  # i.e. an exception is present
+			del stack[-1]       # remove call of full_stack, the printed exception
+								# will contain the caught exception caller instead
+		trc = 'Traceback (most recent call last):\n'
+		stackstr = trc + ''.join(traceback.format_list(stack))
+		if exc is not None:
+			stackstr += '  ' + traceback.format_exc().lstrip(trc)
+		return stackstr			
+
 	def getClassName(self):
 		"""
 		Returns class name. However if called in Python it returns the name the for C++ module.

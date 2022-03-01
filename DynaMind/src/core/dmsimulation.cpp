@@ -837,7 +837,7 @@ void Simulation::run()
 			//Run PreRun to init GDALSytem before module is executed
 			m->preRun();
 			//Run Module
-			QtConcurrent::run(m, &Module::run).waitForFinished();
+			QtConcurrent::run(m, &Module::moduleRun).waitForFinished();
 			// check for errors
 			//Run AfterRun to clean up GDALModules
 			m->afterRun();
