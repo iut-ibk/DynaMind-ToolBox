@@ -203,7 +203,7 @@ class ClimateProjectionRainfall(Module):
 
     def run(self):
 
-        daily_custom_rainfall = self.to_vector(self.custom_daily_rainfall)
+        
 
         for t in self.city:
             lat = t.GetFieldAsDouble("lat")
@@ -255,9 +255,11 @@ class ClimateProjectionRainfall(Module):
 
         climate_data = pd.DataFrame(dates)
 
-        if len(daily_custom_rainfall) > 0:
-            climate_data = climate_data.assign(rnd24Adjust=daily_custom_rainfall)
-        elif "https://" in self.datasets["rnd24Adjust"]:
+        # daily_custom_rainfall = self.to_vector(self.custom_daily_rainfall)
+
+        # if len(daily_custom_rainfall) > 0:
+        #     climate_data = climate_data.assign(rnd24Adjust=daily_custom_rainfall)
+        if "https://" in self.datasets["rnd24Adjust"]:
             # assume to download data from the api
             climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries("rnd24Adjust", long, lat))
         else:
