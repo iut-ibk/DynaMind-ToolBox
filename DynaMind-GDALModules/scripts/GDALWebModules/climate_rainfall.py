@@ -24,15 +24,24 @@ class ClimateProjectionRainfall(Module):
         self.from_projection = True
 
 
+        # if fraction is negative use start and end date from station
         self.createParameter("fraction", DM.DOUBLE)
         self.fraction = 0.0
 
         self.createParameter("daily_rainfall", DM.STRING)
         self.daily_rainfall = 'https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/Precipitation/rnd24Adjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc'
 
+        self.createParameter("custom_daily_rainfall", DM.STRING)
+        self.custom_daily_rainfall = ""
+
+
         self.city = ViewContainer("city", DM.COMPONENT, DM.MODIFY)
 
         self.registerViewContainers([self.city])
+
+    def to_vector(self, st):
+        st = st.replace("[", "").replace("]", "")
+        return [float(d) for d in st.split(",")]
 
     def get_monthly_evapotranspiration(self, x, y):
         """
@@ -188,7 +197,13 @@ class ClimateProjectionRainfall(Module):
             timeseries_new = timeseries_new.append(df)
         return timeseries_new[0].tolist()
 
+    def to_vector(self, st):
+        st = st.replace("[", "").replace("]", "")
+        return [float(d) for d in st.split(",")]
+
     def run(self):
+
+        daily_custom_rainfall = self.to_vector(self.custom_daily_rainfall)
 
         for t in self.city:
             lat = t.GetFieldAsDouble("lat")
@@ -231,6 +246,7 @@ class ClimateProjectionRainfall(Module):
             dates = dr[(dr.day != 29) | (dr.month != 2)]
 
 
+
         if start_period < 1900:
             self.timeseries.finalise()
             self.station.finalise()
@@ -239,7 +255,9 @@ class ClimateProjectionRainfall(Module):
 
         climate_data = pd.DataFrame(dates)
 
-        if "https://" in self.datasets["rnd24Adjust"]:
+        if len(daily_custom_rainfall) > 0:
+            climate_data = climate_data.assign(rnd24Adjust=daily_custom_rainfall)
+        elif "https://" in self.datasets["rnd24Adjust"]:
             # assume to download data from the api
             climate_data = climate_data.assign(rnd24Adjust=self.extract_mean_timeseries("rnd24Adjust", long, lat))
         else:
@@ -258,9 +276,6 @@ class ClimateProjectionRainfall(Module):
         end = datetime.datetime.strptime(f'{end_year}-01-01', "%Y-%m-%d")
 
         rain = climate_data.loc[(climate_data.index >= start) & (climate_data.index < end)]['rnd24Adjust'].to_list()
-
-        # dr = pd.date_range(start=f'{year}-01-01', end=f'{year}-12-31', freq='1d')
-
 
         if not self.from_station:
             log("No temperature station defined loading default values", Warning)
