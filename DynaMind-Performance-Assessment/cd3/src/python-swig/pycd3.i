@@ -60,7 +60,7 @@ public:
 
 %feature("director:except") {
 	if ($error != NULL) {
-		//PyErr_Print();
+		PyErr_Print();
 		throw PythonException();
 	}
 }
@@ -78,6 +78,7 @@ namespace std {
 	try {
 		$action
 	} catch (...) {
+		PyErr_Print();
 		Logger(Error) << "FIXME: handle correctly::Exception happened";
 		abort();
 	}
@@ -303,6 +304,7 @@ public:
 	Flow();
 	static size_t size();
 	static bool defined();
+	static void undefine();
 	static void define(std::map<std::string, CalculationUnit> definition);
 	static std::vector<std::string> getNames();
 	static size_t countUnits(CalculationUnit unit);
@@ -807,6 +809,9 @@ class CityDrain3:
 
 		if start_time and end_time and delta_t:
 			self.set_simulation_parameter(start_time, end_time, delta_t)
+
+	def __del__(self):
+		pycd3.Flow.undefine()
 
 	def register_native_plugin(self, file_name):
 		"""
