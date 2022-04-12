@@ -1,0 +1,31 @@
+[
+  {
+    "group": "root",
+    "nodes": [
+      {
+        "name": "load_simulation",
+        "class_name": "GDALHotStarter",
+        "parameters": {
+          "hot_start_database": "scenario_Baseline/performance_assessment.sqlite"
+        }
+      },
+      {
+        "name": "MicroClimateAssessment",
+        "class_name": "DM_MicroClimate",
+        "parameters": {}
+      },
+      {
+        "name": "WaterBalanceTest",
+        "class_name": "UrbanMetabolismModel",
+        "parameters": {}
+      },
+      {
+        "name": "export_database",
+        "class_name": "DM_ExportSimulationDB",
+        "parameters": {
+          "file_name": "/workspaces/DynaMind-ToolBox/tmp/test"
+        }
+      }
+    ]
+  }
+]

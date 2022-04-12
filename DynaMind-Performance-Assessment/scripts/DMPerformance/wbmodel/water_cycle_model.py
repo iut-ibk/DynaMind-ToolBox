@@ -78,13 +78,13 @@ class WaterCycleModel():
             sub_networks["sub_" + str(sub_id)] = self._create_sub_catchment_network(sub_id, stream,  "sub_" + str(sub_id) + "_" + str(stream) + "_total")
 
         self._networks = sub_networks
-
+        
         # Needs unique ID
         self._build_network()
         self._cd3.init_nodes()
         self._cd3.start(self.start_date)
         #self._reporting()
-
+        #print('FLOW PROBES', self._flow_probes)
         # for key, storage in self._lot_storage_reporting.items():
         #     for id, s in storage.items():
         #         print(key, id, s,  sum(s.get_state_value_as_double_vector('provided_volume')))
@@ -174,6 +174,9 @@ class WaterCycleModel():
         for name, network in self._networks.items():
             self._create_nodes(network)
 
+        print('Network: ', self._networks)
+        #print('NODES',self._nodes)
+
         # Add all storages
         for name, s in self._wb_sub_storages.items():
             self._create_storage(s)
@@ -194,12 +197,14 @@ class WaterCycleModel():
 
     def _create_nodes(self, network):
         nodes = {}
+        # determine the number of inputs for the mixer
         for e in network["edges"]:
             end_n = e[1]
             if end_n not in nodes:
                 nodes[end_n] = 0
             nodes[end_n] += 1
 
+        
         for n in nodes.keys():
             if n not in self._nodes:
                 self._nodes[n] = TransferNode(self._cd3, nodes[n])

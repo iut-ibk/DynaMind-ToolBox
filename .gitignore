@@ -23,3 +23,8 @@ BuildWin/
 *.user*
 *.bak
 *.idea
+tests/output/{*
+tests/.env*
+tests/venv*
+{*
+tmp

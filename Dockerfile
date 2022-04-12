@@ -67,28 +67,30 @@ USER node
 
 RUN git clone https://christianurich@bitbucket.org/mothlight/target_java.git
 
-RUN	mkdir DynaMind-ToolBox
+USER root
 
-ADD . DynaMind-ToolBox
+# RUN	mkdir DynaMind-ToolBox
+
+# ADD . DynaMind-ToolBox
 
 
-WORKDIR /home/node/DynaMind-ToolBox/
+# WORKDIR /home/node/DynaMind-ToolBox/
 
-RUN	mkdir build
+# RUN	mkdir build
 
-WORKDIR /home/node/DynaMind-ToolBox/build/
+# WORKDIR /home/node/DynaMind-ToolBox/build/
 
-RUN cmake  -DWITH_GUI=FALSE -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=TRUE -DWITH_PLUGIN_GDALMODULE=TRUE  -DWITH_PLUGIN_GDALDRAINAGE=TRUE -DWITH_UNIT_TESTS=TRUE ..
+# RUN cmake  -DWITH_GUI=FALSE -DWITH_PLUGIN_PERFORMANCE_ASSESSMENT=TRUE -DWITH_PLUGIN_GDALMODULE=TRUE  -DWITH_PLUGIN_GDALDRAINAGE=TRUE -DWITH_UNIT_TESTS=TRUE ..
 
-RUN	make -j 5
+# RUN	make -j 5
 
-ENV  PYTHONPATH {$PYTHONPATH}:/usr/local/lib
+# ENV  PYTHONPATH {$PYTHONPATH}:/usr/local/lib
 
-WORKDIR /home/node/DynaMind-ToolBox/build/output
+# WORKDIR /home/node/DynaMind-ToolBox/build/output
 
-USER root 
+# USER root 
 
-RUN ./unit-test
+# RUN ./unit-test
 #RUN ./unit-test --gtest_output="xml:/tmp/test_general.xml"
 #RUN ./unit-test_WaterBalance --gtest_output="xml:/tmp/test_wb.xml"
 #RUN ./unit-test_gdalmodules --gtest_output="xml:/tmp/modules_test.xml"

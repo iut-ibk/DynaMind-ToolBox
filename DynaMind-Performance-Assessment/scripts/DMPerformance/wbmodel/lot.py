@@ -135,7 +135,6 @@ class Lot:
 
         self._internal_streams[LotStream.rainfall] = self._create_stream(self._standard_values[UnitFlows.rainfall],
                                                                          lot["area"])
-
         self._internal_streams[LotStream.pervious_runoff] = self._create_stream(
             self._standard_values[UnitFlows.pervious_runoff], pervious_area)
         self._internal_streams[LotStream.impervious_runoff] = self._create_stream(

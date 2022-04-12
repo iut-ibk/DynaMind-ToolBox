@@ -148,11 +148,15 @@ class UrbanMetabolismModel(Module):
 
         soils = {}
         for s in self.wb_soil_parameters:
+            
             soil_id = s.GetFID()
+            
             soil = {}
             for p in SoilParameters:
                 soil[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             soils[soil_id] = soil
+
+        
 
         demand_profile = {}
         for s in self.wb_demand_profile:
@@ -162,9 +166,12 @@ class UrbanMetabolismModel(Module):
                 profile[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             demand_profile[demand_id] = profile
         self.wb_demand_profile.finalise()
+        
+        print(demand_profile)
 
         for s in self.wb_lot_streams:
             s: ogr.Feature
+            
             wb_template_id = s.GetFieldAsInteger("wb_lot_template_id")
             out_stream = Streams(s.GetFieldAsInteger("outflow_stream_id"))
             lot_stream = LotStream(s.GetFieldAsInteger("lot_stream_id"))

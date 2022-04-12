@@ -151,7 +151,9 @@ class Catchment_w_Routing(pycd3.Node):
         self.total_groundwater = 0.
         self.total_evapotranspiration = 0.
 
-        self.current_perv_storage_level = 0.
+
+        ############################# This was originally zero #########################
+        self.current_perv_storage_level = 0.3*self.perv_soil_storage_capacity
 
         #starting values for Horton model
         self.possible_infiltr_raw = self.Horton_initial_cap/3600.*dt
@@ -194,14 +196,20 @@ class Catchment_w_Routing(pycd3.Node):
             
         return True
     
-    
-    
         
     def f(self, current, dt):
-        
+        #print('MODEL STORAGE DEPTH', self.perv_soil_storage_capacity)
+        #print('MODEL STORAGE LEVEL',self.current_perv_storage_level)
+        # print("RAIN HEIGHT: ",self.current_effective_rain_height)
+        # print("DT: ", dt)
+        #print("RAIN", self.rain[0])
+        #print("Evapo", self.evapo[0])
         #describing the current rain that doesnt evaporate in the same timestep
         #resetting the time values for the Horton model
         #delay in possible infiltration by 1 * dt when time value reset to 0.0 now set to 1 real time
+        
+        self.rain[0] = 10*self.rain[0]
+        
         if self.current_effective_rain_height < 0:
             self.current_effective_rain_height= self.rain[0]-self.evapo[0]
             if self.current_effective_rain_height <= 0:
@@ -217,6 +225,9 @@ class Catchment_w_Routing(pycd3.Node):
         else:
             self.current_effective_rain_height= self.rain[0]-self.evapo[0]
 
+        #print('Avaliable water this time step',self.current_effective_rain_height)
+        #print('Rain: ',self.rain[0], ' Evaporation: ',self.evapo[0])
+        #print('Rain Height', self.current_effective_rain_height)
         if self.current_effective_rain_height > 0:
             self.total_effective_rain+=self.current_effective_rain_height
 
@@ -329,18 +340,25 @@ class Catchment_w_Routing(pycd3.Node):
 
         # Soil Storage
         self.current_perv_storage_level += self.actual_infiltr[0] / (self.perv_area * self.area_property)
-
+        #print('transpiration_capacity', self.transpiration_capacity)
+        #print('soil level', self.current_perv_storage_level)
+        #print('capacity', self.perv_soil_storage_capacity)
         # Evapotranspiration
-        evapo = self.transpiration_capacity *  self.current_perv_storage_level / self.perv_soil_storage_capacity
-        # print(evapo, self.evapo[0])
+        evapo = self.transpiration_capacity *  (1000 * self.current_perv_storage_level) / (1000 * self.perv_soil_storage_capacity)
+        #print(evapo, self.evapo[0])
+        #print('Actual Evapo ',evapo)
         if evapo > self.current_perv_storage_level:
             evapo =  self.current_perv_storage_level
 
         if evapo > self.evapo[0]:
             evapo = self.evapo[0]
 
+        #print('storage level', self.current_perv_storage_level)
+
         self.current_perv_storage_level -= evapo
 
+        #print('Actual Evapo after storage ',evapo)
+       # print('storage level', self.current_perv_storage_level)
         # Flow to Groundwater
         groundwater = self.current_perv_storage_level * self.daily_recharge_rate
 

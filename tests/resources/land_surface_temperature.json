@@ -1,0 +1,27 @@
+[
+    {
+      "group": "root",
+      "nodes": [
+        {
+            "name": "load_simulation",
+            "class_name": "GDALHotStarter",
+            "parameters": {
+              "hot_start_database": "/home/christian/data/Codes/DynaMind-ToolBox/DynaMind-Performance-Assessment/tests/output/scenario_Baseline/performance_assessment.sqlite"
+            }
+          },
+          {
+            "name": "MicroClimateAssessment",
+            "class_name": "DM_MicroClimate",
+            "parameters": {
+            }
+          },
+          {
+            "name": "export_database",
+            "class_name": "DM_ExportSimulationDB",
+            "parameters": {
+                "file_name": "/tmp/test.sqlite"
+            }
+          }
+        ]
+    }
+]
