@@ -153,6 +153,7 @@ class Lot:
             for idx, s in enumerate(lot["storages"]):
                 self._add_storage(units, s)
 
+        print('I get to the lot setup streams')
         # Setup Streams
         for stream_id in self._external_streams:
             if stream_id in lot["streams"]:
@@ -235,7 +236,10 @@ class Lot:
     def _sum_streams(self, streams: []) -> list:
         mixer = self._cd3.add_node("Mixer")
         mixer.setIntParameter("num_inputs", len(streams))
+        print(streams)
         for idx, s in enumerate(streams):
             s: list
+            print('I get here')
             self._cd3.add_connection(s[0], s[1], mixer, f"in_{idx}")
+            print('but not here')
         return list((mixer, "out"))

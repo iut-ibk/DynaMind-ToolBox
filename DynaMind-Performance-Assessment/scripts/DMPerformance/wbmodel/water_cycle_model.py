@@ -65,7 +65,6 @@ class WaterCycleModel():
         self._cd3.register_native_plugin(
             self.get_default_folder() + "/CD3Modules/libdance4water-nodes")
 
-
         self._networks = {}
 
         sub_networks = {}
@@ -160,7 +159,6 @@ class WaterCycleModel():
         }
 
     def _build_network(self):
-
         # Create lots
         for lot_id, lot in self._lots.items():
             self._nodes[lot_id] = Lot(lot_id,
@@ -169,7 +167,7 @@ class WaterCycleModel():
                                       self._standard_values,
                                       self._wb_demand_profile[lot["wb_demand_profile_id"]],
                                       self._lot_storage_reporting)
-
+        print('I get past lot creation')
         # Create all nodes in network
         for name, network in self._networks.items():
             self._create_nodes(network)
@@ -227,6 +225,7 @@ class WaterCycleModel():
                 continue
             #Careful only call once because it increments the ports
             inflow = n_end.in_port
+            print('im actually here')
             self._cd3.add_connection(outflow[0], outflow[1], inflow[0], inflow[1])
 
         self._flow_probes[name] = self._nodes[network["reporting_node"]].add_flow_probe()

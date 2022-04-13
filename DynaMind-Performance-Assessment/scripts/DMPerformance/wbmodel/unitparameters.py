@@ -274,7 +274,7 @@ class UnitParameters:
             # logging.warning(
             #     f"{key} {[format(v, '.2f') for v in values]}")
 
-        del catchment_model
+        #del catchment_model
 
     @property
     def unit_values(self) -> {}:
