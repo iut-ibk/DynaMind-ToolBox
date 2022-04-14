@@ -34,6 +34,7 @@ public:
 	void deinit();
 private:
 	int num_inputs;
+	void create_inputs();
 	Flow out;
 	std::vector<Flow *> inputs;
 	std::vector<std::string> input_names;
