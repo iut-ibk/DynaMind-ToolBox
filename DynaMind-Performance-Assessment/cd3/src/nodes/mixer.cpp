@@ -30,7 +30,11 @@ Mixer::Mixer() {
 	num_inputs = 2;
 	addParameter(ADD_PARAMETERS(num_inputs));
 	addOutPort(ADD_PARAMETERS(out));
+
+	// add in ports
+	this->create_inputs();
 }
+
 
 Mixer::~Mixer() {
 }
@@ -46,23 +50,26 @@ void Mixer::deinit() {
 	input_names.clear();
 }
 
-bool Mixer::init(ptime start, ptime end, int dt) {
-	(void) start;
-	(void) end;
-	(void) dt;
-
+void Mixer::create_inputs() {
     if (inputs.size() == num_inputs)
-        return true;
+        return;
 
-	for (int i = 0; i < num_inputs; i++) {
+	for (int i = inputs.size(); i < num_inputs; i++) {
 		Flow *tmp = new Flow();
 		std::ostringstream name;
 		name << "in_" << i;
 		addInPort(name.str(), tmp);
 		inputs.push_back(tmp);
 		input_names.push_back(name.str());
-//        std::cout<< name.str() << std::endl;
 	}
+}
+
+bool Mixer::init(ptime start, ptime end, int dt) {
+	(void) start;
+	(void) end;
+	(void) dt;
+
+	this->create_inputs();
 	return true;
 }
 

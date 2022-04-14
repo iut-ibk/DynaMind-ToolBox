@@ -236,6 +236,7 @@ class Lot:
     def _sum_streams(self, streams: []) -> list:
         mixer = self._cd3.add_node("Mixer")
         mixer.setIntParameter("num_inputs", len(streams))
+        self._cd3.init_nodes()
         print(streams)
         for idx, s in enumerate(streams):
             s: list

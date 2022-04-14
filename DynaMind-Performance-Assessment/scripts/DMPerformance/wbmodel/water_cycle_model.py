@@ -178,7 +178,8 @@ class WaterCycleModel():
         # Add all storages
         for name, s in self._wb_sub_storages.items():
             self._create_storage(s)
-
+            
+        self._cd3.init_nodes()
         for name, network in self._networks.items():
             self._create_network(name, network)
 
