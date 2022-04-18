@@ -1,4 +1,5 @@
 import logging
+from pyexpat import model
 import pycd3 as cd3
 
 from enum import Enum
@@ -162,6 +163,7 @@ class UnitParameters:
             parameters["Saturation_[%]"] = self.soil[SoilParameters_Irrigation.saturation]
             
             parameters["Soil Storage Capacity [m]"] = self.soil[SoilParameters_Irrigation.soil_depth]
+            parameters["Initial_Pervious_Storage_Level_[m]"] = self.soil[SoilParameters_Irrigation.intial_soil_depth]
             parameters["Wetting_Loss_[m]"] = self.soil[SoilParameters_Irrigation.initial_loss]
 
             parameters["Daily Recharge Rate"] = self.soil[SoilParameters_Irrigation.ground_water_recharge_rate]
@@ -180,6 +182,8 @@ class UnitParameters:
             reporting[UnitFlows.pervious_storage] = {"port": "pervious_storage", "factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.effective_evapotranspiration] = {"port": "evapotranspiration", "factor": (lot_area * (perv_area_fra))}
             
+
+        #set up the city model and register the python plugins
 
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
 
@@ -204,26 +208,43 @@ class UnitParameters:
         catchment_model.register_python_plugin(
             self.get_default_folder() + "/CD3Modules/CD3Waterbalance/Module/cd3waterbalancemodules.py")
 
-        catchment_w_routing = catchment_model.add_node("Catchment_w_Routing")
 
-        catchment_w_irrigation = catchment_model.add_node('Catchment_w_Irrigation')
+        # select the model based on the soil parameter types and carry this foward
 
+        if key[0] == SoilParameters.impervious_threshold:
 
+            catchment_w_routing = catchment_model.add_node("Catchment_w_Routing")
+            model = catchment_w_routing
+
+        elif key[0] == SoilParameters_Irrigation.horton_inital_infiltration: 
+        
+            catchment_w_irrigation = catchment_model.add_node('Catchment_w_Irrigation')
+            model = catchment_w_irrigation
+
+        
         for p in parameters.items():
-            catchment_w_routing.setDoubleParameter(p[0], p[1])
+            model.setDoubleParameter(p[0], p[1])
 
         rain = catchment_model.add_node("SourceVector")
         rain.setDoubleVectorParameter("source", self._climate_data["rainfall intensity"])
         evapo = catchment_model.add_node("SourceVector")
         evapo.setDoubleVectorParameter("source", self._climate_data["evapotranspiration"])
 
-        catchment_model.add_connection(rain, "out", catchment_w_routing, "Rain")
-        catchment_model.add_connection(evapo, "out", catchment_w_routing, "Evapotranspiration")
+        catchment_model.add_connection(rain, "out", model, "Rain")
+        catchment_model.add_connection(evapo, "out", model, "Evapotranspiration")
+
+        # if its the irrigation module, we also need an irrigation stream to the catchment
+        if key[0] == SoilParameters_Irrigation.horton_inital_infiltration:
+            irrigation = catchment_model.add_node("SourceVector")
+
+            # at the moment we hardcode the irrigation and set it to be zero
+            irrigation.setDoubleVectorParameter("source", [0 for i in self._climate_data["rainfall intensity"]])
+            catchment_model.add_connection(irrigation, "out", model, "irrigation")
 
         flow_probe = {}
         for key, r in reporting.items():
             rep = catchment_model.add_node("FlowProbe")
-            catchment_model.add_connection(catchment_w_routing, r["port"], rep, "in")
+            catchment_model.add_connection(model, r["port"], rep, "in")
             flow_probe[key] = rep
         
         catchment_model.init_nodes()

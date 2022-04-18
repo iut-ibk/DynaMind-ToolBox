@@ -8,7 +8,7 @@ from osgeo import ogr
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
-from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, UnitFlows, DemandProfile, annual_sum
+from wbmodel import WaterCycleModel, Streams, LotStream, SoilParameters, SoilParameters_Irrigation, UnitFlows, DemandProfile, annual_sum
 
 class UrbanMetabolismModel(Module):
 
@@ -23,7 +23,11 @@ class UrbanMetabolismModel(Module):
         self.setIsGDALModule(True)
 
         self.createParameter("from_rain_station", DM.BOOL)
+        self.createParameter('irrigation_module', DM.BOOL)
         self.from_rain_station = False
+
+        # Used to turn new catchment model on and off
+        self.irrigation_module = True
 
     def init(self):
 
@@ -95,10 +99,19 @@ class UrbanMetabolismModel(Module):
         self.green_roofs = ViewContainer('green_roof', DM.COMPONENT, DM.READ)
         self.green_roofs.addAttribute("wb_soil_id", DM.Attribute.INT, DM.READ)
 
-        self.wb_soil_parameters = ViewContainer('wb_soil', DM.COMPONENT, DM.READ)
+        
+        # depending on the catchment model to be used load in the correct soil moisture data
 
-        for s in SoilParameters:
-            self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
+        if self.irrigation_module:
+            self.wb_soil_parameters = ViewContainer('wb_soil_irrigated', DM.COMPONENT, DM.READ)
+            for s in SoilParameters_Irrigation:
+                self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
+
+        else:
+            self.wb_soil_parameters = ViewContainer('wb_soil', DM.COMPONENT, DM.READ)
+            for s in SoilParameters:
+                self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
+
 
         self.wb_unit_flows = ViewContainer('wb_unit_flow', DM.COMPONENT, DM.WRITE)
         for s in UnitFlows:

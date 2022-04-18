@@ -6,7 +6,7 @@
         "name": "load_simulation",
         "class_name": "GDALHotStarter",
         "parameters": {
-          "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/output/scenario_basic/basic.sqlite"
+          "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/output/scenario_basic/basic_copy.sqlite"
         }
       },
       {

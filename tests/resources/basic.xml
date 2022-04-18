@@ -12,26 +12,26 @@
       </RootNode>
       <Node>
         <ClassName value="GDALHotStarter"/>
-        <UUID value="63e406f0-73e9-4896-8696-a39ef67b403a"/>
+        <UUID value="90f5d496-aa1f-4253-be3f-8bf88dc50741"/>
         <Name value="load_simulation"/>
         <GroupUUID value="0"/>
-        <parameter name="hot_start_database">/workspaces/DynaMind-ToolBox/tests/output/scenario_basic/basic.sqlite</parameter>
+        <parameter name="hot_start_database">/workspaces/DynaMind-ToolBox/tests/output/scenario_basic/basic_copy</parameter>
       </Node>
       <Node>
         <ClassName value="DM_MicroClimate"/>
-        <UUID value="ceb2f221-423d-46a0-93f6-547b8f6eec29"/>
+        <UUID value="71c6fae5-09ed-4a7f-9e77-572f79121ccb"/>
         <Name value="MicroClimateAssessment"/>
         <GroupUUID value="0"/>
       </Node>
       <Node>
         <ClassName value="UrbanMetabolismModel"/>
-        <UUID value="a3347272-0c68-433f-b5bb-1bb021ca6eb1"/>
+        <UUID value="635ab931-ce9c-464a-9cc0-bbd77518e3a6"/>
         <Name value="WaterBalanceTest"/>
         <GroupUUID value="0"/>
       </Node>
       <Node>
         <ClassName value="DM_ExportSimulationDB"/>
-        <UUID value="42015b5b-5faa-4b36-97e1-f86ef95182e4"/>
+        <UUID value="88108395-4a90-475b-aec9-3b11c168b883"/>
         <Name value="export_database"/>
         <GroupUUID value="0"/>
         <parameter name="file_name">/workspaces/DynaMind-ToolBox/tmp/basic_out</parameter>
@@ -41,12 +41,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="ceb2f221-423d-46a0-93f6-547b8f6eec29"/>
+          <UUID value="71c6fae5-09ed-4a7f-9e77-572f79121ccb"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="63e406f0-73e9-4896-8696-a39ef67b403a"/>
+          <UUID value="90f5d496-aa1f-4253-be3f-8bf88dc50741"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -54,12 +54,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="a3347272-0c68-433f-b5bb-1bb021ca6eb1"/>
+          <UUID value="635ab931-ce9c-464a-9cc0-bbd77518e3a6"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="ceb2f221-423d-46a0-93f6-547b8f6eec29"/>
+          <UUID value="71c6fae5-09ed-4a7f-9e77-572f79121ccb"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -67,12 +67,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="42015b5b-5faa-4b36-97e1-f86ef95182e4"/>
+          <UUID value="88108395-4a90-475b-aec9-3b11c168b883"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="a3347272-0c68-433f-b5bb-1bb021ca6eb1"/>
+          <UUID value="635ab931-ce9c-464a-9cc0-bbd77518e3a6"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -82,25 +82,25 @@
   <DynaMindGUI>
     <GUI_Nodes>
       <GUI_Node>
-        <GUI_UUID value="63e406f0-73e9-4896-8696-a39ef67b403a"/>
+        <GUI_UUID value="90f5d496-aa1f-4253-be3f-8bf88dc50741"/>
         <GUI_PosX value="0"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="ceb2f221-423d-46a0-93f6-547b8f6eec29"/>
+        <GUI_UUID value="71c6fae5-09ed-4a7f-9e77-572f79121ccb"/>
         <GUI_PosX value="300"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="a3347272-0c68-433f-b5bb-1bb021ca6eb1"/>
+        <GUI_UUID value="635ab931-ce9c-464a-9cc0-bbd77518e3a6"/>
         <GUI_PosX value="600"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="42015b5b-5faa-4b36-97e1-f86ef95182e4"/>
+        <GUI_UUID value="88108395-4a90-475b-aec9-3b11c168b883"/>
         <GUI_PosX value="900"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>

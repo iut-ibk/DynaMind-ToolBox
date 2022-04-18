@@ -74,7 +74,7 @@ class Catchment_w_Irrigation(pycd3.Node):
 
         # new parameters to be set by dynamind
         self.initial_perv_storage_level = pycd3.Double(0.3)
-        self.addParameter("Current_Pervious_Storage_Level_[m]", self.initial_perv_storage_level)
+        self.addParameter("Initial_Pervious_Storage_Level_[m]", self.initial_perv_storage_level)
         self.wilting_point = pycd3.Double(0.09)
         self.addParameter("Wilting_Point_[%]", self.wilting_point)
         self.field_capacity = pycd3.Double(0.22)
@@ -104,7 +104,10 @@ class Catchment_w_Irrigation(pycd3.Node):
         
         # if the timestep is daily and irrigation is appiled, then the infiltration is overestimated
         # as irrigation only occurs for no longer than one hour
-        self.daily_time_step = True
+        if self.dt == 86400:
+            self.daily_time_step = True
+        else:
+            self.daily_time_step = False
 
         print("This is me form init done")
 
