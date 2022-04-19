@@ -208,7 +208,7 @@ class Catchment_w_Routing(pycd3.Node):
         #resetting the time values for the Horton model
         #delay in possible infiltration by 1 * dt when time value reset to 0.0 now set to 1 real time
         
-        self.rain[0] = 10*self.rain[0]
+        #self.rain[0] = 10*self.rain[0]
         
         if self.current_effective_rain_height < 0:
             self.current_effective_rain_height= self.rain[0]-self.evapo[0]

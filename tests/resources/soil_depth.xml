@@ -12,26 +12,26 @@
       </RootNode>
       <Node>
         <ClassName value="GDALHotStarter"/>
-        <UUID value="616d6b64-71c4-46bb-b671-0dc1295d5d85"/>
+        <UUID value="c8895d2b-d61f-4664-ac3f-1567c7b2cefd"/>
         <Name value="load_simulation"/>
         <GroupUUID value="0"/>
         <parameter name="hot_start_database">/workspaces/DynaMind-ToolBox/tests/output/scenario_soil_depth/soil_depth.sqlite</parameter>
       </Node>
       <Node>
         <ClassName value="DM_MicroClimate"/>
-        <UUID value="af15cee6-3f84-424d-93c6-a07bb00f85e4"/>
+        <UUID value="d0799a4b-9921-4af8-b8f4-f6a7cc74028d"/>
         <Name value="MicroClimateAssessment"/>
         <GroupUUID value="0"/>
       </Node>
       <Node>
         <ClassName value="UrbanMetabolismModel"/>
-        <UUID value="2b2bebba-d04a-428b-a54a-ee12b8dc4fc8"/>
+        <UUID value="39da3c5c-5f11-42aa-a5b8-1c2a663e83b1"/>
         <Name value="WaterBalanceTest"/>
         <GroupUUID value="0"/>
       </Node>
       <Node>
         <ClassName value="DM_ExportSimulationDB"/>
-        <UUID value="ee64862d-3f6c-4201-8727-ed4af53f1fba"/>
+        <UUID value="874b3594-f7f2-4581-b914-699d1e428e0f"/>
         <Name value="export_database"/>
         <GroupUUID value="0"/>
         <parameter name="file_name">/workspaces/DynaMind-ToolBox/tmp/soil_depth_out</parameter>
@@ -41,12 +41,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="af15cee6-3f84-424d-93c6-a07bb00f85e4"/>
+          <UUID value="d0799a4b-9921-4af8-b8f4-f6a7cc74028d"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="616d6b64-71c4-46bb-b671-0dc1295d5d85"/>
+          <UUID value="c8895d2b-d61f-4664-ac3f-1567c7b2cefd"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -54,12 +54,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="2b2bebba-d04a-428b-a54a-ee12b8dc4fc8"/>
+          <UUID value="39da3c5c-5f11-42aa-a5b8-1c2a663e83b1"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="af15cee6-3f84-424d-93c6-a07bb00f85e4"/>
+          <UUID value="d0799a4b-9921-4af8-b8f4-f6a7cc74028d"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -67,12 +67,12 @@
       <Link>
         <BackLink value="0"/>
         <InPort>
-          <UUID value="ee64862d-3f6c-4201-8727-ed4af53f1fba"/>
+          <UUID value="874b3594-f7f2-4581-b914-699d1e428e0f"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </InPort>
         <OutPort>
-          <UUID value="2b2bebba-d04a-428b-a54a-ee12b8dc4fc8"/>
+          <UUID value="39da3c5c-5f11-42aa-a5b8-1c2a663e83b1"/>
           <PortName value="city"/>
           <PortType value="0"/>
         </OutPort>
@@ -82,25 +82,25 @@
   <DynaMindGUI>
     <GUI_Nodes>
       <GUI_Node>
-        <GUI_UUID value="616d6b64-71c4-46bb-b671-0dc1295d5d85"/>
+        <GUI_UUID value="c8895d2b-d61f-4664-ac3f-1567c7b2cefd"/>
         <GUI_PosX value="0"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="af15cee6-3f84-424d-93c6-a07bb00f85e4"/>
+        <GUI_UUID value="d0799a4b-9921-4af8-b8f4-f6a7cc74028d"/>
         <GUI_PosX value="300"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="2b2bebba-d04a-428b-a54a-ee12b8dc4fc8"/>
+        <GUI_UUID value="39da3c5c-5f11-42aa-a5b8-1c2a663e83b1"/>
         <GUI_PosX value="600"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>
       </GUI_Node>
       <GUI_Node>
-        <GUI_UUID value="ee64862d-3f6c-4201-8727-ed4af53f1fba"/>
+        <GUI_UUID value="874b3594-f7f2-4581-b914-699d1e428e0f"/>
         <GUI_PosX value="900"/>
         <GUI_PosY value="0"/>
         <GUI_Mini value="0"/>

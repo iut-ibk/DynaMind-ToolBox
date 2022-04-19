@@ -27,8 +27,8 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.pervious_level = pycd3.Flow()
 
         # in ports
-        self.addInPort("rain", self.rain)
-        self.addInPort("potentialEvapo", self.evapo)
+        self.addInPort("Rain", self.rain)
+        self.addInPort("Evapotranspiration", self.evapo)
         self.addInPort("irrigation", self.irrigation)
 
         # out ports
@@ -104,10 +104,12 @@ class Catchment_w_Irrigation(pycd3.Node):
         
         # if the timestep is daily and irrigation is appiled, then the infiltration is overestimated
         # as irrigation only occurs for no longer than one hour
-        if self.dt == 86400:
-            self.daily_time_step = True
-        else:
-            self.daily_time_step = False
+        # if self.dt == 86400:
+        #     self.daily_time_step = True
+        # else:
+        #     self.daily_time_step = False
+
+        self.daily_time_step = True
 
         print("This is me form init done")
 

@@ -27,7 +27,7 @@ class UrbanMetabolismModel(Module):
         self.from_rain_station = False
 
         # Used to turn new catchment model on and off
-        self.irrigation_module = True
+        self.irrigation_module = False
 
     def init(self):
 
@@ -101,12 +101,10 @@ class UrbanMetabolismModel(Module):
 
         
         # depending on the catchment model to be used load in the correct soil moisture data
-
-        if self.irrigation_module:
+        if self.irrigation_module == 1:
             self.wb_soil_parameters = ViewContainer('wb_soil_irrigated', DM.COMPONENT, DM.READ)
             for s in SoilParameters_Irrigation:
                 self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
-
         else:
             self.wb_soil_parameters = ViewContainer('wb_soil', DM.COMPONENT, DM.READ)
             for s in SoilParameters:
@@ -165,11 +163,17 @@ class UrbanMetabolismModel(Module):
             soil_id = s.GetFID()
             
             soil = {}
-            for p in SoilParameters:
+
+            if self.irrigation_module == 1:
+                soil_params = SoilParameters_Irrigation
+            else: 
+                soil_params = SoilParameters
+
+            for p in soil_params:
                 soil[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             soils[soil_id] = soil
 
-        
+        print('Soils', soils)
 
         demand_profile = {}
         for s in self.wb_demand_profile:
@@ -180,7 +184,6 @@ class UrbanMetabolismModel(Module):
             demand_profile[demand_id] = profile
         self.wb_demand_profile.finalise()
         
-        print(demand_profile)
 
         for s in self.wb_lot_streams:
             s: ogr.Feature

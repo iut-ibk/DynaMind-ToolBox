@@ -6,9 +6,10 @@
         "name": "load_simulation",
         "class_name": "GDALHotStarter",
         "parameters": {
-          "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/output/scenario_basic/basic_copy.sqlite"
+          "hot_start_database": "/workspaces/DynaMind-ToolBox/tmp/basic2_out.sqlite"
         }
       },
+      
       {
         "name": "MicroClimateAssessment",
         "class_name": "DM_MicroClimate",

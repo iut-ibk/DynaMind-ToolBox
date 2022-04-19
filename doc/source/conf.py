@@ -27,7 +27,7 @@ import os
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.imgmath',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -68,7 +68,7 @@ release = '0.12.0'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 
-print os.path.abspath('../../output')
+# print os.path.abspath('../../output')
 sys.path.insert(0, os.path.abspath('../../output'))
 
 exclude_patterns = ['sphinx.ext.autodoc']

@@ -33,7 +33,8 @@ def compile_documents_modules(sourcepath,modules):
             shutil.copytree(directory,  os.curdir+"/"+m)
             indexedmodules.append(m)
         except:
-            print "No doc found for " + m
+            pass
+            # print "No doc found for " + m
 
     return indexedmodules
 
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     path = args[0]
     args = args[1:]
 
-    print "Source path: " +  path
+    # print "Source path: " +  path
 
     for i in args:
         modules.append(i)
