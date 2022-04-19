@@ -99,8 +99,11 @@ class UnitParameters:
         roof_imp_fra = 0.5
 
         # get the rainfall out of the climate data for testing
-        df_rain = pd.DataFrame({'rainfall': self._climate_data['rainfall']})
-        df_rain.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/rainfall.csv')
+        # yelp = 1
+        # if yelp == 1:
+        #     df_rain = pd.DataFrame({'rainfall': self._climate_data["rainfall intensity"]})
+        #     df_rain.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/rainfall.csv')
+        #     yelp = 2
 
         # get the keys of the soil parameters of the model. These will be different depending on what model is being used and thus can be
         # used to identify each model
@@ -232,7 +235,7 @@ class UnitParameters:
             df = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/climate_data.csv")
             df['Date'] = pd.to_datetime(df['Date'],format='%d/%m/%Y')
             df.set_index('Date',inplace=True)
-            self._climate_data["evapotranspiration"] = df.loc['2000']['ET'].to_list()
+            self._climate_data["evapotranspiration"] = [v/1000 for v in df.loc['2000']['ET'].to_list()]
 
         
         for p in parameters.items():
@@ -264,14 +267,19 @@ class UnitParameters:
         catchment_model.init_nodes()
         catchment_model.start(self.start_date)
         
+        print(self._standard_values)
+
+
         for key, probe in flow_probe.items():
             
             scaling = 1. / reporting[key]["factor"]
-            self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
-            
+            #self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
+            self._standard_values[key] = [v for v in probe.get_state_value_as_double_vector('Flow')]
 
         self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
         self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
+
+        print(self._standard_values)
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
