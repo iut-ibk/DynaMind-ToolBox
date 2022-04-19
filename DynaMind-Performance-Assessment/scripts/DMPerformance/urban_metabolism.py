@@ -27,7 +27,7 @@ class UrbanMetabolismModel(Module):
         self.from_rain_station = False
 
         # Used to turn new catchment model on and off
-        self.irrigation_module = False
+        self.irrigation_module = True
 
     def init(self):
 

@@ -4,6 +4,9 @@ import pycd3 as cd3
 
 from enum import Enum
 
+# for intergration only
+import pandas as pd
+
 
 class SoilParameters(Enum):
     impervious_threshold = 1
@@ -95,6 +98,9 @@ class UnitParameters:
         perv_area_fra = 0.2
         roof_imp_fra = 0.5
 
+        # get the rainfall out of the climate data for testing
+        df_rain = pd.DataFrame({'rainfall': self._climate_data['rainfall']})
+        df_rain.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/rainfall.csv')
 
         # get the keys of the soil parameters of the model. These will be different depending on what model is being used and thus can be
         # used to identify each model
@@ -216,10 +222,17 @@ class UnitParameters:
             catchment_w_routing = catchment_model.add_node("Catchment_w_Routing")
             model = catchment_w_routing
 
+
         elif key[0] == SoilParameters_Irrigation.horton_inital_infiltration: 
         
             catchment_w_irrigation = catchment_model.add_node('Catchment_w_Irrigation')
             model = catchment_w_irrigation
+
+            # add the correct ET data to the model
+            df = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/climate_data.csv")
+            df['Date'] = pd.to_datetime(df['Date'],format='%d/%m/%Y')
+            df.set_index('Date',inplace=True)
+            self._climate_data["evapotranspiration"] = df.loc['2000']['ET'].to_list()
 
         
         for p in parameters.items():
