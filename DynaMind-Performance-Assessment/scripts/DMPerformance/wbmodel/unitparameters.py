@@ -124,7 +124,7 @@ class UnitParameters:
             parameters = {}
             parameters["Catchment_Area_[m^2]"] = lot_area
             parameters["Fraktion_of_Pervious_Area_pA_[-]"] = perv_area_fra
-            parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - perv_area_fra
+            parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - perv_area_fra - roof_imp_fra
             parameters["Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]"] = roof_imp_fra
             parameters["Outdoor_Demand_Weighing_Factor_[-]"] = 1.0
 

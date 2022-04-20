@@ -190,7 +190,7 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.rain_storage_imp += self.rain[0]
         runoff = max([self.rain_storage_imp - self.initial_loss,0]) * self.area_property * self.imp_area_stormwater
         #runoff = max([self.rain_storage_imp - self.initial_loss - self.depression_loss,0]) * self.area_property * self.imp_area_stormwater
-
+        print('Impervious_Runoff: ', runoff/(self.area_property * self.imp_area_stormwater))
         # reset the rain store to be full
         if runoff > 0:
             self.rain_storage_imp = self.initial_loss
@@ -296,7 +296,7 @@ class Catchment_w_Irrigation(pycd3.Node):
             not_et = (self.perv_soil_storage_capacity * self.wilting_point) - self.current_perv_storage_level
             self.current_perv_storage_level += not_et
             actual_evapo -= not_et
-        print('Evapo',actual_evapo * self.area_property * self.perv_area)
+        #print('Evapo',actual_evapo * self.area_property * self.perv_area)
         return actual_evapo * self.area_property * self.perv_area 
 
 
