@@ -160,7 +160,7 @@ class UnitParameters:
 
             parameters["Catchment_Area_[m^2]"] = lot_area
             parameters["Fraktion_of_Pervious_Area_pA_[-]"] = perv_area_fra
-            parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - perv_area_fra
+            parameters["Fraktion_of_Impervious_Area_to_Stormwater_Drain_iASD_[-]"] = 1.0 - perv_area_fra - roof_imp_fra
             parameters["Fraktion_of_Impervious_Area_to_Reservoir_iAR_[-]"] = roof_imp_fra
 
             parameters["Initial_Infiltration_Capacity_[m/h]"] = self.soil[SoilParameters_Irrigation.horton_inital_infiltration]

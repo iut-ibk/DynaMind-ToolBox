@@ -212,8 +212,11 @@ class Catchment_w_Irrigation(pycd3.Node):
             #if it is dry then the amount of water in the imp and perv rain storege will decrease by evaporation, this needs to be stored and added onto daily total evoptranspiration to preseve mass.
             actual_evapo = self.actual_evapotranspiration()
             store_before = self.rain_storage_imp
+            
+            #print('Actual Evapo', actual_evapo)
             self.rain_storage_imp = max([self.rain_storage_imp - actual_evapo,0])
             self.rain_storage_perv = max([self.rain_storage_perv - actual_evapo,0])
+           
             store_after = self.rain_storage_imp
             self.surface_evaporation = (store_before - store_after) * self.area_property * (self.imp_area_stormwater + self.perv_area)
 
@@ -228,10 +231,9 @@ class Catchment_w_Irrigation(pycd3.Node):
             fraction = 1
         
         self.rain_storage_perv += (self.rain[0] + self.irrigation[0])
-
+        
         avaliable_water = max([(self.rain_storage_perv - self.initial_loss),0])
-
-
+        #print(avaliable_water)
         # as possible infiltration is given on a daily timestep, this completely overestimates the infiltration of irrigation which 
         # we know for certain lasts no more than a hour. In this case, the irrigation portion of the model will consider only 1 hours worth of infiltration 
         if self.daily_time_step:
@@ -252,13 +254,18 @@ class Catchment_w_Irrigation(pycd3.Node):
 
     # calculate the actucal evapotranspiration based on the potential evapotranspiration and the soil moisture
     def actual_evapotranspiration(self):
-
-        soil_moisture = self.current_perv_storage_level/self.perv_soil_storage_capacity
-        
+ 
+        soil_moisture = (self.current_perv_storage_level * 1000)/(self.perv_soil_storage_capacity * 1000)
+        #print('PET',self.evapo[0])
+        #print('current level',self.current_perv_storage_level)
+        #print('total level',self.perv_soil_storage_capacity )
+        #print('Soil Moisture',soil_moisture)
         # added the transpiration_constant to the soil moisture to allow for the calibration of the evapotranspiration
         stress_index = (soil_moisture - self.wilting_point)/(self.field_capacity-self.wilting_point)
-
-        if stress_index < 1:
+        #print('Stress Index',stress_index)
+        if stress_index < 0.00001:
+            return 0 
+        elif stress_index < 1:
             return self.transpiration_capacity * stress_index * self.evapo[0]
         else:
             return self.evapo[0]
@@ -276,9 +283,18 @@ class Catchment_w_Irrigation(pycd3.Node):
 
     def evapotranspiration_loss(self):
         actual_evapo = self.actual_evapotranspiration()
+        
         self.current_perv_storage_level -= actual_evapo
 
+        # sometimes, it is possible for the caluclated Aet to draw the soil water store below the wilting point
+        # which is not possible. To avoid this, find the difference and add it back to the soil store and take it off the ET.
+        if self.current_perv_storage_level < (self.perv_soil_storage_capacity * self.wilting_point):
+            not_et = (self.perv_soil_storage_capacity * self.wilting_point) - self.current_perv_storage_level
+            self.current_perv_storage_level += not_et
+            actual_evapo -= not_et
+        print('Evapo',actual_evapo * self.area_property * self.perv_area)
         return actual_evapo * self.area_property * self.perv_area 
+
 
     def ground_water_loss(self):
 
