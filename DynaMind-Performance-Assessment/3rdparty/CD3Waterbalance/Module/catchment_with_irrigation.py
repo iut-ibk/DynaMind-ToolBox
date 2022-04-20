@@ -160,10 +160,11 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.impervious_runoff[0] = self.impervious_runoff_loss()
         self.poss_infiltration[0] = self.possible_infiltration(self.condition)
         infiltration, self.pervious_runoff[0] = self.pervious_infiltration_runoff()
-        self.actual_infiltration[0] = infiltration
 
         # update soil storage due to infiltration gain and saturation excess loss
-        self.pervious_runoff[0] += self.saturartion_runoff(infiltration)
+        sat_runoff, infiltration = self.saturartion_runoff(infiltration)
+        self.pervious_runoff[0] += sat_runoff
+        self.actual_infiltration[0] = infiltration
 
         # update soil storage due to evapotranspiration loss 
         self.evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation
@@ -279,8 +280,10 @@ class Catchment_w_Irrigation(pycd3.Node):
         saturation_runoff = self.current_perv_storage_level - (self.saturation * self.perv_soil_storage_capacity)
         saturation_runoff = max([saturation_runoff, 0])
 
+        infiltration -= saturation_runoff
+
         self.current_perv_storage_level -= saturation_runoff
-        return saturation_runoff * self.area_property * self.perv_area
+        return saturation_runoff * self.area_property * self.perv_area, infiltration
 
     def evapotranspiration_loss(self):
         actual_evapo = self.actual_evapotranspiration()
