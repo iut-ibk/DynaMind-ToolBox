@@ -423,7 +423,8 @@ class Catchment_w_Routing(pycd3.Node):
         # if the wetting loss and depression loss hasn't been overcome yet, there won't be any runoff from the impervious area
         # that contributes to stormwater
         if self.rain_storage_imp - self.initial_loss - self.depression_loss <= 0.0:
-
+            
+            # Runoff will only be collected if the rain storage is above the depression loss, otherwise it will be zero
             # Roof runoff collection starts
             self.collected_w_raw = (self.rain[0] - self.evapo[0]) * self.imp_area_raintank * self.area_property
 

@@ -34,8 +34,8 @@ class Catchment_w_Irrigation(pycd3.Node):
         # out ports
         self.addOutPort("roof_runoff", self.roof_runoff)
         self.addOutPort("impervious_runoff", self.impervious_runoff)
-        self.addOutPort("pervious_runoff", self.pervious_runoff)
-        self.addOutPort("saturation_runoff", self.saturation_runoff)
+        self.addOutPort("pervious_runoff", self.pervious_runoff) #infiltration excess and saturation runoff combined into one outport
+        #self.addOutPort("saturation_runoff", self.saturation_runoff)
         self.addOutPort('possible_infiltration',self.poss_infiltration)
         self.addOutPort("actual_infiltration", self.actual_infiltration)
         self.addOutPort("groundwater_infiltration", self.groundwater_infiltration)
@@ -163,7 +163,7 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.actual_infiltration[0] = infiltration
 
         # update soil storage due to infiltration gain and saturation excess loss
-        self.saturation_runoff[0] = self.saturartion_runoff(infiltration)
+        self.pervious_runoff[0] += self.saturartion_runoff(infiltration)
 
         # update soil storage due to evapotranspiration loss 
         self.evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation

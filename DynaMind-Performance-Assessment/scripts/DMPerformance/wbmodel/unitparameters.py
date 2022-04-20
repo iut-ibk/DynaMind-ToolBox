@@ -273,8 +273,8 @@ class UnitParameters:
         for key, probe in flow_probe.items():
             
             scaling = 1. / reporting[key]["factor"]
-            #self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
-            self._standard_values[key] = [v for v in probe.get_state_value_as_double_vector('Flow')]
+            self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
+            #self._standard_values[key] = [v for v in probe.get_state_value_as_double_vector('Flow')]
 
         self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
         self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
