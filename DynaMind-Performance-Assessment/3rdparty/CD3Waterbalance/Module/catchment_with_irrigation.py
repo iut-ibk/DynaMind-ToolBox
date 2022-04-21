@@ -6,7 +6,6 @@ import pycd3
 class Catchment_w_Irrigation(pycd3.Node):
 
     def __init__(self):
-        print("Hello from catchment")
         pycd3.Node.__init__(self)
 
         # in flows
@@ -21,7 +20,8 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.saturation_runoff = pycd3.Flow()
         self.actual_infiltration = pycd3.Flow()
         self.groundwater_infiltration = pycd3.Flow()
-        self.evapotranspiration = pycd3.Flow()
+        self.pervious_evapotranspiration = pycd3.Flow()
+        self.impervious_evapotranspiration = pycd3.Flow()
         self.irrigation_required = pycd3.Flow()
         self.poss_infiltration = pycd3.Flow()
         self.pervious_level = pycd3.Flow()
@@ -39,13 +39,11 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.addOutPort('possible_infiltration',self.poss_infiltration)
         self.addOutPort("actual_infiltration", self.actual_infiltration)
         self.addOutPort("groundwater_infiltration", self.groundwater_infiltration)
-        self.addOutPort("evapotranspiration", self.evapotranspiration)
+        self.addOutPort("pervious_evapotranspiration", self.pervious_evapotranspiration)
+        self.addOutPort('impervious_evapotranspiration',self.impervious_evapotranspiration)
 
         self.addOutPort("outdoor_demand", self.irrigation_required) # not sure about this one just yet
         self.addOutPort('pervious_storage', self.pervious_level)
-
-        print("added ports")
-
 
         # parameters to be set by dynamind
         self.area_property = pycd3.Double(1000)
@@ -85,10 +83,10 @@ class Catchment_w_Irrigation(pycd3.Node):
         # this allows automatic watering of the system to a particular level specified in the code
         self.automatic_irrigation = False
 
-        print("init done")
+
 
     def init(self, start, stop, dt):
-        print("This is me form init")
+
         # other parameters to store information within the class
         self.dt =dt
         self.num_of_continuous_dry_days = 0
@@ -111,7 +109,7 @@ class Catchment_w_Irrigation(pycd3.Node):
 
         self.daily_time_step = True
 
-        print("This is me form init done")
+
 
         return True
 
@@ -167,7 +165,8 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.actual_infiltration[0] = infiltration
 
         # update soil storage due to evapotranspiration loss 
-        self.evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation
+        self.pervious_evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation/2
+        self.impervious_evapotranspiration[0] = self.surface_evaporation/2
 
         # update soil storage and groundwater loss
         self.groundwater_infiltration[0] = self.ground_water_loss()
@@ -190,7 +189,7 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.rain_storage_imp += self.rain[0]
         runoff = max([self.rain_storage_imp - self.initial_loss,0]) * self.area_property * self.imp_area_stormwater
         #runoff = max([self.rain_storage_imp - self.initial_loss - self.depression_loss,0]) * self.area_property * self.imp_area_stormwater
-        print('Impervious_Runoff: ', runoff/(self.area_property * self.imp_area_stormwater))
+
         # reset the rain store to be full
         if runoff > 0:
             self.rain_storage_imp = self.initial_loss

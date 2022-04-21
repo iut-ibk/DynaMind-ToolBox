@@ -82,7 +82,7 @@ class WaterCycleModel():
         self._build_network()
         self._cd3.init_nodes()
         self._cd3.start(self.start_date)
-        #self._reporting()
+        self._reporting(timeseries = True)
         #print('FLOW PROBES', self._flow_probes)
         # for key, storage in self._lot_storage_reporting.items():
         #     for id, s in storage.items():

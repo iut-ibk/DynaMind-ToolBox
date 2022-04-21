@@ -107,12 +107,12 @@ class UnitParameters:
 
         # get the keys of the soil parameters of the model. These will be different depending on what model is being used and thus can be
         # used to identify each model
-        key = list(self.soil.keys())
+        soil_param = list(self.soil.keys())
 
         # setup the inputs and reporting dicts for the model
 
         # old model
-        if key[0] == SoilParameters.impervious_threshold:
+        if soil_param[0] == SoilParameters.impervious_threshold:
 
             horton_initial_cap = 0.09
             horton_final_cap = 0.001
@@ -138,7 +138,7 @@ class UnitParameters:
             reporting = {}
             reporting[UnitFlows.roof_runoff] = {"port": "Collected_Water", "factor": (lot_area * roof_imp_fra)}
             reporting[UnitFlows.impervious_runoff] = {"port": "impervious_runoff",
-                                                    "factor": (lot_area * (1 - perv_area_fra))}
+                                                    "factor": (lot_area * (1 - perv_area_fra - roof_imp_fra))}
             reporting[UnitFlows.outdoor_demand] = {"port": "Outdoor_Demand", "factor": (lot_area / crop_factor * (
                 perv_area_fra))}  # {"port": "Outdoor_Demand", "factor" : (lot_area * ( perv_area_fra ))}
 
@@ -154,7 +154,7 @@ class UnitParameters:
             reporting[UnitFlows.pervious_runoff] = {"port": "pervious_runoff", "factor": (lot_area * (perv_area_fra))}
 
         # new model
-        elif key[0] == SoilParameters_Irrigation.horton_inital_infiltration:
+        elif soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
 
             parameters = {}
 
@@ -182,15 +182,16 @@ class UnitParameters:
             reporting = {}
 
             reporting[UnitFlows.roof_runoff] = {"port": "roof_runoff", "factor": (lot_area * roof_imp_fra)}
-            reporting[UnitFlows.impervious_runoff] = {"port": "impervious_runoff","factor": (lot_area * (1 - perv_area_fra))}
+            reporting[UnitFlows.impervious_runoff] = {"port": "impervious_runoff","factor": (lot_area * (1 - perv_area_fra - roof_imp_fra))}
             reporting[UnitFlows.pervious_runoff] = {"port": "pervious_runoff", "factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.outdoor_demand] = {"port": "outdoor_demand", "factor": (lot_area * perv_area_fra)} 
             reporting[UnitFlows.possible_infiltration] = {"port": "possible_infiltration", "factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.actual_infiltration] = {"port": "actual_infiltration","factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.groundwater_infiltration] = {"port": "groundwater_infiltration","factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.pervious_storage] = {"port": "pervious_storage", "factor": (lot_area * (perv_area_fra))}
-            reporting[UnitFlows.effective_evapotranspiration] = {"port": "evapotranspiration", "factor": (lot_area * (perv_area_fra))}
-            
+            reporting[UnitFlows.pervious_evapotranspiration] = {"port": "pervious_evapotranspiration", "factor": (lot_area * (perv_area_fra))}
+            reporting[UnitFlows.pervious_evapotranspiration_irrigated] = {"port": "pervious_evapotranspiration", "factor": (lot_area * (perv_area_fra))}
+            reporting[UnitFlows.impervious_evapotranspiration] = {"port": "impervious_evapotranspiration", "factor": (lot_area * (1 - perv_area_fra - roof_imp_fra))}
 
         #set up the city model and register the python plugins
 
@@ -220,13 +221,13 @@ class UnitParameters:
 
         # select the model based on the soil parameter types and carry this foward
 
-        if key[0] == SoilParameters.impervious_threshold:
+        if soil_param[0] == SoilParameters.impervious_threshold:
 
             catchment_w_routing = catchment_model.add_node("Catchment_w_Routing")
             model = catchment_w_routing
 
 
-        elif key[0] == SoilParameters_Irrigation.horton_inital_infiltration: 
+        elif soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration: 
         
             catchment_w_irrigation = catchment_model.add_node('Catchment_w_Irrigation')
             model = catchment_w_irrigation
@@ -251,7 +252,7 @@ class UnitParameters:
         catchment_model.add_connection(evapo, "out", model, "Evapotranspiration")
 
         # if its the irrigation module, we also need an irrigation stream to the catchment
-        if key[0] == SoilParameters_Irrigation.horton_inital_infiltration:
+        if soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
             irrigation = catchment_model.add_node("SourceVector")
 
             # at the moment we hardcode the irrigation and set it to be zero
@@ -279,25 +280,32 @@ class UnitParameters:
         self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
         self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
 
-        print(self._standard_values)
+        #print(self._standard_values)
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
         roof_evapotranspiration = []
         pervious_evapotranspiration = []
 
+        # the old and new models go about calculating the evapotranspiration differently. 
+        # old model: the storage losses are caluclated below
+        # new model: the storage losses are calculated interanlly and added to the right 'standard value' in the previos step
+
         for idx, v in enumerate(self._standard_values[UnitFlows.groundwater_infiltration]):
-            pervious_evapotranspiration.append(self._standard_values[UnitFlows.rainfall][idx]
-                                               - self._standard_values[UnitFlows.pervious_runoff][idx]
-                                               - self._standard_values[UnitFlows.actual_infiltration][idx]
-                                               + self._standard_values[UnitFlows.effective_evapotranspiration][idx])
-            pervious_evapotranspiration_irrigated.append(
-                self._standard_values[UnitFlows.rainfall][idx] -
-                self._standard_values[UnitFlows.pervious_runoff][idx] -
-                self._standard_values[UnitFlows.actual_infiltration][idx] +
-                self._standard_values[UnitFlows.effective_evapotranspiration][idx] +
-                self._standard_values[UnitFlows.outdoor_demand][idx]
-            )
+
+            if soil_param[0] == SoilParameters.impervious_threshold:
+
+                pervious_evapotranspiration.append(self._standard_values[UnitFlows.rainfall][idx]
+                                                - self._standard_values[UnitFlows.pervious_runoff][idx]
+                                                - self._standard_values[UnitFlows.actual_infiltration][idx]
+                                                + self._standard_values[UnitFlows.effective_evapotranspiration][idx])
+                pervious_evapotranspiration_irrigated.append(
+                    self._standard_values[UnitFlows.rainfall][idx] -
+                    self._standard_values[UnitFlows.pervious_runoff][idx] -
+                    self._standard_values[UnitFlows.actual_infiltration][idx] +
+                    self._standard_values[UnitFlows.effective_evapotranspiration][idx] +
+                    self._standard_values[UnitFlows.outdoor_demand][idx]
+                )
 
             impervious_evapotranspiration.append(
                 self._standard_values[UnitFlows.rainfall][idx] - self._standard_values[UnitFlows.impervious_runoff][
@@ -305,15 +313,20 @@ class UnitParameters:
             roof_evapotranspiration.append(
                 self._standard_values[UnitFlows.rainfall][idx] - self._standard_values[UnitFlows.roof_runoff][
                     idx])
-        self._standard_values[UnitFlows.pervious_evapotranspiration] = pervious_evapotranspiration
-        self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated] = pervious_evapotranspiration_irrigated
-        self._standard_values[UnitFlows.impervious_evapotranspiration] = impervious_evapotranspiration
+        
+        
+        if soil_param[0] == SoilParameters.impervious_threshold:
+
+            self._standard_values[UnitFlows.pervious_evapotranspiration] = pervious_evapotranspiration
+            self._standard_values[UnitFlows.pervious_evapotranspiration_irrigated] = pervious_evapotranspiration_irrigated
+            self._standard_values[UnitFlows.impervious_evapotranspiration] = impervious_evapotranspiration
+
         self._standard_values[UnitFlows.roof_evapotranspiration] = roof_evapotranspiration
 
         for key, values in self._standard_values.items():
             logging.info(
-                f"{key} {format(sum(values), '.2f')}")
-
+                f"{key} {format(sum(values), '.4f')}")
+        print('impervious_check:', sum(impervious_evapotranspiration) )
             # logging.warning(
             #     f"{key} {[format(v, '.2f') for v in values]}")
 
