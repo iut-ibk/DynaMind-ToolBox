@@ -232,11 +232,15 @@ class UnitParameters:
             catchment_w_irrigation = catchment_model.add_node('Catchment_w_Irrigation')
             model = catchment_w_irrigation
 
-            # add the correct ET data to the model
+            # add the correct ET data and rainfall to the model
             df = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/climate_data.csv")
             df['Date'] = pd.to_datetime(df['Date'],format='%d/%m/%Y')
             df.set_index('Date',inplace=True)
-            self._climate_data["evapotranspiration"] = [v/1000 for v in df.loc['2000']['ET'].to_list()]
+            #print('rainfall',df.loc['2021']['ET'].to_list())
+            #print('rainfall_length',len(df.loc['2021']['ET'].to_list()))
+            self._climate_data["evapotranspiration"] = [v/1000 for v in df.loc['2019']['ET'].to_list()]
+            self._climate_data["rainfall intensity"] = [v/1000 for v in df.loc['2019']['Rainfall'].to_list()]
+            print('rain_length',len(self._climate_data["rainfall intensity"]))
 
         
         for p in parameters.items():
@@ -255,8 +259,11 @@ class UnitParameters:
         if soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
             irrigation = catchment_model.add_node("SourceVector")
 
-            # at the moment we hardcode the irrigation and set it to be zero
-            irrigation.setDoubleVectorParameter("source", [0 for i in self._climate_data["rainfall intensity"]])
+            # at the moment we hardcode the irrigation and load it from the file
+
+            df = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/zone_9.csv")
+            print('irrigation_length', df.shape)
+            irrigation.setDoubleVectorParameter("source", [i for i in df['volume'].to_list()])
             catchment_model.add_connection(irrigation, "out", model, "irrigation")
 
         flow_probe = {}
@@ -268,9 +275,7 @@ class UnitParameters:
         catchment_model.init_nodes()
         catchment_model.start(self.start_date)
         
-        print(self._standard_values)
-
-
+        
         for key, probe in flow_probe.items():
             
             scaling = 1. / reporting[key]["factor"]
@@ -280,7 +285,7 @@ class UnitParameters:
         self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
         self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
 
-        #print(self._standard_values)
+        print(self._standard_values)
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []

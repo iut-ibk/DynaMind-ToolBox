@@ -30,3 +30,4 @@ tests/venv*
 tmp
 .devcontainer/devcontainer.json
 .vscode/launch.json
+.vscode/settings.json

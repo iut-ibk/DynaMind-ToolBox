@@ -6,10 +6,9 @@
         "name": "load_simulation",
         "class_name": "GDALHotStarter",
         "parameters": {
-          "hot_start_database": "/workspaces/DynaMind-ToolBox/tmp/basic2_out.sqlite"
+          "hot_start_database": "/workspaces/DynaMind-ToolBox/tmp/Zone_9.sqlite"
         }
       },
-      
       {
         "name": "MicroClimateAssessment",
         "class_name": "DM_MicroClimate",
@@ -24,7 +23,7 @@
         "name": "export_database",
         "class_name": "DM_ExportSimulationDB",
         "parameters": {
-          "file_name": "/workspaces/DynaMind-ToolBox/tmp/basic_out"
+          "file_name": "/workspaces/DynaMind-ToolBox/tmp/Zone_9_out"
         }
       }
     ]

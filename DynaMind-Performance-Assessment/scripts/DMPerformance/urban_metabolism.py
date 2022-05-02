@@ -370,8 +370,10 @@ class UrbanMetabolismModel(Module):
             f.SetField("station_id", station_id)
             f.SetField("wb_demand_profile_id", wb_demand_profile_id)
             for s in UnitFlows:
-                dm_set_double_list(f, str(s).split(".")[1],
-                                   item[s])
+                # check if unit_flow is available as they differ betweem the different models
+                if s in item:
+                    dm_set_double_list(f, str(s).split(".")[1],
+                                    item[s])
         self.wb_unit_flows.finalise()
 
         for l in self.lot:
