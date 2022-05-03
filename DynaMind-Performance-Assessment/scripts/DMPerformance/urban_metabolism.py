@@ -27,7 +27,7 @@ class UrbanMetabolismModel(Module):
         self.from_rain_station = False
 
         # Used to turn new catchment model on and off
-        self.irrigation_module = True
+        self.irrigation_module = False
 
     def init(self):
 
@@ -37,7 +37,6 @@ class UrbanMetabolismModel(Module):
         self.lot.addAttribute("roof_area", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("outdoor_imp", DM.Attribute.DOUBLE, DM.READ)
         self.lot.addAttribute("garden_area", DM.Attribute.DOUBLE, DM.READ)
-        # self.lot.addAttribute("tree_cover", DM.Attribute.DOUBLE, DM.READ)
 
         for i in range(1, 10):
             self.lot.addAttribute(f"wb_sub_catchment_id_{i}", DM.Attribute.INT, DM.READ)
