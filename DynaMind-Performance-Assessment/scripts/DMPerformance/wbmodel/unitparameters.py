@@ -99,8 +99,8 @@ class UnitParameters:
         roof_imp_fra = 0.5
 
         # testing get rid of this
-        self.soil[SoilParameters_Irrigation.soil_depth] = 0.3
-        self.soil[SoilParameters_Irrigation.intial_soil_depth] = 0.1
+        # self.soil[SoilParameters_Irrigation.soil_depth] = 0.3
+        # self.soil[SoilParameters_Irrigation.intial_soil_depth] = 0.1
 
         # get the rainfall out of the climate data for testing
         # yelp = 1
@@ -326,24 +326,24 @@ class UnitParameters:
 
         self._standard_values[UnitFlows.roof_evapotranspiration] = roof_evapotranspiration
 
-        print('Soil Mositure: ', [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]])
+        # print('Soil Mositure: ', [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]])
 
         for key, values in self._standard_values.items():
             logging.info(
                 f"{key} {format(sum(values), '.4f')}")
-        print('impervious_check:', sum(impervious_evapotranspiration) )
+        # print('impervious_check:', sum(impervious_evapotranspiration) )
             # logging.warning(
             #     f"{key} {[format(v, '.2f') for v in values]}")
 
         #del catchment_model
 
         # write the soil moisture, date, rainfall field capacity, wilting point, saturation to a csv file for plotting
-        df = pd.DataFrame(self._standard_values)
-        df['Soil Moisture'] = [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]]
-        df[['wilding_point', 'field_capacity', 'saturation']] = [self.soil[SoilParameters_Irrigation.wilting_point], self.soil[SoilParameters_Irrigation.field_capactiy], self.soil[SoilParameters_Irrigation.saturation]]
-        df['Date'] = climate.loc['2021'].index
+        # df = pd.DataFrame(self._standard_values)
+        # df['Soil Moisture'] = [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]]
+        # df[['wilding_point', 'field_capacity', 'saturation']] = [self.soil[SoilParameters_Irrigation.wilting_point], self.soil[SoilParameters_Irrigation.field_capactiy], self.soil[SoilParameters_Irrigation.saturation]]
+        # df['Date'] = climate.loc['2021'].index
 
-        df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture.csv', index=False)
+        # df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture.csv', index=False)
 
     @property
     def unit_values(self) -> {}:
