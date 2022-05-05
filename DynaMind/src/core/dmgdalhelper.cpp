@@ -4,16 +4,13 @@
 #include <istream>
 #include <iostream>
 
-bool DM::DMFeature::SetDoubleList(OGRFeature *f, const std::string &name, const std::vector<double> &values)
+bool DM::DMFeature::SetDoubleList(OGRFeature *f, const std::string &name, std::vector<double> &values)
 {
 	if (values.size() == 0)
 		return true;
-	//convert to bytestream
-	std::stringbuf bytebuffer;
-	for (size_t i = 0; i < values.size(); i++) {
-		bytebuffer.sputn(reinterpret_cast<const char *>(&values[i]), 8);
-	}
-	GByte * val= reinterpret_cast<unsigned char*>(const_cast<char*>(bytebuffer.str().c_str()));
+	double * pData = values.data();
+	unsigned char * pDataBytes = reinterpret_cast<unsigned char*>(pData);
+	GByte * val= reinterpret_cast<unsigned char*>(pDataBytes);
 	f->SetField(f->GetFieldIndex(name.c_str()),values.size()*8,val);
 	return true;
 }

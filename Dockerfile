@@ -50,6 +50,8 @@ RUN pip3 install dask
 
 RUN pip3 install toolz
 
+RUN pip3 install timezonefinder
+
 WORKDIR /home/node/
 
 #RUN git clone --progress --verbose -b release/2.4  https://github.com/OSGeo/gdal.git
