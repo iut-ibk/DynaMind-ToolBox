@@ -335,6 +335,8 @@ TEST_F(TestGDALModules,WriteAttributes) {
 		DM::DMFeature::GetDoubleList(f,"double_vector_attribute", ress_vec );
 		DM::Logger(DM::Error) << ress_vec.size();
 		ASSERT_EQ( ress_vec.size(), 3 );
+		ASSERT_FLOAT_EQ( ress_vec[0], 10.5 );
+		ASSERT_FLOAT_EQ( ress_vec[1], 20.5 );
 		ASSERT_FLOAT_EQ( ress_vec[2], 30.5 );
 		return;
 	}
