@@ -98,7 +98,7 @@ class UnitParameters:
         perv_area_fra = 0.2
         roof_imp_fra = 0.5
 
-        # testing get rid of this
+        # testing get rid
         self.soil[SoilParameters_Irrigation.soil_depth] = 0.3
         self.soil[SoilParameters_Irrigation.intial_soil_depth] = 0.1
 
