@@ -1,0 +1,148 @@
+[
+    {
+        "group": "root",
+        "nodes": [
+            {
+                "name": "load_simulation",
+                "class_name": "GDALHotStarter",
+                "parameters": {
+                    "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET.sqlite"
+                }
+            },
+            {
+                "name": "add_container",
+                "class_name": "DM_CreateComponent",
+                "parameters": {
+                    "lead_view_name": "timeseries",
+                    "component_type": "COMPONENT",
+                    "create_empty": "0",
+                    "append": "1"
+                }
+            },
+            {
+                "name": "Add Parameter - end",
+                "class_name": "GDALAttributeCalculator",
+                "parameters": {
+                    "attribute": "timeseries.end",
+                    "attribute_type": "STRING",
+                    "equation": "\"01.01.2001 00:00:00\""
+                },
+                "filter": {
+                    "view_name": [
+                        "timeseries"
+                    ],
+                    "attribute_filter": [
+                        "type is null"
+                    ],
+                    "spatial_filter": [
+                        ""
+                    ]
+                }
+            },
+            {
+                "name": "Add Parameter - start",
+                "class_name": "GDALAttributeCalculator",
+                "parameters": {
+                    "attribute": "timeseries.start",
+                    "attribute_type": "STRING",
+                    "equation": "\"02.01.2000 00:00:00\""
+                },
+                "filter": {
+                    "view_name": [
+                        "timeseries"
+                    ],
+                    "attribute_filter": [
+                        "type is null"
+                    ],
+                    "spatial_filter": [
+                        ""
+                    ]
+                }
+            },
+            {
+                "name": "Add Parameter - timestep",
+                "class_name": "GDALAttributeCalculator",
+                "parameters": {
+                    "attribute": "timeseries.timestep",
+                    "attribute_type": "DOUBLE",
+                    "equation": "86400"
+                },
+                "filter": {
+                    "view_name": [
+                        "timeseries"
+                    ],
+                    "attribute_filter": [
+                        "type is null"
+                    ],
+                    "spatial_filter": [
+                        ""
+                    ]
+                }
+            },
+            {
+                "name": "Add Parameter - data",
+                "class_name": "GDALAttributeCalculator",
+                "parameters": {
+                    "attribute": "timeseries.data",
+                    "attribute_type": "DOUBLEVECTOR",
+                    "equation": "{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}"
+                },
+                "filter": {
+                    "view_name": [
+                        "timeseries"
+                    ],
+                    "attribute_filter": [
+                        "type is null"
+                    ],
+                    "spatial_filter": [
+                        ""
+                    ]
+                }
+            },
+            {
+                "name": "Add Parameter - stationid",
+                "class_name": "DM_SQliteCalculator",
+                "parameters": {
+                    "attribute": "timeseries.station_id",
+                    "attribute_type": "INT",
+                    "query": "UPDATE timeseries SET station_id = (SELECT max(ogc_fid) FROM station) WHERE type is null"
+                }
+            },
+            {
+                "name": "Add Parameter - type",
+                "class_name": "GDALAttributeCalculator",
+                "parameters": {
+                    "attribute": "timeseries.type",
+                    "attribute_type": "STRING",
+                    "equation": "\"irrigation\""
+                },
+                "filter": {
+                    "view_name": [
+                        "timeseries"
+                    ],
+                    "attribute_filter": [
+                        "type is null"
+                    ],
+                    "spatial_filter": [
+                        ""
+                    ]
+                }
+            },
+            {
+                "name": "logging",
+                "class_name": "GDALLogAttriubtes",
+                "parameters": {
+                    "leadingViewName": "timeseries",
+                    "attributeNames": "data"
+                }
+            },
+            {
+                "name": "export_database",
+                "class_name": "DM_ExportSimulationDB",
+                "parameters": {
+                    "file_name": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/3_Irrigation"
+                }
+            }
+        ]
+    }
+]

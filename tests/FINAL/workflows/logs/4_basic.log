@@ -1,0 +1,85 @@
+INFO	 Sun May 8 23:07:35 2022| Pythonthreads enabled
+INFO	 Sun May 8 23:07:35 2022| Add Python Path  
+INFO	 Sun May 8 23:07:35 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:35 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:35 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance
+INFO	 Sun May 8 23:07:35 2022| Register  DMPerformance
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/Drainage
+INFO	 Sun May 8 23:07:36 2022| Register  Drainage
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALModules
+INFO	 Sun May 8 23:07:36 2022| Register  GDALModules
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:36 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALWebModules
+INFO	 Sun May 8 23:07:36 2022| Register  GDALWebModules
+INFO	 Sun May 8 23:07:37 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Sun May 8 23:07:37 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/TestModules
+INFO	 Sun May 8 23:07:37 2022| Register  TestModules
+INFO	 Sun May 8 23:07:37 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/Modules
+INFO	 Sun May 8 23:07:37 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libdynamind-performance-assessment.so
+INFO	 Sun May 8 23:07:37 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_drainage_modules.so
+INFO	 Sun May 8 23:07:37 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_standard_modules.so
+INFO	 Sun May 8 23:07:37 2022| Add Python Path  
+INFO	 Sun May 8 23:07:38 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/libdynamind-testmodules.so
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pycd3
+INFO	 Sun May 8 23:07:38 2022| Register  pycd3
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmextensions
+INFO	 Sun May 8 23:07:38 2022| Register  pydmextensions
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmtoolbox
+INFO	 Sun May 8 23:07:38 2022| Register  pydmtoolbox
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydynamind
+INFO	 Sun May 8 23:07:38 2022| Register  pydynamind
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Sun May 8 23:07:38 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/start
+INFO	 Sun May 8 23:07:38 2022| Register  start
+INFO	 Sun May 8 23:07:38 2022| >> loading simulation file ' /workspaces/DynaMind-ToolBox/tests/FINAL/workflows/compiled/4_basic.xml '
+INFO	 Sun May 8 23:07:38 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/3_Irrigation.sqlite '
+INFO	 Sun May 8 23:07:38 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/3_Irrigation.sqlite '
+INFO	 Sun May 8 23:07:38 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/workflows/outputs/wb_ress.dat '
+INFO	 Sun May 8 23:07:38 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/workflows/outputs/wb_ress.dat '
+INFO	 Sun May 8 23:07:38 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/4_FinalResults '
+INFO	 Sun May 8 23:07:38 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/4_FinalResults '
+INFO	 Sun May 8 23:07:38 2022| >> checking stream
+INFO	 Sun May 8 23:07:38 2022| >> Check Streams
+INFO	 Sun May 8 23:07:38 2022| >> checking stream finished successfully
+INFO	 Sun May 8 23:07:38 2022| >> loading simulation file finished
+INFO	 Sun May 8 23:07:38 2022| >>>> starting simulation
+INFO	 Sun May 8 23:07:38 2022| >> Reset Simulation
+INFO	 Sun May 8 23:07:38 2022| >> Check Streams
+INFO	 Sun May 8 23:07:39 2022| >> checking simulation
+INFO	 Sun May 8 23:07:39 2022| >> Check Streams
+INFO	 Sun May 8 23:07:39 2022| >> checking simulation succeeded (took  4 ms)
+INFO	 Sun May 8 23:07:39 2022| >> starting simulation
+INFO	 Sun May 8 23:07:39 2022| running module ' GDALHotStarter   load_simulation '
+INFO	 Sun May 8 23:07:59 2022| module ' load_simulation ' executed successfully (took  20514 ms)
+INFO	 Sun May 8 23:07:59 2022| running module ' DM_MicroClimate   MicroClimateAssessment '
+INFO	 Sun May 8 23:07:59 2022| module ' MicroClimateAssessment ' executed successfully (took  12 ms)
+INFO	 Sun May 8 23:07:59 2022| running module ' UrbanMetabolismModel   WaterBalanceTest '
+ERROR	 Sun May 8 23:07:59 2022| Traceback (most recent call last):
+ERROR	 Sun May 8 23:07:59 2022|   File "/workspaces/DynaMind-ToolBox/build/output/pydynamind.py", line 4580, in moduleRun
+ERROR	 Sun May 8 23:07:59 2022|     self.run()
+ERROR	 Sun May 8 23:07:59 2022|   File "/workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance/urban_metabolism.py", line 315, in run
+ERROR	 Sun May 8 23:07:59 2022|     library_path=self.getSimulationConfig().getDefaultLibraryPath())
+ERROR	 Sun May 8 23:07:59 2022|   File "/workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance/wbmodel/water_cycle_model.py", line 45, in __init__
+ERROR	 Sun May 8 23:07:59 2022|     self._library_path).unit_values
+ERROR	 Sun May 8 23:07:59 2022|   File "/workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance/wbmodel/unitparameters.py", line 373, in __init__
+ERROR	 Sun May 8 23:07:59 2022|     df = pd.DataFrame(self._standard_values)
+ERROR	 Sun May 8 23:07:59 2022|   File "/usr/local/lib/python3.6/dist-packages/pandas/core/frame.py", line 468, in __init__
+ERROR	 Sun May 8 23:07:59 2022|     mgr = init_dict(data, index, columns, dtype=dtype)
+ERROR	 Sun May 8 23:07:59 2022|   File "/usr/local/lib/python3.6/dist-packages/pandas/core/internals/construction.py", line 283, in init_dict
+ERROR	 Sun May 8 23:07:59 2022|     return arrays_to_mgr(arrays, data_names, index, columns, dtype=dtype)
+ERROR	 Sun May 8 23:07:59 2022|   File "/usr/local/lib/python3.6/dist-packages/pandas/core/internals/construction.py", line 78, in arrays_to_mgr
+ERROR	 Sun May 8 23:07:59 2022|     index = extract_index(arrays)
+ERROR	 Sun May 8 23:07:59 2022|   File "/usr/local/lib/python3.6/dist-packages/pandas/core/internals/construction.py", line 397, in extract_index
+ERROR	 Sun May 8 23:07:59 2022|     raise ValueError("arrays must all be same length")
+ERROR	 Sun May 8 23:07:59 2022| ValueError: arrays must all be same length
+ERROR	 Sun May 8 23:07:59 2022| 
+ERROR	 Sun May 8 23:07:59 2022| module ' WaterBalanceTest ' failed after  261 ms
+INFO	 Sun May 8 23:07:59 2022| >>>> finished simulation at an average of  20796 +- 0 ms
+INFO	 Sun May 8 23:07:59 2022| >> Reset Simulation
+INFO	 Sun May 8 23:07:59 2022| >> Check Streams

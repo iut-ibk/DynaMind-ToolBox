@@ -1,0 +1,142 @@
+<DynaMind>
+  <Info Version="0.5"/>
+  <DynaMindCore>
+    <Settings>
+      <EPSG value="3857"/>
+      <WorkingDir value="/tmp"/>
+      <KeepSystems value="0"/>
+    </Settings>
+    <Nodes>
+      <RootNode>
+        <UUID value="0"/>
+      </RootNode>
+      <Node>
+        <ClassName value="GDALHotStarter"/>
+        <UUID value="db86f15a-99ab-4b79-82ca-79af948f859e"/>
+        <Name value="load_simulation"/>
+        <GroupUUID value="0"/>
+        <parameter name="hot_start_database">/workspaces/DynaMind-ToolBox/tests/FINAL/databases/3_Irrigation.sqlite</parameter>
+      </Node>
+      <Node>
+        <ClassName value="DM_MicroClimate"/>
+        <UUID value="0c99ffa3-ecc9-48b2-b0f3-db2eaaef54b6"/>
+        <Name value="MicroClimateAssessment"/>
+        <GroupUUID value="0"/>
+      </Node>
+      <Node>
+        <ClassName value="UrbanMetabolismModel"/>
+        <UUID value="0bdcf21e-0ff1-4e6c-81bb-d4556a4bc11d"/>
+        <Name value="WaterBalanceTest"/>
+        <GroupUUID value="0"/>
+        <parameter name="from_rain_station">1</parameter>
+        <parameter name="irrigation_module">1</parameter>
+      </Node>
+      <Node>
+        <ClassName value="GDALLogAttriubtes"/>
+        <UUID value="b2e0d369-8d86-419f-be10-e70687cf004f"/>
+        <Name value="logging"/>
+        <GroupUUID value="0"/>
+        <parameter name="leadingViewName">wb_unit_flow</parameter>
+        <parameter name="attributeNames">pervious_storage</parameter>
+        <parameter name="excelFriendly">1</parameter>
+        <parameter name="printFeatureID">1</parameter>
+        <parameter name="file_name">/workspaces/DynaMind-ToolBox/tests/FINAL/workflows/outputs/wb_ress.dat</parameter>
+      </Node>
+      <Node>
+        <ClassName value="DM_ExportSimulationDB"/>
+        <UUID value="ab88edaf-5b2e-4b08-8ecc-2c184b0e0f3e"/>
+        <Name value="export_database"/>
+        <GroupUUID value="0"/>
+        <parameter name="file_name">/workspaces/DynaMind-ToolBox/tests/FINAL/databases/4_FinalResults</parameter>
+      </Node>
+    </Nodes>
+    <Links>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="0c99ffa3-ecc9-48b2-b0f3-db2eaaef54b6"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="db86f15a-99ab-4b79-82ca-79af948f859e"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="0bdcf21e-0ff1-4e6c-81bb-d4556a4bc11d"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="0c99ffa3-ecc9-48b2-b0f3-db2eaaef54b6"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="b2e0d369-8d86-419f-be10-e70687cf004f"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="0bdcf21e-0ff1-4e6c-81bb-d4556a4bc11d"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="ab88edaf-5b2e-4b08-8ecc-2c184b0e0f3e"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="b2e0d369-8d86-419f-be10-e70687cf004f"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+    </Links>
+  </DynaMindCore>
+  <DynaMindGUI>
+    <GUI_Nodes>
+      <GUI_Node>
+        <GUI_UUID value="db86f15a-99ab-4b79-82ca-79af948f859e"/>
+        <GUI_PosX value="0"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="0c99ffa3-ecc9-48b2-b0f3-db2eaaef54b6"/>
+        <GUI_PosX value="300"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="0bdcf21e-0ff1-4e6c-81bb-d4556a4bc11d"/>
+        <GUI_PosX value="600"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="b2e0d369-8d86-419f-be10-e70687cf004f"/>
+        <GUI_PosX value="900"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="ab88edaf-5b2e-4b08-8ecc-2c184b0e0f3e"/>
+        <GUI_PosX value="1200"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+    </GUI_Nodes>
+  </DynaMindGUI>
+</DynaMind>

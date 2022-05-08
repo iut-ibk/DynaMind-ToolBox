@@ -1,0 +1,46 @@
+<DynaMind>
+	<Info Version="0.5"/>
+<DynaMindCore>
+	<Settings>
+		<EPSG value="32755"/>
+		<WorkingDir value="/var/folders/l6/jf279g613sdfpkctdwfdzn7c0000gn/T/dynamind"/>
+		<KeepSystems value="0"/>
+	</Settings>
+	<Nodes>
+		<RootNode>
+			<UUID value="0"/>
+		</RootNode>
+		<Node>
+			<ClassName value="DM_CreateComponent"/>
+			<UUID value="1629579648"/>
+			<Name value=""/>
+			<GroupUUID value="0"/>
+			<DebugMode value="0"/>
+			<parameter name="lead_view_name">
+				<![CDATA[city]]>
+			</parameter>
+			<parameter name="component_type">
+				<![CDATA[FACE]]>
+			</parameter>
+			<parameter name="create_empty">
+				<![CDATA[0]]>
+			</parameter>
+			<parameter name="append">
+				<![CDATA[0]]>
+			</parameter>
+		</Node>
+	</Nodes>
+	<Links>
+	</Links>
+</DynaMindCore>
+<DynaMindGUI>
+	<GUI_Nodes>
+		<GUI_Node>
+			<GUI_UUID value="1629579648"/>
+			<GUI_PosX value="0"/>
+			<GUI_PosY value="0"/>
+			<GUI_Minimized value="0"/>
+		</GUI_Node>
+	</GUI_Nodes>
+</DynaMindGUI>
+</DynaMind>

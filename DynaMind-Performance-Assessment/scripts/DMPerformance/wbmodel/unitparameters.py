@@ -93,10 +93,12 @@ class UnitParameters:
         self._climate_data = climate_data
         self.end_date = end_date
         self.soil = soil_parameters
-        
-        lot_area = 500
-        perv_area_fra = 0.2
-        roof_imp_fra = 0.5
+
+        print('soil:', self.soil)
+
+        lot_area = 1090
+        perv_area_fra = 1
+        roof_imp_fra = 0
 
         # testing get rid
         self.soil[SoilParameters_Irrigation.soil_depth] = 0.3
@@ -201,6 +203,14 @@ class UnitParameters:
 
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
 
+        print('Start Date:', self.start_date)
+        print('End Date:', self.end_date)
+        print('rain len:',len(self._climate_data['rainfall intensity']))
+        print('et length:',len(self._climate_data["potential pt data"]))
+        print('irrigation length:',len(self._climate_data["irrigation"]))
+        print("rainfall", self._climate_data["rainfall intensity"])
+
+
         print("Init CD3")
         catchment_model = cd3.CityDrain3(
             self.start_date,
@@ -237,11 +247,11 @@ class UnitParameters:
             model = catchment_w_irrigation
 
             # add the correct ET data and rainfall to the model
-            climate = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/climate_data.csv")
-            climate['Date'] = pd.to_datetime(climate['Date'],format='%d/%m/%Y')
-            climate.set_index('Date',inplace=True)
-            self._climate_data["evapotranspiration"] = [v/1000 for v in climate.loc['2021']['ET'].to_list()]
-            self._climate_data["rainfall intensity"] = [v/1000 for v in climate.loc['2021']['Rainfall'].to_list()]
+            # climate = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/climate_data.csv")
+            # climate['Date'] = pd.to_datetime(climate['Date'],format='%d/%m/%Y')
+            # climate.set_index('Date',inplace=True)
+            #self._climate_data["evapotranspiration"] = [v/1000 for v in climate.loc['2021']['ET'].to_list()]
+            #self._climate_data["rainfall intensity"] = [v/1000 for v in climate.loc['2021']['Rainfall'].to_list()]
 
         
         for p in parameters.items():
@@ -250,8 +260,12 @@ class UnitParameters:
         rain = catchment_model.add_node("SourceVector")
         rain.setDoubleVectorParameter("source", self._climate_data["rainfall intensity"])
         evapo = catchment_model.add_node("SourceVector")
-        evapo.setDoubleVectorParameter("source", self._climate_data["evapotranspiration"])
 
+        if soil_param[0] == SoilParameters.impervious_threshold:
+            evapo.setDoubleVectorParameter("source", self._climate_data["evapotranspiration"])
+        elif soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
+            evapo.setDoubleVectorParameter("source", self._climate_data["potential pt data"])
+        
         
         catchment_model.add_connection(rain, "out", model, "Rain")
         catchment_model.add_connection(evapo, "out", model, "Evapotranspiration")
@@ -260,10 +274,7 @@ class UnitParameters:
         if soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
             irrigation = catchment_model.add_node("SourceVector")
 
-            # at the moment we hardcode the irrigation and load it from the file
-
-            df = pd.read_csv("/workspaces/DynaMind-ToolBox/tests/resources/zone_9.csv")
-            irrigation.setDoubleVectorParameter("source", [i for i in df['volume'].to_list()])
+            irrigation.setDoubleVectorParameter("source", self._climate_data["irrigation"])
             catchment_model.add_connection(irrigation, "out", model, "irrigation")
 
         flow_probe = {}
@@ -278,12 +289,28 @@ class UnitParameters:
         
         for key, probe in flow_probe.items():
             
-            scaling = 1. / reporting[key]["factor"]
+            try:
+                scaling = 1. / reporting[key]["factor"]
+            except ZeroDivisionError:
+                scaling = 0
+                
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
             #self._standard_values[key] = [v for v in probe.get_state_value_as_double_vector('Flow')]
 
+        for key in self._standard_values.keys():
+            print(f'{key}: {len(self._standard_values[key])}')
+
+       
+
         self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
-        self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
+        
+
+        print('standard values:', self._standard_values[UnitFlows.rainfall])
+
+        if soil_param[0] == SoilParameters.impervious_threshold:
+            self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
+        elif soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
+            self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["potential pt data"]]
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
@@ -326,24 +353,25 @@ class UnitParameters:
 
         self._standard_values[UnitFlows.roof_evapotranspiration] = roof_evapotranspiration
 
-        print('Soil Mositure: ', [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]])
+        #print('Soil Mositure: ', [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]])
 
         for key, values in self._standard_values.items():
             logging.info(
                 f"{key} {format(sum(values), '.4f')}")
-        print('impervious_check:', sum(impervious_evapotranspiration) )
+        #print('impervious_check:', sum(impervious_evapotranspiration) )
             # logging.warning(
             #     f"{key} {[format(v, '.2f') for v in values]}")
 
         #del catchment_model
 
         # write the soil moisture, date, rainfall field capacity, wilting point, saturation to a csv file for plotting
-        df = pd.DataFrame(self._standard_values)
-        df['Soil Moisture'] = [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]]
-        df[['wilding_point', 'field_capacity', 'saturation']] = [self.soil[SoilParameters_Irrigation.wilting_point], self.soil[SoilParameters_Irrigation.field_capactiy], self.soil[SoilParameters_Irrigation.saturation]]
-        df['Date'] = climate.loc['2021'].index
+        
+        #df['Soil Moisture'] = [i/self.soil[SoilParameters_Irrigation.soil_depth] * 100 for i in self._standard_values[UnitFlows.pervious_storage]]
+        #df[['wilding_point', 'field_capacity', 'saturation']] = [self.soil[SoilParameters_Irrigation.wilting_point], self.soil[SoilParameters_Irrigation.field_capactiy], self.soil[SoilParameters_Irrigation.saturation]]
+        # df['Date'] = climate.loc['2021'].index
 
-        df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture.csv', index=False)
+        df = pd.DataFrame(self._standard_values)
+        df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture5.csv', index=False)
 
     @property
     def unit_values(self) -> {}:

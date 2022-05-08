@@ -97,9 +97,16 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.possible_infiltr_raw = self.Horton_final_cap/3600.*self.dt
         self.rain_storage_imp = 0
         self.rain_storage_perv = 0
-        self.surface_evaporation = 0
+        self.surface_evaporation_imp = 0
+        self.surface_evaporation_perv = 0
         self.condition = 'dry'
         self.current_perv_storage_level = 1 * self.initial_perv_storage_level
+        self.itteration = 1
+
+        #the previous day storage values for checking the mass balance
+        self.previous_perv_storage_level = 0
+        self.previous_rain_storage_imp = 0
+        self.previous_rain_storage_perv = 0
         
         # if the timestep is daily and irrigation is appiled, then the infiltration is overestimated
         # as irrigation only occurs for no longer than one hour
@@ -126,6 +133,12 @@ class Catchment_w_Irrigation(pycd3.Node):
 
     ############ Not Sure IF Current is needed or if def needs to be called f (C++ thing) ###############
     def f(self, current, dt):
+
+        #record the previous days, storage levels
+        self.previous_perv_storage_level = self.current_perv_storage_level
+        self.previous_rain_storage_imp = self.rain_storage_imp
+        self.previous_rain_storage_perv = self.rain_storage_perv
+
         # determine the irrigation requiements for the timestep only if it isnt going to rain
         # in this way, we look at the final soil store from the previous day and will add additional water to bring
         # the store to the target level (in this case it is field capacty but can be changed)
@@ -144,7 +157,7 @@ class Catchment_w_Irrigation(pycd3.Node):
             self.num_of_continuous_wet_days = 1
             self.condition = 'wet'
         
-        # if it did not rain yesterday and did not total, increase number of non raindays
+        # if it did not rain yesterday and did not today, increase number of non raindays
         elif (self.condition == 'dry') and (self.rain[0] + self.irrigation[0] == 0):
             self.num_of_continuous_dry_days += 1
             self.condition = 'dry'
@@ -154,6 +167,12 @@ class Catchment_w_Irrigation(pycd3.Node):
             self.num_of_continuous_wet_days += 1
             self.condition = 'wet'
 
+        
+        # #print('itteration:', self.itteration)
+        # print(self.condition)
+        # self.itteration += 1
+        # # print(self.condition)
+        # print(self.rain[0])
         # calculate the runoffs and evapotranspirations
         self.roof_runoff[0] = self.roof_runoff_loss()
         self.impervious_runoff[0] = self.impervious_runoff_loss()
@@ -166,13 +185,17 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.actual_infiltration[0] = infiltration
 
         # update soil storage due to evapotranspiration loss 
-        self.pervious_evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation/2
-        self.impervious_evapotranspiration[0] = self.surface_evaporation/2
+        self.pervious_evapotranspiration[0] = self.evapotranspiration_loss() + self.surface_evaporation_perv
+        self.impervious_evapotranspiration[0] = self.surface_evaporation_imp
 
         # update soil storage and groundwater loss
         self.groundwater_infiltration[0] = self.ground_water_loss()
 
         self.pervious_level[0] = self.current_perv_storage_level
+        
+        # write a mass balance test to ensure all the streams are adding up
+        self.mass_balance_test()
+
 
         return dt
 
@@ -186,15 +209,18 @@ class Catchment_w_Irrigation(pycd3.Node):
     def impervious_runoff_loss(self):
 
         # update the rain_storage (this is only relavent when rain occured in the previous timestep
-        # and therefore some rain is already stored in the system)    
-        self.rain_storage_imp += self.rain[0]
-        runoff = max([self.rain_storage_imp - self.initial_loss,0]) * self.area_property * self.imp_area_stormwater
-        #runoff = max([self.rain_storage_imp - self.initial_loss - self.depression_loss,0]) * self.area_property * self.imp_area_stormwater
+        # and therefore some rain is already stored in the system)
+        if self.imp_area_stormwater > 0:    
+            self.rain_storage_imp += self.rain[0]
+            runoff = max([self.rain_storage_imp - self.initial_loss,0]) * self.area_property * self.imp_area_stormwater
+            #runoff = max([self.rain_storage_imp - self.initial_loss - self.depression_loss,0]) * self.area_property * self.imp_area_stormwater
 
-        # reset the rain store to be full
-        if runoff > 0:
-            self.rain_storage_imp = self.initial_loss
-        return runoff
+            # reset the rain store to be full
+            if runoff > 0:
+                self.rain_storage_imp = self.initial_loss
+            return runoff
+        else:
+            return 0
 
     # calculates the infiltration rate for the given timestep using hortens model
     def possible_infiltration(self,conditions):
@@ -212,7 +238,8 @@ class Catchment_w_Irrigation(pycd3.Node):
 
             #if it is dry then the amount of water in the imp and perv rain storege will decrease by evaporation, this needs to be stored and added onto daily total evoptranspiration to preseve mass.
             actual_evapo = self.actual_evapotranspiration()
-            store_before = self.rain_storage_imp
+            store_before_imp = self.rain_storage_imp
+            store_before_perv = self.rain_storage_perv
             
             # self.rain_storage_imp = max([self.rain_storage_imp - actual_evapo,0])
             # self.rain_storage_perv = max([self.rain_storage_perv - actual_evapo,0])
@@ -223,39 +250,45 @@ class Catchment_w_Irrigation(pycd3.Node):
             self.rain_storage_imp -= (0.5 * self.rain_storage_imp)
             self.rain_storage_perv -= (0.5 * self.rain_storage_perv)
            
-            store_after = self.rain_storage_imp
-            self.surface_evaporation = (store_before - store_after) * self.area_property * (self.imp_area_stormwater + self.perv_area)
+            store_after_imp = self.rain_storage_imp
+            store_after_perv = self.rain_storage_perv
+            if self.imp_area_stormwater > 0:
+                self.surface_evaporation_imp = (store_before_imp - store_after_imp) * self.area_property * (self.imp_area_stormwater)
+            if self.perv_area >0:
+                self.surface_evaporation_perv = (store_before_perv - store_after_perv) * self.area_property * (self.perv_area)
 
         return self.possible_infiltr_raw
 
     # determines the volume of water infiltrating into and running off the pervious region of a lot
     def pervious_infiltration_runoff(self):
-        
-        try:
-            fraction = self.rain[0] / (self.rain[0] + self.irrigation[0])
-        except ZeroDivisionError:
-            fraction = 1
-        
-        self.rain_storage_perv += (self.rain[0] + self.irrigation[0])
-        
-        avaliable_water = max([(self.rain_storage_perv - self.initial_loss),0])
-        
-        # as possible infiltration is given on a daily timestep, this completely overestimates the infiltration of irrigation which 
-        # we know for certain lasts no more than a hour. In this case, the irrigation portion of the model will consider only 1 hours worth of infiltration 
-        if self.daily_time_step:
+        if self.perv_area > 0:
+            try:
+                fraction = self.rain[0] / (self.rain[0] + self.irrigation[0])
+            except ZeroDivisionError:
+                fraction = 1
             
-            infiltration = min([self.possible_infiltr_raw, avaliable_water * fraction]) * self.area_property * self.perv_area + min([self.possible_infiltr_raw/24, avaliable_water * (1- fraction)]) * self.area_property * self.perv_area
+            self.rain_storage_perv += (self.rain[0] + self.irrigation[0])
+            
+            avaliable_water = max([(self.rain_storage_perv - self.initial_loss),0])
+            
+            # as possible infiltration is given on a daily timestep, this completely overestimates the infiltration of irrigation which 
+            # we know for certain lasts no more than a hour. In this case, the irrigation portion of the model will consider only 1 hours worth of infiltration 
+            if self.daily_time_step:
+                
+                infiltration = min([self.possible_infiltr_raw, avaliable_water * fraction]) * self.area_property * self.perv_area + min([self.possible_infiltr_raw/24, avaliable_water * (1- fraction)]) * self.area_property * self.perv_area
 
+            else:
+                
+                infiltration = min([self.possible_infiltr_raw, avaliable_water]) * self.area_property * self.perv_area
+
+            runoff = (avaliable_water * self.area_property * self.perv_area ) - infiltration
+
+            # reset the rain store to be full
+            if infiltration > 0:
+                self.rain_storage_perv = self.initial_loss
+            return infiltration, runoff
         else:
-            
-            infiltration = min([self.possible_infiltr_raw, avaliable_water]) * self.area_property * self.perv_area
-
-        runoff = (avaliable_water * self.area_property * self.perv_area ) - infiltration
-
-        # reset the rain store to be full
-        if infiltration > 0:
-            self.rain_storage_perv = self.initial_loss
-        return infiltration, runoff
+            return 0, 0
 
 
     # calculate the actucal evapotranspiration based on the potential evapotranspiration and the soil moisture
@@ -321,8 +354,28 @@ class Catchment_w_Irrigation(pycd3.Node):
             return irrigation_depth * self.area_property * self.perv_area        
         else:
             return 0
+    
+    def mass_balance_test(self):
+
+        soil_storage = (self.current_perv_storage_level * self.area_property * self.perv_area) - (self.previous_perv_storage_level * self.area_property * self.perv_area)
+        rain_storage = (self.rain_storage_imp * self.area_property * self.imp_area_stormwater) + (self.rain_storage_perv * self.area_property * self.perv_area) - (self.previous_rain_storage_imp * self.area_property * self.imp_area_stormwater) - (self.previous_rain_storage_perv * self.area_property * self.perv_area)
+
+        rainfall = (self.rain[0] * self.area_property) + (self.irrigation[0] * self.area_property * self.perv_area)
+        evaporation = (self.pervious_evapotranspiration[0]) + (self.impervious_evapotranspiration[0])
+        runoff = (self.pervious_runoff[0]) + (self.impervious_runoff[0]) + (self.roof_runoff[0])
+        groundwater = self.groundwater_infiltration[0]
+
+        balance = rainfall - soil_storage - rain_storage - evaporation - runoff - groundwater
+        print('Balance:', round(balance,4))
+        # print('previous_perv_stroage:', round(self.previous_rain_storage_perv * self.area_property * self.perv_area,4))
+        # print('current_perv_stroage:', round(self.rain_storage_perv * self.area_property * self.perv_area,4))
+        # print('difference:', round((self.previous_rain_storage_perv * self.area_property * self.perv_area)-(self.rain_storage_perv * self.area_property * self.perv_area),4))
 
 
     def getClassName(self):
         #print "getClassName"
         return "Catchment_w_Irrigation"
+
+
+    
+

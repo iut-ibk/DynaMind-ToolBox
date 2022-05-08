@@ -1,0 +1,46 @@
+[
+  {
+    "group": "root",
+    "nodes": [
+      {
+        "name": "load_simulation",
+        "class_name": "GDALHotStarter",
+        "parameters": {
+          "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/3_Irrigation.sqlite"
+        }
+      },
+      {
+        "name": "MicroClimateAssessment",
+        "class_name": "DM_MicroClimate",
+        "parameters": {}
+      },
+      {
+        "name": "WaterBalanceTest",
+        "class_name": "UrbanMetabolismModel",
+        "parameters": {
+          "from_rain_station": "1",
+          "irrigation_module": "1"
+        }
+      },
+
+      {
+        "name": "logging",
+        "class_name": "GDALLogAttriubtes",
+        "parameters": {
+            "leadingViewName": "wb_unit_flow",
+            "attributeNames": "pervious_storage",
+            "excelFriendly": "1",
+            "printFeatureID": "1",
+            "file_name": "/workspaces/DynaMind-ToolBox/tests/FINAL/workflows/outputs/wb_ress.dat"
+        }
+    },
+      {
+        "name": "export_database",
+        "class_name": "DM_ExportSimulationDB",
+        "parameters": {
+          "file_name": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/4_FinalResults"
+        }
+      }
+    ]
+  }
+]

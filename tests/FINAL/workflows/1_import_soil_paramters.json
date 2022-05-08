@@ -1,0 +1,92 @@
+[
+  {
+    "group": "root",
+    "nodes": [
+      {
+        "name": "load_simulation",
+        "class_name": "GDALHotStarter",
+        "parameters": {
+          "hot_start_database": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/base.sqlite"
+        }
+      },{
+      "group": "add_soil",
+      "parameters": {"Runs": 24},
+      "nodes":[
+        { "name": "add_container",
+          "class_name": "DM_CreateComponent",
+          "parameters": {"lead_view_name": "wb_soil_irrigated", "component_type": "COMPONENT", "create_empty": "0", "append": "1"}
+          
+        }      
+      ]
+      },
+      {"name": "Add_Parameter_horton_inital_infiltration",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.horton_inital_infiltration",
+         "attribute_type": "Double",
+         "equation": "0.09"}},
+       {"name": "Add_Parameter_horton_final_infiltration",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.horton_final_infiltration",
+         "attribute_type": "Double",
+         "equation": "0.001"}},
+       {"name": "Add_Parameter_horton_decay_constant",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.horton_decay_constant",
+         "attribute_type": "Double",
+         "equation": "0.06"}},
+       {"name": "Add_Parameter_wilting_point",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.wilting_point",
+         "attribute_type": "Double",
+         "equation": "0.09"}},
+       {"name": "Add_Parameter_field_capactiy",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.field_capactiy",
+         "attribute_type": "Double",
+         "equation": "0.22"}},
+       {"name": "Add_Parameter_saturation",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.saturation",
+         "attribute_type": "Double",
+         "equation": "0.4"}},
+       {"name": "Add_Parameter_soil_depth",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.soil_depth",
+         "attribute_type": "Double",
+         "equation": "0.03"}},
+       {"name": "Add_Parameter_intial_soil_depth",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.intial_soil_depth",
+         "attribute_type": "Double",
+         "equation": "0.01"}},
+       {"name": "Add_Parameter_ground_water_recharge_rate",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.ground_water_recharge_rate",
+         "attribute_type": "Double",
+         "equation": "0.25"}},
+       {"name": "Add_Parameter_transpiration_capacity",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.transpiration_capacity",
+         "attribute_type": "Double",
+         "equation": "1"}},
+       {"name": "Add_Parameter_initial_loss",
+        "class_name": "GDALAttributeCalculator",
+        "parameters": {"attribute": "wb_soil_irrigated.initial_loss",
+         "attribute_type": "Double",
+         "equation": "0.001"}}
+      ,
+      {
+        "name": "MicroClimateAssessment",
+        "class_name": "DM_MicroClimate",
+        "parameters": {}
+      },
+      {
+        "name": "export_database",
+        "class_name": "DM_ExportSimulationDB",
+        "parameters": {
+          "file_name": "/workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil"
+        }
+      }
+    ]
+  }
+]

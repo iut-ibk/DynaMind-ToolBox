@@ -1,0 +1,12 @@
+"""C:\Program Files (x86)\CityDrain3\bin\cd3.exe"   C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\complex_system.xml""
+DEBUG Mi 12. Nov 14:49:09 2014| starting
+DEBUG Mi 12. Nov 14:49:09 2014| loading file model: C:\Users\Acer\Documents\GitHub\CD3Waterbalance\simulationwithpatterns\complex_system.xml
+DEBUG Mi 12. Nov 14:49:09 2014| registering builtin Nodes
+DEBUG Mi 12. Nov 14:49:09 2014| registering builtin Simulations
+WARN Mi 12. Nov 14:49:09 2014| ignoring native plugin "nodes" because it is loaded as builtin
+WARN Mi 12. Nov 14:49:09 2014| ignoring native plugin "nodes" because it is loaded as builtin
+DEBUG Mi 12. Nov 14:49:10 2014| loading simulation DefaultSimulation
+DEBUG Mi 12. Nov 14:49:10 2014| setting simulation time parameters start: 2000-Jan-01 00:00:00 stop: 2001-Jan-01 00:00:00 dt: 360
+DEBUG Mi 12. Nov 14:49:10 2014| parsing posix time  2000-Jan-01 00:00:00
+DEBUG Mi 12. Nov 14:49:10 2014| parsing posix time  
+DEBUG Mi 12. Nov 14:49:10 2014| creating a File_Reader node with id: File_Reader_0

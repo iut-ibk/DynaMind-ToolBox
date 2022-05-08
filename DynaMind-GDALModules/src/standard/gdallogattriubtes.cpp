@@ -76,10 +76,13 @@ void GDALLogAttriubtes::run()
 	this->leadingView.resetReading();
 	OGRFeature * f;
 	while (f = this->leadingView.getNextFeature()) {
+		std::stringstream ss;
+
 		if (printFeatureID) {
+			ss << this->leadingViewName << " " << (int) f->GetFID();
 			DM::Logger(DM::Error) << this->leadingViewName << " " << (int) f->GetFID();
 		}
-		std::stringstream ss;
+		
 
 		foreach (std::string attr_name, this->attributeNames) {
 			int feature_type = leadingView.getAttributeType(attr_name);

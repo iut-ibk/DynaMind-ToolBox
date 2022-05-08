@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<citydrain version="1.0">
+    <pluginpath path="nodes"/>
+    <pythonmodule module="/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py"/>
+    <pythonmodule module="/Users/christianurich/Documents/CD3Waterbalance/Module/cd3waterbalancemodules.py"/>
+    <simulation class="DefaultSimulation">
+        <time start="2000-Jan-01 00:00:00" stop="2000-Jan-02 00:00:00" dt="300">
+            <flowdefinition>
+                <flow name="Q"/>
+                <concentration name="BOD5"/>
+                <concentration name="COD"/>
+                <concentration name="Cu"/>
+                <concentration name="Ntot"/>
+            </flowdefinition>
+        </time>
+    </simulation>
+    <model>
+        <nodelist>
+            <node id="FileOut_0" class="FileOut">
+                <parameter name="out_file_name" type="string" value="Demandmodel.txt"/>
+            </node>
+            <node id="Demand_Model_0" class="Demand_Model">
+                <parameter name="Number of Householdes" type="double" value="40"/>
+                <parameter name="Number of People living in HH" type="double" value="4"/>
+                <parameter name="Unit Type: Residential or Commercial" type="string" value="Residential"/>
+            </node>
+        </nodelist>
+        <connectionlist>
+            <connection id="0">
+                <source node="Demand_Model_0" port="Outport_Bathtub_1_[l/h]"/>
+                <sink node="FileOut_0" port="in"/>
+            </connection>
+        </connectionlist>
+    </model>
+    <gui>
+        <nodeposition id="Demand_Model_0" x="-456" y="-70"/>
+        <nodeposition id="FileOut_0" x="0" y="-244"/>
+    </gui>
+</citydrain>
