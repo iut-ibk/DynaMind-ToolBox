@@ -94,22 +94,10 @@ class UnitParameters:
         self.end_date = end_date
         self.soil = soil_parameters
 
-        print('soil:', self.soil)
-
-        lot_area = 1090
-        perv_area_fra = 1
+        lot_area = 500
+        perv_area_fra = 0.2
         roof_imp_fra = 0
 
-        # testing get rid
-        self.soil[SoilParameters_Irrigation.soil_depth] = 0.3
-        self.soil[SoilParameters_Irrigation.intial_soil_depth] = 0.1
-
-        # get the rainfall out of the climate data for testing
-        # yelp = 1
-        # if yelp == 1:
-        #     df_rain = pd.DataFrame({'rainfall': self._climate_data["rainfall intensity"]})
-        #     df_rain.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/rainfall.csv')
-        #     yelp = 2
 
         # get the keys of the soil parameters of the model. These will be different depending on what model is being used and thus can be
         # used to identify each model
@@ -198,17 +186,11 @@ class UnitParameters:
             reporting[UnitFlows.pervious_evapotranspiration] = {"port": "pervious_evapotranspiration", "factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.pervious_evapotranspiration_irrigated] = {"port": "pervious_evapotranspiration", "factor": (lot_area * (perv_area_fra))}
             reporting[UnitFlows.impervious_evapotranspiration] = {"port": "impervious_evapotranspiration", "factor": (lot_area * (1 - perv_area_fra - roof_imp_fra))}
+            reporting['Perv_Rainstorage'] = {"port": "Perv_Rainstorage", "factor": (lot_area * (perv_area_fra))}
 
         #set up the city model and register the python plugins
 
         flow = {'Q': cd3.Flow.flow, 'N': cd3.Flow.concentration}
-
-        print('Start Date:', self.start_date)
-        print('End Date:', self.end_date)
-        print('rain len:',len(self._climate_data['rainfall intensity']))
-        print('et length:',len(self._climate_data["potential pt data"]))
-        print('irrigation length:',len(self._climate_data["irrigation"]))
-        print("rainfall", self._climate_data["rainfall intensity"])
 
 
         print("Init CD3")
@@ -293,24 +275,18 @@ class UnitParameters:
                 scaling = 1. / reporting[key]["factor"]
             except ZeroDivisionError:
                 scaling = 0
-                
+
             self._standard_values[key] = [v * scaling for v in probe.get_state_value_as_double_vector('Flow')]
+            #for testing to get the full unscaled values
             #self._standard_values[key] = [v for v in probe.get_state_value_as_double_vector('Flow')]
 
-        for key in self._standard_values.keys():
-            print(f'{key}: {len(self._standard_values[key])}')
-
-       
-
-        self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"]]
+        self._standard_values[UnitFlows.rainfall] = [v for v in self._climate_data["rainfall intensity"][:-1]]
         
-
-        print('standard values:', self._standard_values[UnitFlows.rainfall])
 
         if soil_param[0] == SoilParameters.impervious_threshold:
             self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["evapotranspiration"]]
         elif soil_param[0] == SoilParameters_Irrigation.horton_inital_infiltration:
-            self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["potential pt data"]]
+            self._standard_values[UnitFlows.evapotranspiration] = [v for v in self._climate_data["potential pt data"][:-1]]
 
         pervious_evapotranspiration_irrigated = []
         impervious_evapotranspiration = []
@@ -370,8 +346,8 @@ class UnitParameters:
         #df[['wilding_point', 'field_capacity', 'saturation']] = [self.soil[SoilParameters_Irrigation.wilting_point], self.soil[SoilParameters_Irrigation.field_capactiy], self.soil[SoilParameters_Irrigation.saturation]]
         # df['Date'] = climate.loc['2021'].index
 
-        df = pd.DataFrame(self._standard_values)
-        df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture5.csv', index=False)
+        # df = pd.DataFrame(self._standard_values)
+        # df.to_csv('/workspaces/DynaMind-ToolBox/tests/resources/soil_moisture5.csv', index=False)
 
     @property
     def unit_values(self) -> {}:

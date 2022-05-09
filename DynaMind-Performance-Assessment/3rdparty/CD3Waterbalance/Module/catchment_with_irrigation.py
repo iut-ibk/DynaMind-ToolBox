@@ -25,6 +25,7 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.irrigation_required = pycd3.Flow()
         self.poss_infiltration = pycd3.Flow()
         self.pervious_level = pycd3.Flow()
+        self.Perv_Rainstorage = pycd3.Flow()
         
 
         # in ports
@@ -45,6 +46,8 @@ class Catchment_w_Irrigation(pycd3.Node):
 
         self.addOutPort("outdoor_demand", self.irrigation_required) # not sure about this one just yet
         self.addOutPort('pervious_storage', self.pervious_level)
+        self.addOutPort('Perv_Rainstorage', self.Perv_Rainstorage)
+
 
         # parameters to be set by dynamind
         self.area_property = pycd3.Double(1000)
@@ -139,6 +142,10 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.previous_rain_storage_imp = self.rain_storage_imp
         self.previous_rain_storage_perv = self.rain_storage_perv
 
+        # on rainy days, there is no surface evaporation and this needs to be reset to 0
+        self.surface_evaporation_perv = 0
+        self.surface_evaporation_imp = 0
+
         # determine the irrigation requiements for the timestep only if it isnt going to rain
         # in this way, we look at the final soil store from the previous day and will add additional water to bring
         # the store to the target level (in this case it is field capacty but can be changed)
@@ -167,12 +174,6 @@ class Catchment_w_Irrigation(pycd3.Node):
             self.num_of_continuous_wet_days += 1
             self.condition = 'wet'
 
-        
-        # #print('itteration:', self.itteration)
-        # print(self.condition)
-        # self.itteration += 1
-        # # print(self.condition)
-        # print(self.rain[0])
         # calculate the runoffs and evapotranspirations
         self.roof_runoff[0] = self.roof_runoff_loss()
         self.impervious_runoff[0] = self.impervious_runoff_loss()
@@ -192,6 +193,7 @@ class Catchment_w_Irrigation(pycd3.Node):
         self.groundwater_infiltration[0] = self.ground_water_loss()
 
         self.pervious_level[0] = self.current_perv_storage_level
+        self.Perv_Rainstorage[0] = self.rain_storage_perv
         
         # write a mass balance test to ensure all the streams are adding up
         self.mass_balance_test()
@@ -254,7 +256,7 @@ class Catchment_w_Irrigation(pycd3.Node):
             store_after_perv = self.rain_storage_perv
             if self.imp_area_stormwater > 0:
                 self.surface_evaporation_imp = (store_before_imp - store_after_imp) * self.area_property * (self.imp_area_stormwater)
-            if self.perv_area >0:
+            if self.perv_area > 0:
                 self.surface_evaporation_perv = (store_before_perv - store_after_perv) * self.area_property * (self.perv_area)
 
         return self.possible_infiltr_raw
@@ -329,7 +331,6 @@ class Catchment_w_Irrigation(pycd3.Node):
             not_et = (self.perv_soil_storage_capacity * self.wilting_point) - self.current_perv_storage_level
             self.current_perv_storage_level += not_et
             actual_evapo -= not_et
-        #print('Evapo',actual_evapo * self.area_property * self.perv_area)
         return actual_evapo * self.area_property * self.perv_area 
 
 
@@ -366,10 +367,10 @@ class Catchment_w_Irrigation(pycd3.Node):
         groundwater = self.groundwater_infiltration[0]
 
         balance = rainfall - soil_storage - rain_storage - evaporation - runoff - groundwater
-        print('Balance:', round(balance,4))
-        # print('previous_perv_stroage:', round(self.previous_rain_storage_perv * self.area_property * self.perv_area,4))
-        # print('current_perv_stroage:', round(self.rain_storage_perv * self.area_property * self.perv_area,4))
-        # print('difference:', round((self.previous_rain_storage_perv * self.area_property * self.perv_area)-(self.rain_storage_perv * self.area_property * self.perv_area),4))
+        print(f'{self.itteration} Balance:', round(balance,4))
+        #print('rainfall:',rainfall,'soil_storage:',soil_storage,'rain_storage:',rain_storage,'evaporation:',evaporation,'runoff:',runoff,'groundwater:',groundwater, 'level:',(self.rain_storage_perv * self.area_property * self.perv_area))
+        self.itteration += 1
+
 
 
     def getClassName(self):

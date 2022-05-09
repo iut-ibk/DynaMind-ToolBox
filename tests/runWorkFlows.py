@@ -41,7 +41,7 @@ def run_file(name, simulation):
 
 
 workflow = ["1_import_soil_paramters", "2_import_et", "3_import_irrigation", "4_basic"]
-workflow = [ "4_basic"]
+#workflow = [ "4_basic"]
 
 for w in workflow:
     print("running workflow: ", w)

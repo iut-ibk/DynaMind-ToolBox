@@ -1,90 +1,90 @@
-INFO	 Fri May 6 07:06:05 2022| Pythonthreads enabled
-INFO	 Fri May 6 07:06:05 2022| Add Python Path  
-INFO	 Fri May 6 07:06:05 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:05 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:05 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance
-INFO	 Fri May 6 07:06:05 2022| Register  DMPerformance
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/Drainage
-INFO	 Fri May 6 07:06:06 2022| Register  Drainage
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALModules
-INFO	 Fri May 6 07:06:06 2022| Register  GDALModules
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:06 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALWebModules
-INFO	 Fri May 6 07:06:06 2022| Register  GDALWebModules
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/TestModules
-INFO	 Fri May 6 07:06:07 2022| Register  TestModules
-INFO	 Fri May 6 07:06:07 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/Modules
-INFO	 Fri May 6 07:06:07 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libdynamind-performance-assessment.so
-INFO	 Fri May 6 07:06:07 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_drainage_modules.so
-INFO	 Fri May 6 07:06:07 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_standard_modules.so
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  
-INFO	 Fri May 6 07:06:07 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/libdynamind-testmodules.so
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pycd3
-INFO	 Fri May 6 07:06:07 2022| Register  pycd3
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmextensions
-INFO	 Fri May 6 07:06:07 2022| Register  pydmextensions
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmtoolbox
-INFO	 Fri May 6 07:06:07 2022| Register  pydmtoolbox
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydynamind
-INFO	 Fri May 6 07:06:07 2022| Register  pydynamind
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
-INFO	 Fri May 6 07:06:07 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/start
-INFO	 Fri May 6 07:06:07 2022| Register  start
-INFO	 Fri May 6 07:06:07 2022| >> loading simulation file ' /workspaces/DynaMind-ToolBox/tests/FINAL/workflows/compiled/2_import_et.xml '
-INFO	 Fri May 6 07:06:07 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil.sqlite '
-INFO	 Fri May 6 07:06:07 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil.sqlite '
-INFO	 Fri May 6 07:06:07 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET '
-INFO	 Fri May 6 07:06:07 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET '
-INFO	 Fri May 6 07:06:08 2022| >> checking stream
-INFO	 Fri May 6 07:06:08 2022| >> Check Streams
-INFO	 Fri May 6 07:06:08 2022| >> checking stream finished successfully
-INFO	 Fri May 6 07:06:08 2022| >> loading simulation file finished
-INFO	 Fri May 6 07:06:08 2022| >>>> starting simulation
-INFO	 Fri May 6 07:06:08 2022| >> Reset Simulation
-INFO	 Fri May 6 07:06:08 2022| >> Check Streams
-INFO	 Fri May 6 07:06:08 2022| >> checking simulation
-INFO	 Fri May 6 07:06:08 2022| >> Check Streams
-INFO	 Fri May 6 07:06:08 2022| >> checking simulation succeeded (took  9 ms)
-INFO	 Fri May 6 07:06:08 2022| >> starting simulation
-INFO	 Fri May 6 07:06:08 2022| running module ' GDALHotStarter   load_simulation '
-INFO	 Fri May 6 07:06:29 2022| module ' load_simulation ' executed successfully (took  20457 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' DM_CreateComponent   add_container '
-INFO	 Fri May 6 07:06:29 2022| module ' add_container ' executed successfully (took  11 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALAttributeCalculator   Add Parameter - end '
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - end ' executed successfully (took  14 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALAttributeCalculator   Add Parameter - start '
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - start ' executed successfully (took  10 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALAttributeCalculator   Add Parameter - timestep '
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - timestep ' executed successfully (took  10 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALAttributeCalculator   Add Parameter - data '
-INFO	 Fri May 6 07:06:29 2022| Define Array
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - data ' executed successfully (took  12 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' DM_SQliteCalculator   Add Parameter - stationid '
-ERROR	 Fri May 6 07:06:29 2022| SQL error:  /usr/local/lib/mod_spatialite: cannot open shared object file: No such file or directory
-INFO	 Fri May 6 07:06:29 2022| UPDATE timeseries SET station_id = (SELECT max(ogc_fid) FROM station) WHERE type is null
-INFO	 Fri May 6 07:06:29 2022| End Syncronise DB
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - stationid ' executed successfully (took  77 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALAttributeCalculator   Add Parameter - type '
-INFO	 Fri May 6 07:06:29 2022| module ' Add Parameter - type ' executed successfully (took  17 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' GDALLogAttriubtes   logging '
-ERROR	 Fri May 6 07:06:29 2022| timeseries   1
-ERROR	 Fri May 6 07:06:29 2022| 	 data 	 [ 0 0 0 0 0 0 0.8 0 0 1.4 0 0 6.4 0 0 1.4 0 0 0 0 0 0 0 0.4 0.2 2.4 1.2 2 0 0 3 0.2 0 0 0 0 0 0 0 0 0 0 4.8 1.2 2.4 0 0 0 0 0 0 0 0 0 0 0 8.8 0 0 0 0 0 0 4.4 2.8 13.6 17.2 12.6 0.8 23.2 0.2 0 2.2 1 0 0 0 0 2.8 31.4 30.4 11.2 4 0 0 0 0 0 0 0 0 3.2 0 0 9.8 8.2 0.2 0 0 0 0 0 0 0 0 2 6.8 0 0 0.2 0 0 0 0 0 0.6 6 0.8 0 0 0 2 4.8 3.4 8.2 18 0 0 0 3.2 0.6 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0.2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 0 0 0.4 0 0 0 2 2 0 2.4 0 0 0 0 0 0.4 0 16 0.4 0 2.4 3.4 6 0 1.8 0 0 0 0 0 0 0 0 0 2 0 0.8 0 0 0 0 0 0 2 0 9 0 0 0 0 1 0.2 0 0 0.6 0 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.4 0 8.6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0 0 1.4 0 10 6.8 0.2 0 0 0 0 0 0 0 0 0 11.6 3.4 0 0 0 12.6 4.4 0 0 0 7.5 0.6 0 0 0 0 10.5 0 0 0 0 0 0 3.2 1.4 4 8.8 0 0 0.8 0 0.4 0 1.6 0 5.6 4.6 68 9.6 19 0.8 7.2 1 1.8 1.8 0 0 0.4 0 7.8 0 0.2 8 10.6 3.4 0 0 0 0.4 2.2 14 0 0 0 0 4 3 0 0 0 0 1.2 0 0 0 0 0 0 0 0 0 0 0 0 0]
-ERROR	 Fri May 6 07:06:29 2022| timeseries   2
-ERROR	 Fri May 6 07:06:29 2022| 	 data 	 [ 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.74194]
-ERROR	 Fri May 6 07:06:29 2022| timeseries   3
-ERROR	 Fri May 6 07:06:29 2022| 	 data 	 [ 3 4 3 4 4 5 3 5 3 3 3 5 4 5 5 3 4 4 4 4 3 4 3 3 4 5 3 5 3 4 4 5 3 4 4 4 3 5 3 5 5 3 5 3 3 3 4 4 5 3 3 4 3 4 5 5 3 4 4 4 4 5 5 5 3 5 4 3 4 5 3 3 5 3 3 3 3 3 3 5 3 5 4 4 4 3 4 4 4 3 4 5 3 4 5 3 5 3 4 5 5 4 3 4 4 3 5 5 5 5 4 5 5 5 5 5 3 4 5 5 4 5 4 3 5 5 3 5 3 3 5 3 5 5 5 3 3 3 4 5 3 4 5 5 5 4 3 3 3 3 5 5 3 3 3 4 5 3 3 4 3 5 4 4 4 3 3 3 4 4 5 4 3 3 4 5 4 4 4 3 3 3 4 5 4 4 3 3 4 5 3 5 5 4 4 4 5 3 3 4 3 5 5 3 5 5 5 4 4 3 3 3 5 5 4 4 3 3 5 4 4 5 3 4 4 4 4 4 5 5 5 3 4 5 4 4 4 4 3 5 5 3 4 4 3 3 3 5 4 5 4 5 3 5 3 4 4 4 3 3 3 3 3 3 4 3 5 5 4 4 4 5 4 4 3 4 5 4 4 3 3 4 4 5 4 5 5 4 5 5 3 4 4 4 5 4 4 4 5 3 4 3 4 4 5 3 5 3 3 5 3 5 3 3 3 3 4 5 3 3 4 5 4 3 3 3 3 3 4 3 5 5 5 3 3 5 3 5 5 3 4 4 4 3 3 4 3 3 4 5 5 3 5 4 4 5 4 5 5 4 5 3 3 5 4 4 5 5]
-INFO	 Fri May 6 07:06:29 2022| module ' logging ' executed successfully (took  15 ms)
-INFO	 Fri May 6 07:06:29 2022| running module ' DM_ExportSimulationDB   export_database '
-INFO	 Fri May 6 07:06:29 2022| Copy file to  /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET.sqlite
-INFO	 Fri May 6 07:06:29 2022| module ' export_database ' executed successfully (took  81 ms)
-INFO	 Fri May 6 07:06:29 2022| >> finished simulation (took  20715 ms)
-INFO	 Fri May 6 07:06:29 2022| >>>> finished simulation at an average of  20725 +- 0 ms
-INFO	 Fri May 6 07:06:29 2022| >> Reset Simulation
-INFO	 Fri May 6 07:06:29 2022| >> Check Streams
+INFO	 Mon May 9 02:36:16 2022| Pythonthreads enabled
+INFO	 Mon May 9 02:36:16 2022| Add Python Path  
+INFO	 Mon May 9 02:36:16 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:16 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:16 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/DMPerformance
+INFO	 Mon May 9 02:36:16 2022| Register  DMPerformance
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/Drainage
+INFO	 Mon May 9 02:36:17 2022| Register  Drainage
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALModules
+INFO	 Mon May 9 02:36:17 2022| Register  GDALModules
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:17 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/GDALWebModules
+INFO	 Mon May 9 02:36:17 2022| Register  GDALWebModules
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/PythonModules/scripts/TestModules
+INFO	 Mon May 9 02:36:18 2022| Register  TestModules
+INFO	 Mon May 9 02:36:18 2022| Load modules from:  /workspaces/DynaMind-ToolBox/build/output/Modules
+INFO	 Mon May 9 02:36:18 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libdynamind-performance-assessment.so
+INFO	 Mon May 9 02:36:18 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_drainage_modules.so
+INFO	 Mon May 9 02:36:18 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/Modules/libgdal_standard_modules.so
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  
+INFO	 Mon May 9 02:36:18 2022| successfully loaded native module  /workspaces/DynaMind-ToolBox/build/output/libdynamind-testmodules.so
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pycd3
+INFO	 Mon May 9 02:36:18 2022| Register  pycd3
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmextensions
+INFO	 Mon May 9 02:36:18 2022| Register  pydmextensions
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydmtoolbox
+INFO	 Mon May 9 02:36:18 2022| Register  pydmtoolbox
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/pydynamind
+INFO	 Mon May 9 02:36:18 2022| Register  pydynamind
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output
+INFO	 Mon May 9 02:36:18 2022| Add Python Path  /workspaces/DynaMind-ToolBox/build/output/start
+INFO	 Mon May 9 02:36:18 2022| Register  start
+INFO	 Mon May 9 02:36:18 2022| >> loading simulation file ' /workspaces/DynaMind-ToolBox/tests/FINAL/workflows/compiled/2_import_et.xml '
+INFO	 Mon May 9 02:36:18 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil.sqlite '
+INFO	 Mon May 9 02:36:18 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil.sqlite '
+INFO	 Mon May 9 02:36:18 2022| converted relative path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET '
+INFO	 Mon May 9 02:36:18 2022| to absolute path ' /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET '
+INFO	 Mon May 9 02:36:18 2022| >> checking stream
+INFO	 Mon May 9 02:36:18 2022| >> Check Streams
+INFO	 Mon May 9 02:36:19 2022| >> checking stream finished successfully
+INFO	 Mon May 9 02:36:19 2022| >> loading simulation file finished
+INFO	 Mon May 9 02:36:19 2022| >>>> starting simulation
+INFO	 Mon May 9 02:36:19 2022| >> Reset Simulation
+INFO	 Mon May 9 02:36:19 2022| >> Check Streams
+INFO	 Mon May 9 02:36:19 2022| >> checking simulation
+INFO	 Mon May 9 02:36:19 2022| >> Check Streams
+INFO	 Mon May 9 02:36:19 2022| >> checking simulation succeeded (took  10 ms)
+INFO	 Mon May 9 02:36:19 2022| >> starting simulation
+INFO	 Mon May 9 02:36:19 2022| running module ' GDALHotStarter   load_simulation '
+INFO	 Mon May 9 02:36:39 2022| module ' load_simulation ' executed successfully (took  19904 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' DM_CreateComponent   add_container '
+INFO	 Mon May 9 02:36:39 2022| module ' add_container ' executed successfully (took  12 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALAttributeCalculator   Add Parameter - end '
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - end ' executed successfully (took  14 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALAttributeCalculator   Add Parameter - start '
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - start ' executed successfully (took  10 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALAttributeCalculator   Add Parameter - timestep '
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - timestep ' executed successfully (took  11 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALAttributeCalculator   Add Parameter - data '
+INFO	 Mon May 9 02:36:39 2022| Define Array
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - data ' executed successfully (took  12 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' DM_SQliteCalculator   Add Parameter - stationid '
+ERROR	 Mon May 9 02:36:39 2022| SQL error:  /usr/local/lib/mod_spatialite: cannot open shared object file: No such file or directory
+INFO	 Mon May 9 02:36:39 2022| UPDATE timeseries SET station_id = (SELECT max(ogc_fid) FROM station) WHERE type is null
+INFO	 Mon May 9 02:36:39 2022| End Syncronise DB
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - stationid ' executed successfully (took  77 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALAttributeCalculator   Add Parameter - type '
+INFO	 Mon May 9 02:36:39 2022| module ' Add Parameter - type ' executed successfully (took  16 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' GDALLogAttriubtes   logging '
+ERROR	 Mon May 9 02:36:39 2022| timeseries   1
+ERROR	 Mon May 9 02:36:39 2022| 	 data 	 [ 0 0 0 0 0 0 0.8 0 0 1.4 0 0 6.4 0 0 1.4 0 0 0 0 0 0 0 0.4 0.2 2.4 1.2 2 0 0 3 0.2 0 0 0 0 0 0 0 0 0 0 4.8 1.2 2.4 0 0 0 0 0 0 0 0 0 0 0 8.8 0 0 0 0 0 0 4.4 2.8 13.6 17.2 12.6 0.8 23.2 0.2 0 2.2 1 0 0 0 0 2.8 31.4 30.4 11.2 4 0 0 0 0 0 0 0 0 3.2 0 0 9.8 8.2 0.2 0 0 0 0 0 0 0 0 2 6.8 0 0 0.2 0 0 0 0 0 0.6 6 0.8 0 0 0 2 4.8 3.4 8.2 18 0 0 0 3.2 0.6 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0.2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 0 0 0.4 0 0 0 2 2 0 2.4 0 0 0 0 0 0.4 0 16 0.4 0 2.4 3.4 6 0 1.8 0 0 0 0 0 0 0 0 0 2 0 0.8 0 0 0 0 0 0 2 0 9 0 0 0 0 1 0.2 0 0 0.6 0 0 0 0 0 0 1 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.4 0 8.6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0 0 1.4 0 10 6.8 0.2 0 0 0 0 0 0 0 0 0 11.6 3.4 0 0 0 12.6 4.4 0 0 0 7.5 0.6 0 0 0 0 10.5 0 0 0 0 0 0 3.2 1.4 4 8.8 0 0 0.8 0 0.4 0 1.6 0 5.6 4.6 68 9.6 19 0.8 7.2 1 1.8 1.8 0 0 0.4 0 7.8 0 0.2 8 10.6 3.4 0 0 0 0.4 2.2 14 0 0 0 0 4 3 0 0 0 0 1.2 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ERROR	 Mon May 9 02:36:39 2022| timeseries   2
+ERROR	 Mon May 9 02:36:39 2022| 	 data 	 [ 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 2.74194 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 3.58621 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.48387 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 2.2 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 1.09677 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.766667 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.774194 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.677419 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.633333 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 0.870968 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.1 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.77419 2.74194]
+ERROR	 Mon May 9 02:36:39 2022| timeseries   3
+ERROR	 Mon May 9 02:36:39 2022| 	 data 	 [ 3 4 3 4 4 5 3 5 3 3 3 5 4 5 5 3 4 4 4 4 3 4 3 3 4 5 3 5 3 4 4 5 3 4 4 4 3 5 3 5 5 3 5 3 3 3 4 4 5 3 3 4 3 4 5 5 3 4 4 4 4 5 5 5 3 5 4 3 4 5 3 3 5 3 3 3 3 3 3 5 3 5 4 4 4 3 4 4 4 3 4 5 3 4 5 3 5 3 4 5 5 4 3 4 4 3 5 5 5 5 4 5 5 5 5 5 3 4 5 5 4 5 4 3 5 5 3 5 3 3 5 3 5 5 5 3 3 3 4 5 3 4 5 5 5 4 3 3 3 3 5 5 3 3 3 4 5 3 3 4 3 5 4 4 4 3 3 3 4 4 5 4 3 3 4 5 4 4 4 3 3 3 4 5 4 4 3 3 4 5 3 5 5 4 4 4 5 3 3 4 3 5 5 3 5 5 5 4 4 3 3 3 5 5 4 4 3 3 5 4 4 5 3 4 4 4 4 4 5 5 5 3 4 5 4 4 4 4 3 5 5 3 4 4 3 3 3 5 4 5 4 5 3 5 3 4 4 4 3 3 3 3 3 3 4 3 5 5 4 4 4 5 4 4 3 4 5 4 4 3 3 4 4 5 4 5 5 4 5 5 3 4 4 4 5 4 4 4 5 3 4 3 4 4 5 3 5 3 3 5 3 5 3 3 3 3 4 5 3 3 4 5 4 3 3 3 3 3 4 3 5 5 5 3 3 5 3 5 5 3 4 4 4 3 3 4 3 3 4 5 5 3 5 4 4 5 4 5 5 4 5 3 3 5 4 4 5 5]
+INFO	 Mon May 9 02:36:39 2022| module ' logging ' executed successfully (took  12 ms)
+INFO	 Mon May 9 02:36:39 2022| running module ' DM_ExportSimulationDB   export_database '
+INFO	 Mon May 9 02:36:39 2022| Copy file to  /workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET.sqlite
+INFO	 Mon May 9 02:36:39 2022| module ' export_database ' executed successfully (took  81 ms)
+INFO	 Mon May 9 02:36:39 2022| >> finished simulation (took  20160 ms)
+INFO	 Mon May 9 02:36:39 2022| >>>> finished simulation at an average of  20171 +- 0 ms
+INFO	 Mon May 9 02:36:39 2022| >> Reset Simulation
+INFO	 Mon May 9 02:36:39 2022| >> Check Streams

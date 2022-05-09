@@ -102,12 +102,10 @@ class UrbanMetabolismModel(Module):
         
         # depending on the catchment model to be used load in the correct soil moisture data
         if self.irrigation_module == 1:
-            print('I AM HERE')
             self.wb_soil_parameters = ViewContainer('wb_soil_irrigated', DM.COMPONENT, DM.READ)
             for s in SoilParameters_Irrigation:
                 self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
         else:
-            print('I DONT WANT YOU TO Be HERE')
             self.wb_soil_parameters = ViewContainer('wb_soil', DM.COMPONENT, DM.READ)
             for s in SoilParameters:
                 self.wb_soil_parameters.addAttribute(str(s).split(".")[1], DM.Attribute.DOUBLE, DM.READ)
@@ -445,10 +443,16 @@ class UrbanMetabolismModel(Module):
                 vec = vec[2:]
                 station["potential pt data"] = vec
 
+            if "irrigation" in station:
+                vec = station["irrigation"]
+                # remove first two elements
+                vec = vec[2:]
+                station["irrigation"] = vec
+
         # @TODO make sure data streams are the same length
                 
 
-
+        print(stations)
 
         return stations, (start_date, end_date)
 
