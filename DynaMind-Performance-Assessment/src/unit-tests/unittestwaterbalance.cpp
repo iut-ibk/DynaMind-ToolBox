@@ -37,14 +37,14 @@ TEST_F(UnitTestWaterBalance,testEnviroment)
 {
 	ASSERT_TRUE(sim!=0);
 
-	WaterBalanceHouseHold wb;
-	wb.setEvapofile("./Data/Raindata/melb_eva_24.ixx");
-	wb.setRainfile("./Data/Raindata/melb_rain_24.ixx");
-	wb.initmodel();
-	wb.calculateRunoffAndDemand(3000,.25, .5, 4);
-	std::vector<double> sw = wb.getStormwater_runoff();
-	std::vector<double> non_p=  wb.getNon_potable_demand();
-	wb.createTankOption(0, 2.5, sw,non_p);
+	// WaterBalanceHouseHold wb;
+	// wb.setEvapofile("./Data/Raindata/melb_eva_24.ixx");
+	// wb.setRainfile("./Data/Raindata/melb_rain_24.ixx");
+	// wb.initmodel();
+	// wb.calculateRunoffAndDemand(3000,.25, .5, 4);
+	// std::vector<double> sw = wb.getStormwater_runoff();
+	// std::vector<double> non_p=  wb.getNon_potable_demand();
+	// wb.createTankOption(0, 2.5, sw,non_p);
 
 
 

@@ -1,0 +1,187 @@
+"""
+@file
+@author  Martin Schoepf <martin.schoepf@gmail.com>
+@version 1.0
+@section LICENSE
+
+This file is part of DynaMind
+Copyright (C) 2014  Martin Schoepf
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+"""
+
+from osgeo import ogr
+from pydynamind import *
+from geoserverpublish import *
+import time
+
+
+class GDALPublishPostgisLayerInGeoserver(Module):
+    display_name = "Publish PostGis to Geoserver"
+    group_name = "Data Import and Export"
+
+    def __init__(self):
+        Module.__init__(self)
+        self.setIsGDALModule(True)
+        
+        ### Postgis configuration
+        self.createParameter("postGisUrl", STRING, "Url of the PostGis")
+        self.postGisUrl = "localhost"
+
+        self.createParameter("postGisUsername", STRING, "Url of the PostGis")
+        self.postGisUsername = "postgres"
+
+        self.createParameter("postGisPassword", STRING, "Url of the PostGis")
+        self.postGisPassword = "iut0703"
+
+        self.createParameter("postGisDB", STRING, "Db to use")
+        self.postGisDB="test"
+
+        self.createParameter("postGisTable", STRING, "Table to be used inside the DB")
+        self.postGisTable="test"
+
+
+        ### Geoserver configuration
+        self.createParameter("geoserverUrl", STRING, "Url  f the geoserver")
+        self.geoserverUrl = "http://web01-c815.uibk.ac.at:8080/geoserver/"
+
+        self.createParameter("geoserverUserName", STRING, "User for the geoserver")
+        self.geoserverUserName = "admin"
+
+        self.createParameter("geoserverPassword", STRING, "Password for the supplied geoserver use")
+        self.geoserverPassword = "iut07030201"
+
+        self.createParameter("workspace", STRING, "Workspace to be used in the geoserver")
+        self.workspace="crc"
+
+        self.createParameter("geoserverDataStoreName", STRING, "Name of the Datastore to be used in the geoserver")
+        self.geoserverDataStoreName="postgis"
+
+        self.createParameter("EPSG", STRING, "EPSG code used for layer publish")
+        self.EPSG='EPSG:3857'
+
+        ### Use style to publish layer
+        self.createParameter("styleUsed", STRING, "Style to be used to publish the Layer. \
+            If the style is in a workspace use the following syntax: workspace:styleName ")
+        self.styleUsed='standard'        
+
+        
+        self.dummy = ViewContainer("dummy", SUBSYSTEM, MODIFY)
+
+        
+        self.createParameter("step", INT)
+        self.step = 1 #export every x step
+
+        self.createParameter("scenario_id_as_prefix", BOOL)
+        self.scenario_id_as_prefix = False
+        
+    
+    def init(self):
+        log("Run Geoserver Init", Standard)
+
+
+
+        views = []
+        views.append(self.dummy)
+
+
+        if self.scenario_id_as_prefix:
+            self.city = ViewContainer("city", COMPONENT, READ)
+            self.city.addAttribute("scenario_id", Attribute.INT, READ)
+            views.append(self.city)
+        self.registerViewContainers(views)
+
+
+
+    def run(self):
+        connected = False
+        attempts = 0
+        while not connected and attempts < 10:
+            attempts+=1
+            try:
+                self.geoHelper = GeoserverHelper(self.geoserverUrl,self.geoserverUserName,self.geoserverPassword,
+                                             self.geoserverWorkSpace)
+                log("Connection to geoserver established", Standard)
+                connected = True
+            except:
+                e = sys.exc_info()[0]
+                log(str(e), Error)
+                log("Connection to geoserver failed", Error)
+                log("Retry to connect", Standard)
+                time.sleep((attempts-1) * 10)
+
+
+        if not connected:
+            log("Ultimately failed", Error)
+            return
+
+        if self.scenario_id_as_prefix:
+            self.city.reset_reading()
+            for c in self.city:
+                scenario_id = c.GetFieldAsInteger("scenario_id")
+
+        # only exort on x step
+        if self.get_group_counter() != -1 and (self.get_group_counter()  % self.step != 0):
+            log("only export on x step", Standard)
+            return
+
+        #indication of the postgis-connection is valid
+        ret = True
+        try:
+            ret = self.geoHelper.createPostGISDataStore(self.geoserverDataStoreName, self.postGisPassword,
+                                              self.postGisUsername, self.postGisUrl, self.postGisDB,
+                                              self.workspace)
+        except FailedRequestError as e:
+            log(str(e),Warning)
+
+        if ret == False:
+            log("Could not connect to PostGIS server with the supplied parameters.",Error)
+            self.setStatus(MOD_EXECUTION_ERROR)
+            return
+
+        try:
+            name_on_server = ""
+            #check for counter:  "_" + str(self.get_group_counter() for postGisTable #if self.counter is set
+            if self.scenario_id_as_prefix:
+                self.city.reset_reading()
+                for c in self.city:
+                    name_on_server+=str(scenario_id) + "_"
+
+            if self.get_group_counter() != -1:
+                name_on_server += self.postGisTable+"_"+str(self.get_group_counter())
+
+            else:
+                name_on_server += self.postGisTable
+
+            feature_type = self.geoHelper.publishPostGISLayer(name_on_server, self.geoserverDataStoreName, self.EPSG)
+
+            if not feature_type:
+                log("Error uploading data", Error)
+            else:
+                log("Successfully published data " + str(feature_type), Standard)
+
+        except FailedRequestError as e:
+            log(str(e),Error)
+            self.setStatus(MOD_EXECUTION_ERROR)
+            return
+
+        if self.styleUsed != 'standard':
+            ret = self.geoHelper.setDefaultStyleForLayer(self.postGisTable, self.styleUsed)
+            if ret != 0:
+                log("Could not set the supplied style, standard style used.",Warning)
+
+        if self.scenario_id_as_prefix:
+            self.city.finalise()
+        return

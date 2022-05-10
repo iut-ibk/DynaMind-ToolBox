@@ -24,7 +24,7 @@ class UrbanMetabolismModel(Module):
 
         self.createParameter("from_rain_station", DM.BOOL)
         self.createParameter('irrigation_module', DM.BOOL)
-        self.from_rain_station = False
+        self.from_rain_station = True
 
         # Used to turn new catchment model on and off
         self.irrigation_module = False
@@ -172,7 +172,6 @@ class UrbanMetabolismModel(Module):
                 soil[p] = s.GetFieldAsDouble(str(p).split(".")[1])
             soils[soil_id] = soil
 
-        print('Soils', soils)
 
         demand_profile = {}
         for s in self.wb_demand_profile:
@@ -301,7 +300,6 @@ class UrbanMetabolismModel(Module):
 
 
         stations, dates = self._load_station()
-
 
         wb = WaterCycleModel(lots=lots,
                              sub_catchments=sub_catchments,
@@ -433,6 +431,27 @@ class UrbanMetabolismModel(Module):
                 start_date = datetime.strptime(t.GetFieldAsString("start"), '%d.%m.%Y %H:%M:%S').strftime('%Y-%b-%d %H:%M:%S')
                 end_date = datetime.strptime(t.GetFieldAsString("end"), '%d.%m.%Y %H:%M:%S').strftime('%Y-%b-%d %H:%M:%S')
             self.timeseries.finalise()
+
+        # Check and cleanup
+
+        # @TODO to deal with copprupt data at the start
+        for station_id, station in stations.items():
+            if "potential pt data" in station:
+                vec =  station["potential pt data"]
+                # remove first two elements
+                vec = vec[2:]
+                station["potential pt data"] = vec
+
+            if "irrigation" in station:
+                vec = station["irrigation"]
+                # remove first two elements
+                vec = vec[2:]
+                station["irrigation"] = vec
+
+        # @TODO make sure data streams are the same length
+                
+
+        print(stations)
 
         return stations, (start_date, end_date)
 

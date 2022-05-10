@@ -112,6 +112,13 @@ class Lot:
 
         pervious_area = lot["area"] - lot["roof_area"] - lot["impervious_area"]
 
+        print("Lot area: ", lot["area"])
+        print("Roof area: ", lot["roof_area"])
+        print("Impervious area: ", lot["impervious_area"])
+        print("Pervious area: ", pervious_area)
+        print("Garden area:",lot['irrigated_garden_area'])
+
+
         # Green roofs
         if (self._green_roofs):
             roof_evapotranspiration = np.array(self._green_roofs[UnitFlows.pervious_evapotranspiration]) * (

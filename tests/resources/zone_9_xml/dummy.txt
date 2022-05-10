@@ -1,0 +1,17 @@
+2 options
+ - default from file in data
+ - setting data in stream
+
+
+# dynmamind workflow
+
+# expand timeseries with evapotranspiration
+
+# look at the existing structure for rainfall
+# fill timeseries with end start station_id timetep as is add type
+# add vector data with attributecalculator using {1,2,3} // need to be the excat same lenght of the rainfall
+
+# can be same for irrigation (check for lenght date times etc)
+# might need a filter to only overwrite values where data is null
+
+

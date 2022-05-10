@@ -1,0 +1,309 @@
+<DynaMind>
+  <Info Version="0.5"/>
+  <DynaMindCore>
+    <Settings>
+      <EPSG value="3857"/>
+      <WorkingDir value="/tmp"/>
+      <KeepSystems value="0"/>
+    </Settings>
+    <Nodes>
+      <RootNode>
+        <UUID value="0"/>
+      </RootNode>
+      <Node>
+        <ClassName value="GDALHotStarter"/>
+        <UUID value="65cb1d3e-50e2-4684-926e-e73756f446dd"/>
+        <Name value="load_simulation"/>
+        <GroupUUID value="0"/>
+        <parameter name="hot_start_database">/workspaces/DynaMind-ToolBox/tests/FINAL/databases/1_soil.sqlite</parameter>
+      </Node>
+      <Node>
+        <ClassName value="DM_CreateComponent"/>
+        <UUID value="4d3844a3-1e7c-41cd-9182-4c687650a9b0"/>
+        <Name value="add_container"/>
+        <GroupUUID value="0"/>
+        <parameter name="lead_view_name">timeseries</parameter>
+        <parameter name="component_type">COMPONENT</parameter>
+        <parameter name="create_empty">0</parameter>
+        <parameter name="append">1</parameter>
+      </Node>
+      <Node>
+        <ClassName value="GDALAttributeCalculator"/>
+        <UUID value="4bb55576-827d-44c6-8d70-64bf572f0473"/>
+        <Name value="Add Parameter - end"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.end</parameter>
+        <parameter name="attribute_type">STRING</parameter>
+        <parameter name="equation">"01.01.2001 00:00:00"</parameter>
+        <Filter>
+          <view_name>timeseries</view_name>
+          <attribtue_filter>type is null</attribtue_filter>
+          <spatial_filter></spatial_filter>
+        </Filter>
+      </Node>
+      <Node>
+        <ClassName value="GDALAttributeCalculator"/>
+        <UUID value="b9ddc9ea-b322-40a9-ad8a-628170d32f66"/>
+        <Name value="Add Parameter - start"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.start</parameter>
+        <parameter name="attribute_type">STRING</parameter>
+        <parameter name="equation">"02.01.2000 00:00:00"</parameter>
+        <Filter>
+          <view_name>timeseries</view_name>
+          <attribtue_filter>type is null</attribtue_filter>
+          <spatial_filter></spatial_filter>
+        </Filter>
+      </Node>
+      <Node>
+        <ClassName value="GDALAttributeCalculator"/>
+        <UUID value="2cc34130-4f13-49a1-8b85-4da6800b0773"/>
+        <Name value="Add Parameter - timestep"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.timestep</parameter>
+        <parameter name="attribute_type">DOUBLE</parameter>
+        <parameter name="equation">86400</parameter>
+        <Filter>
+          <view_name>timeseries</view_name>
+          <attribtue_filter>type is null</attribtue_filter>
+          <spatial_filter></spatial_filter>
+        </Filter>
+      </Node>
+      <Node>
+        <ClassName value="GDALAttributeCalculator"/>
+        <UUID value="56ab6813-bd5c-4c45-8e2c-d5355c0a7242"/>
+        <Name value="Add Parameter - data"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.data</parameter>
+        <parameter name="attribute_type">DOUBLEVECTOR</parameter>
+        <parameter name="equation">{3,4,3,4,4,5,3,5,3,3,3,5,4,5,5,3,4,4,4,4,3,4,3,3,4,5,3,5,3,4,4,5,3,4,4,4,3,5,3,5,5,3,5,3,3,3,4,4,5,3,3,4,3,4,5,5,3,4,4,4,4,5,5,5,3,5,4,3,4,5,3,3,5,3,3,3,3,3,3,5,3,5,4,4,4,3,4,4,4,3,4,5,3,4,5,3,5,3,4,5,5,4,3,4,4,3,5,5,5,5,4,5,5,5,5,5,3,4,5,5,4,5,4,3,5,5,3,5,3,3,5,3,5,5,5,3,3,3,4,5,3,4,5,5,5,4,3,3,3,3,5,5,3,3,3,4,5,3,3,4,3,5,4,4,4,3,3,3,4,4,5,4,3,3,4,5,4,4,4,3,3,3,4,5,4,4,3,3,4,5,3,5,5,4,4,4,5,3,3,4,3,5,5,3,5,5,5,4,4,3,3,3,5,5,4,4,3,3,5,4,4,5,3,4,4,4,4,4,5,5,5,3,4,5,4,4,4,4,3,5,5,3,4,4,3,3,3,5,4,5,4,5,3,5,3,4,4,4,3,3,3,3,3,3,4,3,5,5,4,4,4,5,4,4,3,4,5,4,4,3,3,4,4,5,4,5,5,4,5,5,3,4,4,4,5,4,4,4,5,3,4,3,4,4,5,3,5,3,3,5,3,5,3,3,3,3,4,5,3,3,4,5,4,3,3,3,3,3,4,3,5,5,5,3,3,5,3,5,5,3,4,4,4,3,3,4,3,3,4,5,5,3,5,4,4,5,4,5,5,4,5,3,3,5,4,4,5,5}</parameter>
+        <Filter>
+          <view_name>timeseries</view_name>
+          <attribtue_filter>type is null</attribtue_filter>
+          <spatial_filter></spatial_filter>
+        </Filter>
+      </Node>
+      <Node>
+        <ClassName value="DM_SQliteCalculator"/>
+        <UUID value="26ff0de4-27eb-4048-aef5-1a27cd2e0957"/>
+        <Name value="Add Parameter - stationid"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.station_id</parameter>
+        <parameter name="attribute_type">INT</parameter>
+        <parameter name="query">UPDATE timeseries SET station_id = (SELECT max(ogc_fid) FROM station) WHERE type is null</parameter>
+      </Node>
+      <Node>
+        <ClassName value="GDALAttributeCalculator"/>
+        <UUID value="baf19857-22b2-4803-b3c0-80a748e9574d"/>
+        <Name value="Add Parameter - type"/>
+        <GroupUUID value="0"/>
+        <parameter name="attribute">timeseries.type</parameter>
+        <parameter name="attribute_type">STRING</parameter>
+        <parameter name="equation">"potential pt data"</parameter>
+        <Filter>
+          <view_name>timeseries</view_name>
+          <attribtue_filter>type is null</attribtue_filter>
+          <spatial_filter></spatial_filter>
+        </Filter>
+      </Node>
+      <Node>
+        <ClassName value="GDALLogAttriubtes"/>
+        <UUID value="8754b164-a490-402c-b326-c57850095757"/>
+        <Name value="logging"/>
+        <GroupUUID value="0"/>
+        <parameter name="leadingViewName">timeseries</parameter>
+        <parameter name="attributeNames">data</parameter>
+      </Node>
+      <Node>
+        <ClassName value="DM_ExportSimulationDB"/>
+        <UUID value="e1c6ec40-0ca6-4638-aae7-1cd84101c13e"/>
+        <Name value="export_database"/>
+        <GroupUUID value="0"/>
+        <parameter name="file_name">/workspaces/DynaMind-ToolBox/tests/FINAL/databases/2_ET</parameter>
+      </Node>
+    </Nodes>
+    <Links>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="4d3844a3-1e7c-41cd-9182-4c687650a9b0"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="65cb1d3e-50e2-4684-926e-e73756f446dd"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="4bb55576-827d-44c6-8d70-64bf572f0473"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="4d3844a3-1e7c-41cd-9182-4c687650a9b0"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="b9ddc9ea-b322-40a9-ad8a-628170d32f66"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="4bb55576-827d-44c6-8d70-64bf572f0473"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="2cc34130-4f13-49a1-8b85-4da6800b0773"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="b9ddc9ea-b322-40a9-ad8a-628170d32f66"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="56ab6813-bd5c-4c45-8e2c-d5355c0a7242"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="2cc34130-4f13-49a1-8b85-4da6800b0773"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="26ff0de4-27eb-4048-aef5-1a27cd2e0957"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="56ab6813-bd5c-4c45-8e2c-d5355c0a7242"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="baf19857-22b2-4803-b3c0-80a748e9574d"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="26ff0de4-27eb-4048-aef5-1a27cd2e0957"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="8754b164-a490-402c-b326-c57850095757"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="baf19857-22b2-4803-b3c0-80a748e9574d"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+      <Link>
+        <BackLink value="0"/>
+        <InPort>
+          <UUID value="e1c6ec40-0ca6-4638-aae7-1cd84101c13e"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </InPort>
+        <OutPort>
+          <UUID value="8754b164-a490-402c-b326-c57850095757"/>
+          <PortName value="city"/>
+          <PortType value="0"/>
+        </OutPort>
+      </Link>
+    </Links>
+  </DynaMindCore>
+  <DynaMindGUI>
+    <GUI_Nodes>
+      <GUI_Node>
+        <GUI_UUID value="65cb1d3e-50e2-4684-926e-e73756f446dd"/>
+        <GUI_PosX value="0"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="4d3844a3-1e7c-41cd-9182-4c687650a9b0"/>
+        <GUI_PosX value="300"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="4bb55576-827d-44c6-8d70-64bf572f0473"/>
+        <GUI_PosX value="600"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="b9ddc9ea-b322-40a9-ad8a-628170d32f66"/>
+        <GUI_PosX value="900"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="2cc34130-4f13-49a1-8b85-4da6800b0773"/>
+        <GUI_PosX value="1200"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="56ab6813-bd5c-4c45-8e2c-d5355c0a7242"/>
+        <GUI_PosX value="1500"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="26ff0de4-27eb-4048-aef5-1a27cd2e0957"/>
+        <GUI_PosX value="1800"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="baf19857-22b2-4803-b3c0-80a748e9574d"/>
+        <GUI_PosX value="2100"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="8754b164-a490-402c-b326-c57850095757"/>
+        <GUI_PosX value="2400"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+      <GUI_Node>
+        <GUI_UUID value="e1c6ec40-0ca6-4638-aae7-1cd84101c13e"/>
+        <GUI_PosX value="2700"/>
+        <GUI_PosY value="0"/>
+        <GUI_Mini value="0"/>
+      </GUI_Node>
+    </GUI_Nodes>
+  </DynaMindGUI>
+</DynaMind>
